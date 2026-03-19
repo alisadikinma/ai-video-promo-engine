@@ -8,6 +8,11 @@ platform: claude-projects
 
 # Creator Profile & Holiday Production
 
+> **Cast System Note:** Ali Sadikin is a preset that fills exactly 1 Pemeran Utama slot
+> in the cast system. When activated, the slot number {N} is assigned during cast builder
+> (Phase 1). All references below use `ref/cast-c{N}-face.png` where {N} = Ali's assigned
+> cast slot. See `creator-profile-system.md` Section 2 for full integration details.
+
 ## Ali Sadikin MA — Physical Reference
 
 | Attribute | Spec | Cinematography Impact |
@@ -24,7 +29,8 @@ platform: claude-projects
 
 ### Standard Reference Phrase (Copy Verbatim)
 ```
-Using facial identity from reference image: alisadikinface.png.
+Using facial identity from reference image: ref/cast-c{N}-face.png.
+(where {N} = Ali Sadikin's assigned cast slot number from cast-profile.md)
 Maintain consistent: Indonesian male, late 30s, bald, round face, warm skin
 undertone with natural texture, dark brown eyes, rectangular gunmetal
 semi-rimless glasses, clean-shaven, confident approachable presence.
@@ -44,7 +50,9 @@ semi-rimless glasses, clean-shaven, confident approachable presence.
 - Dark henley: needs edge light for separation on dark backgrounds
 
 ### Mandatory Appearances
+When Ali Sadikin preset is assigned to a cast slot, that character MUST appear in:
 Hook shot, CTA/ending shot, talking-head segments, direct-address moments.
+(Per cast-profile-system.md Section 4 — Pemeran Utama mandatory appearances.)
 
 ## Creator Lighting Setups
 
@@ -59,7 +67,7 @@ Hook shot, CTA/ending shot, talking-head segments, direct-address moments.
 ## Thumbnail Generation
 
 ### Requirements
-- Creator face from `alisadikinface.png` — **50-60% of frame**
+- Creator face from `ref/cast-c{N}-face.png` (Ali Sadikin cast slot) — **50-60% of frame**
 - Topic visual in background/side
 - Text overlay zone reserved (don't render text, leave space)
 - Expression EXAGGERATED (readable at 100×100px)
@@ -87,13 +95,20 @@ LIGHTING: Rembrandt/Split 4:1-6:1, mixed warm face/cool topic, strong rim.
 COLOR: Vision3 500T, HIGH SATURATION teal-orange, minimal grain.
 TEXT ZONES: Reserve [position] for title overlay.
 TECHNICAL: 9:16 vertical, min 1280×720, no artifacts.
-FACE REF: alisadikinface.png. [WARDROBE as specified].
+FACE REF: ref/cast-c{N}-face.png. [WARDROBE as specified].
 ```
 
 ## Holiday Design Reference
 
 ### 70/30 Rule
 Holiday atmosphere **70-80%** of composition, professional/tech identity **20-30%**.
+
+### Cast System Integration
+Holiday wardrobe swaps apply per cast member individually. In multi-character videos:
+- Each Pemeran Utama can have independent holiday wardrobe selection
+- Pemeran Pendamping may use generic holiday-themed wardrobe
+- All cast members in the same scene MUST use the same holiday theme (no mixing Christmas + Eid)
+- Holiday palette applies to the entire video, not per-character
 
 ### Holiday Palettes & Symbols
 
@@ -133,6 +148,10 @@ Holiday atmosphere **70-80%** of composition, professional/tech identity **20-30
 - Lighting: "soft romantic rose-tinted candlelight"
 
 ### Holiday Wardrobe Swaps
+
+> These wardrobe swaps are designed for Ali Sadikin preset but can be adapted for any
+> cast member. When adapting for other characters, maintain the holiday color palette
+> and cultural elements while adjusting fit/style to the character's profile.
 
 | Holiday | Wardrobe |
 |---------|----------|

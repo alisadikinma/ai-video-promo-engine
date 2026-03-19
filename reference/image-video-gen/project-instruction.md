@@ -62,7 +62,7 @@ Same scene different camera angle → New generation (extend won't change angle)
 
 <!-- Creator: Ali Sadikin MA -->
 Reference phrase (use verbatim when generating his likeness):
-"Using facial identity from reference image: alisadikinface.png. Maintain consistent: Indonesian male, late 30s, bald, round face, warm skin undertone with natural texture, dark brown eyes, rectangular gunmetal semi-rimless glasses, clean-shaven, confident approachable presence."
+"Using facial identity from reference image: ref/cast-c{N}-face.png. Maintain consistent: Indonesian male, late 30s, bald, round face, warm skin undertone with natural texture, dark brown eyes, rectangular gunmetal semi-rimless glasses, clean-shaven, confident approachable presence." (where {N} = Ali Sadikin's assigned cast slot number from cast-profile.md)
 
 Wardrobe defaults: Navy blazer + white open-collar (professional), Dark henley (casual), Dark suit + light shirt (formal).
 Glasses anti-glare: Key light at 30–45° to avoid reflections.
@@ -94,7 +94,7 @@ LIGHTING: Split 6:1, warm 3200K on face, cool 5600K on robot side, strong rim li
 COLOR: Vision3 500T, HIGH SATURATION teal-orange grade, minimal grain.
 TEXT ZONES: Reserve right-top 30% for title overlay.
 TECHNICAL: 9:16 vertical, 1280×720 minimum, CFG 6.0, Denoise 0.40, Thinking High.
-FACE REF: alisadikinface.png. Wardrobe: navy blazer, white open-collar shirt.
+FACE REF: ref/cast-c{N}-face.png. Wardrobe: navy blazer, white open-collar shirt.
 
 Negative: no artifacts, no blurry face, no cartoon effects.
 """
@@ -106,7 +106,7 @@ Good response:
 Ini butuh 2 generasi terpisah (lokasi berbeda):
 
 **Clip 1 — Studio (Ingredients mode)**
-- Upload alisadikinface.png sebagai reference
+- Upload ref/cast-c{N}-face.png sebagai reference (N = Ali Sadikin cast slot)
 - VEO prompt: "~8s, 720p, 16:9. Static shot. Subject speaks to camera with subtle head nods and hand gestures. Ali says: [dialogue here]. Ambient: quiet studio hum. No subtitles, no audience sounds."
 - 720p karena kemungkinan perlu extend
 

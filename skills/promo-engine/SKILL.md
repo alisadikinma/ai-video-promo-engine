@@ -1,24 +1,25 @@
 ---
 name: promo-engine
 description: >
-  End-to-end AI video promotional production engine. Generates complete 2-3 minute
-  promotional video packages: brainstorm → script → scene breakdown → NB2 image prompts
-  → VEO 3.1 video prompts. Supports any brand (generic) or Ali Sadikin preset.
+  End-to-end AI video promotional production engine. 6-phase pipeline that generates complete
+  2-3 minute promotional video packages: brainstorm → script → scene breakdown → reference
+  collection → NB2 image prompts → VEO 3.1 video prompts. Supports multi-character cast
+  (max 5), any brand (generic) or Ali Sadikin preset.
   Triggers on: video promo, promotional video, product video, promo engine, video production,
   bikin video promosi, buat video, video marketing, iklan video, video agency,
-  generate video, create promo, video script.
+  generate video, create promo, video script, cast, pemeran, karakter video.
 ---
 
 # Promo Engine — AI Video Promotional Production Pipeline
 
 ## Overview
 
-Full pipeline skill that guides users from initial brainstorm to production-ready NB2 image prompts and VEO 3.1 video prompts for 2-3 minute promotional videos.
+Full 6-phase pipeline skill that guides users from initial brainstorm to production-ready NB2 image prompts and VEO 3.1 video prompts for 2-3 minute promotional videos. Includes multi-character cast builder and mandatory reference collection gate.
 
 ## How to Use This Skill
 
 ### As Inline Skill (Recommended)
-Claude reads this SKILL.md directly and follows the 5-phase workflow interactively.
+Claude reads this SKILL.md directly and follows the 6-phase workflow interactively.
 
 ### As Subagent (For batch work)
 Copy `agents/promo-engine-agent.md` to your project's `.claude/agents/` directory.
@@ -33,7 +34,7 @@ Copy `agents/promo-engine-agent.md` to your project's `.claude/agents/` director
 ### Phase 1: Brainstorm
 | Task | Read |
 |------|------|
-| Creator/brand profile | `reference/creator-profile-system.md` |
+| Cast profile system | `reference/creator-profile-system.md` |
 | Target market psychology | `reference/storytelling_script_gen/F1_Audience_Psychology_Matrix.md` |
 | Awareness level routing | `reference/storytelling_script_gen/F8_Awareness_Level_Routing.md` |
 
@@ -58,6 +59,13 @@ Copy `agents/promo-engine-agent.md` to your project's `.claude/agents/` director
 | NB2 → VEO pipeline | `reference/image-video-gen/03-workflow-pipeline.md` |
 | Production stack | `reference/image-video-gen/00-index.md` |
 
+### Phase 3.5: Reference Collection
+| Task | Read |
+|------|------|
+| Cast profile & refs | `reference/creator-profile-system.md` |
+| Naming conventions | `reference/global-promo-config.md` (Section 11) |
+| Institution detection | `reference/global-promo-config.md` (Section 12) |
+
 ### Phase 4: Image Prompts
 | Task | Read |
 |------|------|
@@ -76,7 +84,7 @@ Copy `agents/promo-engine-agent.md` to your project's `.claude/agents/` director
 
 ## Hard Rules (NON-NEGOTIABLE)
 
-1. **NEVER skip a phase** — all 5 phases must execute in order
+1. **NEVER skip a phase** — all 6 phases must execute in order (including Phase 3.5)
 2. **NEVER proceed without user approval** — every phase ends with approval gate
 3. **Ingredients ≠ First+Last Frame** — mutually exclusive VEO modes, NEVER combine
 4. **Audio is NEVER optional** — unspecified = VEO guesses random sounds
@@ -90,6 +98,9 @@ Copy `agents/promo-engine-agent.md` to your project's `.claude/agents/` director
 12. **Face >30% frame for lip sync** — smaller = sync failure
 13. **Every feature MUST have human consequence** — no feature listing without "so what?"
 14. **All AskUserQuestion interactions** — NEVER ask questions as plain text, ALWAYS use AskUserQuestion tool with selectable options
+15. **Max 5 cast members** — 1-3 Pemeran Utama + 0-2 Pemeran Pendamping (NB2 identity lock limit)
+16. **Phase 3.5 is HARD BLOCK** — cannot proceed to Phase 4 without ALL reference images validated in ref-manifest.md
+17. **Cast ref by role** — Utama: face+body+costume(if institutional) MANDATORY. Pendamping: face MANDATORY, body/costume OPTIONAL.
 
 ---
 
@@ -99,19 +110,28 @@ Copy `agents/promo-engine-agent.md` to your project's `.claude/agents/` director
 
 **Read first:** `global-promo-config.md`, `creator-profile-system.md`, `F1_Audience_Psychology_Matrix.md`, `F8_Awareness_Level_Routing.md`
 
-#### Step 1.1: Welcome & Profile Setup
+#### Step 1.1: Welcome & Cast Setup
+
+**Read:** `creator-profile-system.md` (Cast Profile System)
 
 ```
 AskUserQuestion:
-"Selamat datang di Promo Engine! Pertama, siapkan creator/brand profile:"
+"Selamat datang di Promo Engine! Pertama, siapkan cast (pemeran) untuk video ini."
 
 Options:
-A) Start fresh (isi profile baru)
-B) Use Ali Sadikin preset
-C) Load existing profile (dari creator-profile.md)
+A) Build cast baru (isi profile per karakter)
+B) Use Ali Sadikin preset (fills 1 Pemeran Utama slot)
+C) Load existing cast (dari cast-profile.md)
 ```
 
-If "Start fresh" → collect profile fields per `creator-profile-system.md` Section 1.
+If "Build cast baru" or "Ali Sadikin preset" → follow Cast Builder Flow in `creator-profile-system.md` Section 1:
+1. Cast size selection (1-5 characters)
+2. Per-character role assignment (Utama/Pendamping)
+3. Per-character profile collection (name, gender, age, ethnicity, features)
+4. Ali Sadikin preset assignment (if selected)
+5. Institution detection (auto-scan brand + confirm)
+
+Save output: `{project}/cast-profile.md`
 
 #### Step 1.2: Product/Service Discovery
 
@@ -144,6 +164,28 @@ If user uploads/pastes → silently ingest 6 elements per `project-instruction.m
 4. Shame layer (pain they want to escape)
 5. Pride layer (identity they want to claim)
 6. Awareness level
+
+#### Step 1.2b: Institution Detection
+
+After product/service is identified, auto-scan for institutional keywords per `global-promo-config.md` Section 12.
+
+If institution detected:
+
+```
+AskUserQuestion:
+"Terdeteksi produk ini terkait dengan {institution}. Apakah karakter di video perlu pakai seragam {institution}?"
+
+Options:
+A) Ya, semua pemeran pakai seragam
+B) Ya, tapi hanya pemeran tertentu
+C) Tidak, pakai outfit generic
+```
+
+If A → update cast-profile.md with `costume_type = "institutional"` for ALL cast members.
+If B → follow per-character costume assignment per `creator-profile-system.md` Section 7.
+If C → no costume refs required (unless user manually adds later).
+
+If no institution keyword detected → skip this step automatically.
 
 #### Step 1.3: Target Market Selection
 
@@ -252,7 +294,7 @@ B) Revise — ada yang perlu diubah (jelaskan)
 C) Start over — mulai brainstorm dari awal
 ```
 
-**Save output:** `{output_folder}/strategic-brief.md`
+**Save output:** `{output_folder}/strategic-brief.md`, `{project}/cast-profile.md`
 
 ---
 
@@ -340,7 +382,7 @@ AskUserQuestion:
 "Scene plan di atas sudah sesuai?"
 
 Options:
-A) Approve — lanjut ke image prompt generation
+A) Approve — lanjut ke reference collection (Phase 3.5)
 B) Adjust scenes — ubah pembagian scene
 C) Change VEO modes — ganti mode VEO untuk scene tertentu
 D) Adjust durations — ubah durasi scene
@@ -350,26 +392,150 @@ D) Adjust durations — ubah durasi scene
 
 ---
 
+### Phase 3.5: REFERENCE IMAGE COLLECTION (Output: ref-manifest.md)
+
+**Read:** `creator-profile-system.md` (cast refs), `global-promo-config.md` (Section 11: naming, Section 12: institution)
+
+**HARD BLOCK: Cannot proceed to Phase 4 until ALL required references are uploaded and validated.**
+
+#### Step 3.5.1: Auto-Derive Reference Requirements
+
+Scan `scene-plan.md` + `cast-profile.md` to build reference manifest:
+
+```
+FOR each character in cast-profile.md:
+    IF role == "Pemeran Utama":
+        → REQUIRE ref/cast-c{N}-face.png
+        → REQUIRE ref/cast-c{N}-body.png
+        → IF institution_detected: REQUIRE ref/cast-c{N}-costume.png
+    IF role == "Pemeran Pendamping":
+        → REQUIRE ref/cast-c{N}-face.png
+
+FOR each scene in scene-plan.md:
+    → EXTRACT unique locations → REQUIRE ref/env-{location}.png per unique location
+    → IF product mentioned → REQUIRE ref/product-{name}.png (deduplicated)
+    → IF brand/logo/UI visible → REQUIRE ref/brand-{asset}.png (deduplicated)
+
+IF institution_detected:
+    → REQUIRE ref/costume-{institution}.png (shared reference)
+```
+
+#### Step 3.5.2: Present Reference Manifest
+
+Present auto-derived manifest:
+
+```markdown
+# Reference Manifest — {Video Title}
+
+## Cast References
+### Character 1: {Name} (Pemeran Utama) — FULL REF REQUIRED
+| Filename | Content | Used in Scenes | Status |
+|----------|---------|----------------|--------|
+| ref/cast-c1-face.png | Face front view | 1,2,3,5 | ⬜ |
+| ref/cast-c1-body.png | Full body standing | 1,2,3,5 | ⬜ |
+| ref/cast-c1-costume.png | Seragam {institution} | 1,2,3,5 | ⬜ |
+
+### Character 2: {Name} (Pemeran Utama) — FULL REF REQUIRED
+| Filename | Content | Used in Scenes | Status |
+|----------|---------|----------------|--------|
+| ref/cast-c2-face.png | Face front view | 2,4,6 | ⬜ |
+| ref/cast-c2-body.png | Full body standing | 2,4,6 | ⬜ |
+| ref/cast-c2-costume.png | Seragam {institution} | 2,4,6 | ⬜ |
+
+### Character 3: {Name} (Pemeran Pendamping) — FACE REF REQUIRED
+| Filename | Content | Used in Scenes | Status |
+|----------|---------|----------------|--------|
+| ref/cast-c3-face.png | Face front view | 4,7 | ⬜ |
+
+## Product References — MANDATORY
+| Filename | Content | Used in Scenes | Status |
+|----------|---------|----------------|--------|
+| ref/product-{name}.png | Product hero shot | 3,5,8 | ⬜ |
+
+## Environment References — MANDATORY
+| Filename | Content | Used in Scenes | Status |
+|----------|---------|----------------|--------|
+| ref/env-{location-1}.png | {location description} | 1,2,3 | ⬜ |
+| ref/env-{location-2}.png | {location description} | 5,6,7 | ⬜ |
+
+## Brand Assets — MANDATORY
+| Filename | Content | Used in Scenes | Status |
+|----------|---------|----------------|--------|
+| ref/brand-logo.png | Brand logo (transparent BG) | 8,9 | ⬜ |
+
+## Costume/Uniform — MANDATORY (if institutional)
+| Filename | Content | Used in Scenes | Status |
+|----------|---------|----------------|--------|
+| ref/costume-{institution}.png | Master uniform reference | 1-7 | ⬜ |
+
+## Validation: 0/{N} uploaded — BLOCKED
+```
+
+```
+AskUserQuestion:
+"Berdasarkan scene plan, kamu butuh {N} reference images. Upload semua ke folder {project}/ref/ sesuai naming di atas. Status?"
+
+Options:
+A) Sudah semua di-upload, validate
+B) Mau adjust manifest (tambah/hapus item)
+```
+
+**NOTE: No skip option. No "lanjut dulu". This is a hard block.**
+
+#### Step 3.5.3: Validate File Existence
+
+Check every file in manifest exists in `{project}/ref/`:
+
+- ALL exist → Proceed to Step 3.5.4
+- ANY missing → Show missing list:
+
+```
+AskUserQuestion:
+"Masih ada {M} reference image yang belum di-upload:
+- ref/cast-c1-body.png
+- ref/env-pelabuhan.png
+- ref/product-hero.png
+
+Upload dulu ke folder {project}/ref/, lalu confirm."
+
+Options:
+A) Sudah di-upload, validate ulang
+B) Mau adjust manifest
+```
+
+Repeat until 100% complete.
+
+#### Step 3.5.4: Save & Approve Manifest
+
+Save validated manifest to `{output_folder}/ref-manifest.md`
+
+```
+AskUserQuestion:
+"Reference manifest validated ({N}/{N} complete). Lanjut ke Phase 4 (Image Prompts)?"
+
+Options:
+A) Approve — lanjut ke image prompt generation
+B) Mau review manifest lagi
+```
+
+**Save output:** `{output_folder}/ref-manifest.md`
+
+---
+
 ### Phase 4: IMAGE PROMPTS — NB2 (Output: image-prompts.md)
 
 **Read:** `01-nb2-image-generation.md`, `04-cinematography-lookup.md`, `05-creator-and-holidays.md`, `creator-profile-system.md`
 
-#### Step 4.1: Reference Image Check
+#### Step 4.1: Load Validated References
 
-```
-AskUserQuestion:
-"Pastikan reference images sudah di-upload ke folder {project}/ref/:
-- creator-face.png (wajib untuk presenter-style)
-- creator-brand.png (logo brand)
-- ref-{product}.png (product shots, jika ada)
+Load `ref-manifest.md` from Phase 3.5 (all references already validated — no re-check needed).
 
-Status?"
-
-Options:
-A) Sudah lengkap, lanjut
-B) Sebagian sudah, lanjut dulu
-C) Video tanpa presenter (B-Roll only)
-```
+For each scene, map reference images from manifest:
+- Character refs → NB2 identity lock per cast member
+- Product refs → scene context
+- Environment refs → First+Last Frame backgrounds
+- Brand refs → logo/UI placement
+- Costume refs → wardrobe direction
 
 #### Step 4.2: Generate NB2 Prompts per Scene
 
@@ -385,7 +551,8 @@ For each scene in scene-plan.md:
 
 **Apply:**
 - Cinematography lookup (emotion → lighting/lens/film stock)
-- Creator reference phrase (verbatim from profile)
+- Apply creator reference phrase **per character** from `cast-profile.md` (verbatim)
+- For multi-character scenes, use Cast Interaction Templates from `creator-profile-system.md` Section 8
 - NB2 technical parameters (CFG 5-7, denoise 0.35-0.45)
 - Aspect ratio matching VEO target
 - Central 60% rule
@@ -463,7 +630,7 @@ Present final summary:
 - Total VEO clips: {M} (generations + extensions)
 - Total estimated duration: {X}s
 - Output files saved to: `{output_folder}/`
-- Files: strategic-brief.md, av-script.md, scene-plan.md, image-prompts.md, video-prompts.md
+- Files: strategic-brief.md, cast-profile.md, av-script.md, scene-plan.md, ref-manifest.md, image-prompts.md, video-prompts.md
 
 ---
 
@@ -478,11 +645,21 @@ Present final summary:
 - [ ] Opening does NOT start with company name/logo
 - [ ] No jargon without translation
 
+### Reference Collection Quality Gate (Phase 3.5)
+- [ ] All cast face refs uploaded (per role requirements)
+- [ ] All cast body refs uploaded (Pemeran Utama only)
+- [ ] All costume refs uploaded (if institutional)
+- [ ] All product refs uploaded
+- [ ] All environment refs uploaded (per unique location)
+- [ ] All brand asset refs uploaded
+- [ ] ref-manifest.md shows 100% validation
+- [ ] Naming convention matches global-promo-config.md Section 11
+
 ### Image Prompt Quality Gate (Phase 4)
 - [ ] NB2 aspect ratio matches VEO target
 - [ ] CFG 5-7, Denoise 0.35-0.45
 - [ ] Start/End frames share same lighting Kelvin
-- [ ] Creator reference phrase verbatim
+- [ ] Cast reference phrase verbatim per character from cast-profile.md
 - [ ] Central 60% rule applied
 - [ ] Thinking mode specified (minimal for draft, high for final)
 

@@ -88,14 +88,23 @@ All configurable values for the AI Video Promo Engine. Edit THIS file to change 
 
 ---
 
-## 7. Creator Profile
+## 7. Cast System
 
 | Setting | Value | Notes |
 |---------|-------|-------|
-| `creator_preset` | `none` | `none` = generic, `ali` = Ali Sadikin preset |
-| `creator_face_file` | `creator-face.png` | In `{project}/ref/` folder |
-| `creator_brand_file` | `creator-brand.png` | In `{project}/ref/` folder |
-| `ref_folder` | `ref/` | Reference images folder |
+| `max_cast` | `5` | Max characters total (matches NB2 identity lock limit) |
+| `max_pemeran_utama` | `3` | Max main characters |
+| `max_pemeran_pendamping` | `2` | Max supporting characters |
+| `cast_profile_file` | `cast-profile.md` | In `{project}/` folder (replaces creator-profile.md) |
+| `cast_ref_folder` | `ref/` | Reference images folder |
+| `ali_preset_available` | `true` | Ali Sadikin preset can fill 1 cast slot |
+
+### Cast Reference Requirements
+
+| Role | Face Ref | Body Ref | Costume Ref | Identity Lock |
+|------|----------|----------|-------------|---------------|
+| Pemeran Utama | MANDATORY | MANDATORY | MANDATORY (if institutional) | FULL |
+| Pemeran Pendamping | MANDATORY | OPTIONAL | OPTIONAL | PARTIAL |
 
 ---
 
@@ -125,5 +134,61 @@ All configurable values for the AI Video Promo Engine. Edit THIS file to change 
 
 | Setting | Value |
 |---------|-------|
-| `config_version` | `1.0.0` |
+| `config_version` | `1.1.0` |
 | `last_updated` | `2026-03-19` |
+
+---
+
+## 11. Reference Manifest
+
+| Setting | Value | Notes |
+|---------|-------|-------|
+| `ref_manifest_file` | `ref-manifest.md` | In `{project}/output/` folder |
+| `ref_validation_mode` | `hard_block` | Cannot proceed to Phase 4 without 100% refs |
+
+### Naming Conventions
+
+| Category | Pattern | Example |
+|----------|---------|---------|
+| Cast face | `ref/cast-c{N}-face.png` | `ref/cast-c1-face.png` |
+| Cast body | `ref/cast-c{N}-body.png` | `ref/cast-c1-body.png` |
+| Cast costume | `ref/cast-c{N}-costume.png` | `ref/cast-c1-costume.png` |
+| Product | `ref/product-{name}.png` | `ref/product-hero.png` |
+| Environment | `ref/env-{location}.png` | `ref/env-pelabuhan.png` |
+| Brand asset | `ref/brand-{asset}.png` | `ref/brand-logo.png` |
+| Institutional uniform | `ref/costume-{institution}.png` | `ref/costume-kai.png` |
+
+### Reference Categories (All 5 Hard Block)
+
+| # | Category | Required When |
+|---|----------|---------------|
+| 1 | Character (cast) | Any scene with character |
+| 2 | Product | Any scene showing product |
+| 3 | Environment | Any B-Roll or location-specific scene |
+| 4 | Brand Assets | Any scene with visible logo/UI/brand |
+| 5 | Costume/Uniform | When institution detected |
+
+---
+
+## 12. Institution Detection
+
+| Institution Keyword | Uniform Type | Example Roles |
+|---------------------|-------------|---------------|
+| KAI / Kereta Api | Railway uniform | Masinis, petugas stasiun, kondektur |
+| Pelindo / Pelabuhan | Port authority uniform | Petugas pelabuhan, operator crane |
+| BRI / BNI / BCA / Mandiri | Banking uniform | Teller, CS, manager cabang |
+| Pertamina | Energy sector uniform | Operator SPBU, engineer |
+| PLN | Electricity utility uniform | Teknisi, petugas meter |
+| Telkom / Telkomsel | Telecom uniform | Teknisi, CS |
+| Garuda Indonesia | Airline uniform | Pilot, pramugari, ground crew |
+| RS / Rumah Sakit | Medical uniform | Dokter, perawat, apoteker |
+| TNI / Polri | Military/police uniform | Prajurit, polisi |
+| Pos Indonesia | Postal uniform | Petugas pos, kurir |
+| Damri | Bus transit uniform | Sopir, kondektur |
+| BUMN (generic) | Corporate uniform | Per institution |
+
+**Detection Logic:**
+1. Scan brand_name + product description for keywords above
+2. If match → AskUserQuestion to confirm: "Terdeteksi produk untuk {institution}. Pakai seragam?"
+3. If confirmed → ALL cast in relevant scenes MUST have costume ref
+4. If no match → skip costume category (unless user manually adds)

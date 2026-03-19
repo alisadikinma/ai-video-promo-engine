@@ -1,14 +1,14 @@
 ---
 name: promo-validate
 description: >
-  Cross-file consistency checker for AI Video Promo Engine references (8 checks).
+  Cross-file consistency checker for AI Video Promo Engine references (11 checks).
   Run after editing any reference file, before commits, or after adding new knowledge.
   Triggers on: validate, consistency check, reference check, cek referensi, cek konsistensi.
 ---
 
 # Validate References
 
-Run 8 automated consistency checks across all operational files. Reports PASS/FAIL per check with exact file:line.
+Run 11 automated consistency checks across all operational files. Reports PASS/FAIL per check with exact file:line.
 
 ## Scope
 
@@ -71,6 +71,30 @@ Run 8 automated consistency checks across all operational files. Reports PASS/FA
 **Expected:** 30% consistently across all files
 **How to verify:** Search for face percentage — should always be "30%" or ">30%"
 
+### Check 9: Cast System Consistency
+**Pattern:** References to old single-creator model in operational files
+**Expected:** All operational files use cast system terminology (cast-profile, cast-c{N}, Pemeran Utama/Pendamping). No references to `creator-profile.md` (as a generated output), `creator-face.png`, or `creator-brand.png` remain.
+**How to verify:** Search all operational files for `creator-face.png`, `creator-brand.png`, `alisadikinface.png` — should return 0 matches. Note: `creator-profile-system.md` as a reference filename is OK (it's the source doc name), but references to generating/saving `creator-profile.md` as output should now be `cast-profile.md`.
+
+### Check 10: Phase 3.5 Hard Block Enforcement
+**Pattern:** Pipeline allowing Phase 4 without Phase 3.5 validation
+**Expected:** SKILL.md and agent.md both describe Phase 3.5 as mandatory before Phase 4, using "HARD BLOCK" or "cannot proceed" language. No skip/override option exists.
+**How to verify:**
+1. Search SKILL.md for "Phase 3.5" — must exist with "HARD BLOCK" nearby
+2. Search agent.md for "Phase 3.5" — must exist with "HARD BLOCK" nearby
+3. Search SKILL.md Phase 3.5 section for "skip" — should return 0 matches
+4. Verify Phase 4 Step 4.1 does NOT have optional ref check with skip option
+
+### Check 11: Reference Naming Convention Consistency
+**Pattern:** Reference image filenames across all operational files
+**Expected:** All reference image filenames follow the naming conventions from `global-promo-config.md` Section 11:
+- Cast: `ref/cast-c{N}-face.png`, `ref/cast-c{N}-body.png`, `ref/cast-c{N}-costume.png`
+- Product: `ref/product-{name}.png`
+- Environment: `ref/env-{location}.png`
+- Brand: `ref/brand-{asset}.png`
+- Costume: `ref/costume-{institution}.png`
+**How to verify:** Search all operational files for `ref/` image references — all must match one of the 7 naming patterns above. No `ref/creator-*` or `ref/ref-*` patterns should remain.
+
 ## Output Format
 
 ```
@@ -84,8 +108,11 @@ Check 5: Reference File Count ................ PASS (22/22)
 Check 6: 7-Beat Arc Completeness ............. PASS (8/8 beats)
 Check 7: Forbidden Words List ................ PASS (8/8 words)
 Check 8: Face Minimum Percentage ............. PASS (30%)
+Check 9: Cast System Consistency ............. PASS (0 legacy refs)
+Check 10: Phase 3.5 Hard Block ............... PASS
+Check 11: Ref Naming Convention .............. PASS (7/7 patterns)
 
-Result: 8/8 checks passed
+Result: 11/11 checks passed
 ```
 
 If any check FAILS, show:

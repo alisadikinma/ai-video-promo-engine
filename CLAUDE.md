@@ -16,7 +16,7 @@ Claude Code plugin that generates complete promotional video production packages
 | `skills/promo-engine/SKILL.md` | Main skill — end-to-end promo video pipeline |
 | `skills/promo-validate/SKILL.md` | Cross-file consistency checker |
 | `skills/promo-add-platform/SKILL.md` | Scaffold new video platform support |
-| `agents/promo-engine-agent.md` | Subagent for batch/complex promo work |
+| `agents/promo-engine-agent.md` | Subagent for batch/complex promo work (6-phase pipeline) |
 | `reference/` | 22 reference docs read on-demand by skill/agent |
 | `README.md` | Repo README |
 | `LICENSE` | MIT license |
@@ -49,7 +49,7 @@ Claude Code plugin that generates complete promotional video production packages
 | `image-video-gen/02-veo-production-guide.md` | VEO 3.1 video prompts — specs, camera movement, I2V motion, lip sync, extensions, audio |
 | `image-video-gen/03-workflow-pipeline.md` | NB2 → VEO pipeline — decision tree, handoff rules, extension chain, "Last Frame Secret" |
 | `image-video-gen/04-cinematography-lookup.md` | Emotion → complete setup mapping (lighting, lens, film stock, atmosphere, camera motion) |
-| `image-video-gen/05-creator-and-holidays.md` | Ali Sadikin preset profile, holiday palettes, cultural context |
+| `image-video-gen/05-creator-and-holidays.md` | Ali Sadikin as cast slot, cast-c{N} naming, holiday palettes, cultural context |
 | `image-video-gen/project-instruction.md` | Image/video project instructions — critical rules, example workflows |
 
 #### Global Config & Bridge (3 files)
@@ -57,19 +57,20 @@ Claude Code plugin that generates complete promotional video production packages
 | File | When Used |
 |------|-----------|
 | `global-promo-config.md` | ALWAYS (read FIRST) — single source of truth for all configurable values |
-| `creator-profile-system.md` | Phase 1 (Brainstorm) — creator/brand profile setup, generic + Ali Sadikin preset |
+| `creator-profile-system.md` | Phase 1 (Cast Builder) — multi-character cast profiles, institution detection, generic + Ali Sadikin preset |
 | `script-to-scene-bridge.md` | Phase 3 (Scene Breakdown) — script → scene list → VEO mode → image/video prompts |
 
 ## Key Concepts
 
-### Production Pipeline (5-Phase Full Pipeline)
+### Production Pipeline (6-Phase Full Pipeline)
 
 The plugin operates as a single end-to-end pipeline with mandatory approval gates between phases:
 
 ```
-Phase 1: BRAINSTORM          → Output: strategic-brief.md
+Phase 1: BRAINSTORM          → Output: strategic-brief.md + cast-profile.md
   ├─ Upload tech doc (optional)
-  ├─ Creator/brand profile setup
+  ├─ Cast builder (1-5 characters, Utama/Pendamping roles)
+  ├─ Institution detection + costume confirmation
   ├─ Discuss product, storyline, pain points
   ├─ Select target market (C-Level / Manager / Social Media / etc.)
   ├─ Select awareness level
@@ -89,10 +90,17 @@ Phase 3: SCENE BREAKDOWN       → Output: scene-plan.md
   ├─ Extension strategy
   └─ [USER APPROVAL GATE]
 
+Phase 3.5: REFERENCE COLLECTION  → Output: ref-manifest.md
+  ├─ Auto-derive from scene-plan.md + cast-profile.md
+  ├─ Present manifest checklist (5 categories)
+  ├─ User uploads to {project}/ref/
+  ├─ Validate ALL refs exist
+  └─ [HARD BLOCK — 100% required before Phase 4]
+
 Phase 4: IMAGE PROMPTS (NB2)   → Output: image-prompts.md
   ├─ Start frame + End frame per scene (Frame mode)
   ├─ Ingredient images (Ingredients mode)
-  ├─ Creator face reference
+  ├─ Cast face/body/costume references per character
   ├─ Product/brand reference images
   └─ [USER APPROVAL GATE]
 
@@ -107,7 +115,7 @@ Phase 5: VIDEO PROMPTS (VEO)   → Output: video-prompts.md
 
 ### Output Modes
 
-- **`--full`** (default): Full production plan with scene breakdown, storyboard notes, NB2 prompts, VEO prompts, audio specs, extension strategy, post-production checklist
+- **`--full`** (default): Full production plan with cast-profile.md, ref-manifest.md, scene breakdown, storyboard notes, NB2 prompts, VEO prompts, audio specs, extension strategy, post-production checklist
 - **`--quick`**: Copy-paste ready prompts only (NB2 + VEO per scene, no production plan)
 
 ### Production Stack
@@ -171,6 +179,8 @@ The engine auto-calculates optimal scene count from script beats:
 | Demo/walkthrough | Ingredients + Extend | Same character, continuous action |
 | Testimonial | Ingredients + Extend | Face consistency for lip sync |
 | CTA (closing) | First+Last Frame | Dramatic ending transition |
+| Multi-char dialogue | Ingredients | Character consistency, sequential lip sync |
+| Multi-char B-Roll | First+Last Frame | Controlled environment with multiple characters |
 | Same scene continuation | Extend | 720p, +7s per hop |
 | Different scene | New generation | New start/end frames needed |
 
@@ -201,14 +211,47 @@ The engine auto-calculates optimal scene count from script beats:
 
 **Prompt Formula:** `Subject/Material + Lighting Architecture + Camera/Lens + Campaign Context`
 
-**Identity Lock:** Track up to 5 characters + 14 objects per workflow. Generate hero shot → reference sheet → inject via `@identity` tag.
+**Identity Lock:** Track up to 5 characters + 14 objects per workflow (maps to cast system max 5 characters). Generate hero shot → reference sheet → inject via `@identity` tag. Each cast member uses `ref/cast-c{N}-face.png` as identity anchor.
 
-### Creator Profile System (Hybrid)
+### Cast System (Multi-Character)
 
-- **Generic mode** (default): User fills in brand name, creator face image, brand logo, wardrobe, and key physical features during Phase 1 brainstorm
-- **Ali Sadikin preset**: Pre-configured creator profile with specific physical description, wardrobe defaults, and lighting setups. Activated via `--preset ali` flag or interactive selection
-- **Profile storage**: `{project-folder}/creator-profile.md` saved per project for consistency across sessions
-- **Reference images**: `{project-folder}/ref/` folder with `creator-face.png` + `creator-brand.png` (mandatory before image generation)
+Replaces the single-creator model. Supports 1-5 characters per video.
+
+- **Pemeran Utama** (main, 1-3): FULL identity lock — face + body + costume ref MANDATORY
+- **Pemeran Pendamping** (supporting, 0-2): PARTIAL identity lock — face ref MANDATORY, body/costume OPTIONAL
+- **Ali Sadikin preset**: Pre-configured profile that fills 1 Pemeran Utama cast slot
+- **Institution-aware costume**: Auto-detects institutional brand (KAI, Pelindo, BRI, etc.) and requires uniform reference images
+- **Cast profile storage**: `{project-folder}/cast-profile.md` with per-character reference phrases
+- **Reference images**: `{project-folder}/ref/` using naming convention `cast-c{N}-face.png`, `cast-c{N}-body.png`, `cast-c{N}-costume.png`
+- **Max characters**: 5 total (matches NB2 identity lock limit of 5 characters + 14 objects)
+
+### Phase 3.5: Reference Image Validation Gate
+
+Mandatory gate between Scene Breakdown (Phase 3) and Image Prompts (Phase 4).
+
+**HARD BLOCK:** Cannot proceed to Phase 4 without ALL reference images validated.
+
+**5 Reference Categories (all hard block):**
+
+| # | Category | Naming Pattern | Required When |
+|---|----------|---------------|---------------|
+| 1 | Character (cast) | `ref/cast-c{N}-face.png`, `-body.png`, `-costume.png` | Any scene with character |
+| 2 | Product | `ref/product-{name}.png` | Any scene showing product |
+| 3 | Environment | `ref/env-{location}.png` | Any B-Roll or location-specific scene |
+| 4 | Brand Assets | `ref/brand-{asset}.png` | Any scene with visible logo/UI/brand |
+| 5 | Costume/Uniform | `ref/costume-{institution}.png` | When institution detected |
+
+**Auto-derive logic:** Engine scans scene-plan.md + cast-profile.md → builds ref-manifest.md → user uploads → engine validates 100% → proceed.
+
+**No skip. No override. No "lanjut dulu."**
+
+### Institution-Aware Costume System
+
+Auto-detects if the product/brand is tied to a specific Indonesian institution and requires matching uniform reference images.
+
+**Detection:** Engine scans brand name + product description for keywords (KAI, Pelindo, BRI, PLN, Pertamina, Garuda, RS, TNI/Polri, Pos Indonesia, Damri, Telkom, BUMN generic) → confirms with user via AskUserQuestion → flags costume_type = "institutional"
+
+**Impact:** When institutional, ALL cast members in relevant scenes MUST have costume reference uploaded. NB2 prompts inject: "wearing official {institution} uniform as shown in reference image ref/cast-c{N}-costume.png"
 
 ### Target Market Differentiation
 
@@ -265,9 +308,11 @@ The script engine auto-checks for 22 failure patterns including:
 
 Every phase uses `AskUserQuestion` for user interaction:
 
-**Phase 1 (Brainstorm):**
+**Phase 1 (Brainstorm + Cast Builder):**
 - "What product/service is this video for?"
 - "Do you have technical documentation to upload?"
+- "How many characters in this video?" → 1-5, with role assignment (Pemeran Utama / Pemeran Pendamping)
+- "Is this tied to a specific institution?" → auto-detected from brand name, confirmed with user
 - "Who is the target audience?" → C-Level / Manager / Social Media / etc.
 - "What's the awareness level?" → Unaware / Problem-Aware / Solution-Aware / Product-Aware / Most-Aware
 - "What's the core emotional transformation?" → options based on product category
@@ -279,6 +324,11 @@ Every phase uses `AskUserQuestion` for user interaction:
 **Phase 3 (Scene Breakdown):**
 - Present scene plan with VEO modes
 - "Approve scene plan?" → Approve / Adjust scenes / Change VEO modes
+
+**Phase 3.5 (Reference Collection):**
+- Present ref-manifest.md checklist (5 categories)
+- "Upload all required reference images to {project}/ref/"
+- Engine validates 100% — HARD BLOCK until all refs present
 
 **Phase 4 (Image Prompts):**
 - Present NB2 prompts per scene
@@ -322,15 +372,17 @@ When switching to a different scene:
 1. **Brainstorm & Discovery** — interactive AskUserQuestion flow, tech doc upload, target market selection, awareness routing
 2. **Script Generation** — 2-3 min A/V script with 7-beat arc, beat labels, timing, narration, audio direction
 3. **Scene Breakdown** — auto-calculated scene count, VEO mode per scene, extension strategy, duration allocation
-4. **NB2 Image Prompts** — start/end frames, ingredient images, creator face reference, product references
+4. **NB2 Image Prompts** — start/end frames, ingredient images, cast face/body/costume references, product references
 5. **VEO 3.1 Video Prompts** — per-scene prompts with camera movement, audio 3-layer, lip sync, extension prompts
 6. **Target Market Adaptation** — C-Level / VP / Manager / IC / Social Media tone and CTA differentiation
 7. **Awareness Level Routing** — 5 levels route to different narrative strategies
-8. **Creator Profile System** — generic (any brand) + Ali Sadikin preset
-9. **Production Plan** — full production plan with storyboard notes, checklists (--full mode)
-10. **Copy-Paste Prompts** — direct NB2/VEO prompts ready for platform (--quick mode)
-11. **Platform Extensibility** — add new video AI platforms via /promo-add-platform skill
-12. **Cross-File Validation** — consistency checker across all 22 reference files
+8. **Multi-Character Cast System** — 1-5 characters with Pemeran Utama/Pendamping roles, per-character identity lock
+9. **Reference Image Validation Gate** — Phase 3.5 hard block, auto-derive manifest from scene plan
+10. **Institution-Aware Costume** — auto-detect Indonesian institutions, require uniform reference images
+11. **Production Plan** — full production plan with storyboard notes, checklists (--full mode)
+12. **Copy-Paste Prompts** — direct NB2/VEO prompts ready for platform (--quick mode)
+13. **Platform Extensibility** — add new video AI platforms via /promo-add-platform skill
+14. **Cross-File Validation** — consistency checker across all 22 reference files
 
 ## Technical Defaults
 
@@ -349,13 +401,22 @@ When switching to a different scene:
 | VEO duration | Per global-promo-config.md `veo_duration` |
 | VEO audio quality | Per global-promo-config.md `veo_audio_quality` |
 | Output mode | Per global-promo-config.md `output_mode` (full/quick) |
-| Creator preset | Per global-promo-config.md `creator_preset` |
+| Ali Sadikin preset | Per global-promo-config.md `ali_preset_available` |
+| Max cast members | Per global-promo-config.md `max_cast` |
+| Cast ref requirements | Per global-promo-config.md Section 7 |
+| Ref naming convention | Per global-promo-config.md Section 11 |
+| Institution keywords | Per global-promo-config.md Section 12 |
+| Ref validation mode | Per global-promo-config.md `ref_validation_mode` |
 
 ## Conventions for Contributors
 
 ### Changing a Global Setting
 1. Edit `reference/global-promo-config.md` — single source of truth
 2. No need to edit other files — they all reference global-promo-config.md
+
+### Changing a Cast Setting
+1. Edit `reference/global-promo-config.md` Section 7 — single source of truth
+2. No need to edit other files — they reference global-promo-config.md
 
 ### Adding a New Reference File
 1. Create `.md` file in `reference/`
@@ -394,9 +455,15 @@ When switching to a different scene:
 | Missing emotional beats | Check 7-Beat Arc compliance — all beats mandatory |
 | Plastic texture in image | Over-denoising — prompt "visible pores", "natural grain", "micro-scratches" |
 | B-Roll voiceover rendered as lip sync | B-Roll should use `Voiceover:` NOT `says:` — no lip sync for B-Roll |
+| Identity conflict between cast members | Different characters look too similar — use distinct clothing + accessories + positioning per character |
+| Wrong character appears in scene | NB2 prompt missing specific `ref/cast-c{N}-face.png` — each prompt must reference exact cast slot |
+| Costume doesn't match institution | Wrong/generic uniform generated — use `ref/costume-{institution}.png` as reference, describe badge/emblem details |
+| Missing ref blocks Phase 4 | ref-manifest.md validation failed — upload ALL required refs to `{project}/ref/` per manifest |
+| Multi-char dialogue overlap | VEO renders garbled speech — lip sync is 1 speaker at a time, use sequential delivery with reaction pauses |
+| Cast member inconsistent across scenes | Weak reference phrase — use EXACT verbatim phrase from cast-profile.md in EVERY NB2 prompt |
 | Cross-file drift | Run `/promo-validate` — checks all 22 reference files for consistency |
 
 ---
 
-**Version:** 1.0.0
+**Version:** 1.1.0
 **Last Updated:** March 2026

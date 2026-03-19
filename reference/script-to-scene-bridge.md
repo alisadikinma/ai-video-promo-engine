@@ -173,6 +173,59 @@ TECHNICAL: {aspect_ratio}, 4K resolution, high thinking mode.
 WARDROBE: {wardrobe from creator profile}.
 ```
 
+### For Multi-Character Scenes
+
+When 2+ characters from cast-profile.md appear in the same scene:
+
+**Multi-Character Frame Template (First+Last Frame mode):**
+```
+SUBJECT: Character {A} ({name}, {role}) and Character {B} ({name}, {role}) in {interaction from script}.
+Using facial identity from ref/cast-c{A}-face.png for Character {A}.
+Using facial identity from ref/cast-c{B}-face.png for Character {B}.
+Character {A}: {full description from cast-profile.md, verbatim reference phrase}.
+Character {B}: {full description from cast-profile.md, verbatim reference phrase}.
+WARDROBE {A}: {costume/wardrobe from cast-profile.md or institutional uniform from ref/cast-c{A}-costume.png}.
+WARDROBE {B}: {costume/wardrobe from cast-profile.md or institutional uniform from ref/cast-c{B}-costume.png}.
+INTERACTION: {specific action between characters from script A/V direction}.
+POSITIONING: Pemeran Utama more prominent (closer to camera, better lit, larger in frame). Pendamping in supporting position.
+SCENE: {environment from ref/env-{location}.png}.
+CAMERA: {shot size wide enough to fit both characters} {lens} {aperture}, {angle}.
+LIGHTING: {pattern} {ratio}, {kelvin}K {film stock}.
+ATMOSPHERE: {atmosphere type}.
+TECHNICAL: {aspect_ratio}, {resolution}, high thinking mode.
+```
+
+**Multi-Character Ingredients Template:**
+```
+CHARACTER {A} REFERENCE:
+SUBJECT: {Character A full description — verbatim from cast-profile.md}.
+Using facial identity from ref/cast-c{A}-face.png.
+WARDROBE: {costume from cast-profile.md}.
+ANGLE: {front / three-quarter / profile}.
+LIGHTING: Neutral diffused (clean identity data).
+BACKGROUND: Clean studio white.
+TECHNICAL: {aspect_ratio}, 4K, high thinking mode.
+
+CHARACTER {B} REFERENCE:
+(same structure, different character)
+
+NOTE: Generate separate reference images per character for Ingredients mode.
+VEO Ingredients accepts up to 3 reference images — use 1 per character (max 3 chars per generation).
+```
+
+**Character Hierarchy in Frame:**
+- Pemeran Utama: Always more prominent (closer to camera, better lit, larger in frame)
+- Pemeran Pendamping: Supporting position (slightly behind, beside, or angled away)
+- Max 3 characters per frame for clean composition
+- If 4+ characters needed: use shot/reverse-shot or group-then-individual sequence
+
+**Multi-Character Consistency Checklist (in addition to standard checklist):**
+- [ ] Each character's reference phrase used verbatim from cast-profile.md
+- [ ] Each character's identity ref file specified (ref/cast-c{N}-face.png)
+- [ ] Character hierarchy correct (Utama prominent, Pendamping supporting)
+- [ ] Costume matches cast-profile.md (institutional if applicable)
+- [ ] Spatial relationship between characters is physically plausible
+
 ---
 
 ## 4. Scene → VEO 3.1 Video Prompts
@@ -214,6 +267,44 @@ Maintain lighting, environment, character appearance.
 {Character} says: {next_dialogue — max 8-15 words}.
 Audio continues: {same_ambient}, {new_sfx if any}.
 {veo_negative_prompt}
+```
+
+### Multi-Character Presenter Scene (Sequential Dialogue)
+
+When 2+ characters have dialogue in the same scene:
+
+```
+~{duration}s, {resolution}, {aspect_ratio}.
+Camera: {camera_movement — typically wider shot to fit both characters}, {speed}.
+Character {A} and Character {B} in {setting from scene}.
+Character {A} says: {dialogue line — max 8-15 words}.
+[0.3-0.5s pause — Character {B} reacts with {micro-expression}]
+Character {B} says: {response — max 8-15 words}.
+Both characters: {shared micro-movements — subtle breathing, natural eye contact shifts}.
+SFX: {sound effects from script}.
+Ambient: {background atmosphere + music direction}.
+{veo_negative_prompt from global-promo-config.md}
+Maintain exact appearance from reference images for ALL characters.
+```
+
+**CRITICAL VEO LIP SYNC RULE:** VEO handles 1 speaker at a time.
+- For dialogue exchange: sequential delivery with reaction pauses, NOT simultaneous speaking
+- Max 2 dialogue turns per 8s clip (each turn 3-6s)
+- If scene needs more dialogue turns: use Extend or split into multiple clips
+
+### Multi-Character B-Roll Scene (No Dialogue)
+
+```
+~{duration}s, {resolution}, {aspect_ratio}.
+Camera: {camera_movement}, {speed}.
+Character {A} and Character {B} {action from script — e.g., walking through facility, reviewing dashboard}.
+{ambient_motion — characters interact naturally with environment}.
+Voiceover: {narration text from script}.
+SFX: {sound effects}.
+Ambient: {background music + atmosphere}.
+{veo_negative_prompt}
+No character lip sync. Voiceover is background narration track only.
+Maintain appearance consistency for all characters from reference images.
 ```
 
 ---
@@ -287,6 +378,13 @@ Before finalizing each scene's prompts:
 - [ ] Face >30% frame for lip sync scenes
 - [ ] Extension prompt references previous clip context
 - [ ] Transition instruction added to scene-ending clip
+- [ ] All cast members' reference phrases used verbatim (not generic "creator")
+- [ ] Multi-character scenes specify EACH character's identity ref (ref/cast-c{N}-face.png)
+- [ ] Character hierarchy correct (Pemeran Utama prominent, Pendamping supporting)
+- [ ] Costume matches institution ref (if institutional) — ref/cast-c{N}-costume.png
+- [ ] ref-manifest.md validated before generating any prompts (Phase 3.5 gate)
+- [ ] Max 3 characters per frame (4+ use shot/reverse-shot)
+- [ ] VEO dialogue scenes: 1 speaker at a time, sequential delivery
 
 ---
 
@@ -297,6 +395,16 @@ Before finalizing each scene's prompts:
 
 ## Strategic Brief
 {From Phase 1 output}
+
+## Cast Summary
+{From cast-profile.md}
+
+| # | Name | Role | Identity Lock | Ref Files |
+|---|------|------|---------------|-----------|
+
+## Reference Manifest
+{From ref-manifest.md — Phase 3.5 validated}
+Total refs: {N}/{N} ✅
 
 ## A/V Script Summary
 {Key beats and timing from Phase 2}
@@ -335,10 +443,13 @@ Before finalizing each scene's prompts:
 ```
 
 #### Reference Images
-| Filename | Content | Usage |
-|----------|---------|-------|
-| creator-face.png | Presenter face | Identity lock |
-| ref-{product}.png | Product shot | Scene context |
+| Filename | Character/Content | Usage |
+|----------|------------------|-------|
+| ref/cast-c1-face.png | {Character 1 name} face | Identity lock |
+| ref/cast-c2-face.png | {Character 2 name} face | Identity lock |
+| ref/product-{name}.png | Product shot | Scene context |
+| ref/env-{location}.png | Environment | Background |
+| ref/costume-{institution}.png | Institutional uniform | Wardrobe ref |
 
 ---
 
@@ -351,3 +462,117 @@ Before finalizing each scene's prompts:
 - [ ] Total duration within 120-180s target
 - [ ] Narration timing matches dialogue constraints
 ```
+
+---
+
+## 9. Reference Manifest Generation (Phase 3.5)
+
+### Auto-Derive Algorithm
+
+**INPUT:** scene-plan.md + cast-profile.md + strategic-brief.md
+
+```
+# Step 1: Cast references
+FOR each character in cast-profile.md:
+    IF role == "Pemeran Utama":
+        ADD ref/cast-c{N}-face.png    (MANDATORY)
+        ADD ref/cast-c{N}-body.png    (MANDATORY)
+        IF institution_detected:
+            ADD ref/cast-c{N}-costume.png (MANDATORY)
+    IF role == "Pemeran Pendamping":
+        ADD ref/cast-c{N}-face.png    (MANDATORY)
+
+# Step 2: Environment references
+locations = []
+FOR each scene in scene-plan.md:
+    EXTRACT location from visual description
+    IF location NOT IN locations:
+        locations.append(location)
+        ADD ref/env-{location-slug}.png (MANDATORY)
+
+# Step 3: Product references
+products = []
+FOR each scene in scene-plan.md:
+    IF scene mentions product by name:
+        IF product NOT IN products:
+            products.append(product)
+            ADD ref/product-{product-slug}.png (MANDATORY)
+
+# Step 4: Brand asset references
+brand_assets = []
+FOR each scene in scene-plan.md:
+    IF scene mentions brand logo, UI, dashboard, packaging:
+        IF asset NOT IN brand_assets:
+            brand_assets.append(asset)
+            ADD ref/brand-{asset-slug}.png (MANDATORY)
+
+# Step 5: Institution costume (shared)
+IF institution_detected:
+    ADD ref/costume-{institution-slug}.png (MANDATORY)
+```
+
+**OUTPUT:** ref-manifest.md
+
+### Manifest Output Format
+
+```markdown
+# Reference Manifest — {Video Title}
+
+## Overview
+| Total Required | {N} images |
+| Validation Mode | Hard Block (cannot proceed without 100%) |
+| Naming Convention | Per global-promo-config.md Section 11 |
+
+## Cast References
+
+### Character 1: {Name} ({Role}) — {FULL/MINIMAL} REF
+| Filename | Content | Used in Scenes | Status |
+|----------|---------|----------------|--------|
+| ref/cast-c1-face.png | Face front view | {scene_list} | ⬜/✅ |
+| ref/cast-c1-body.png | Full body | {scene_list} | ⬜/✅ |
+| ref/cast-c1-costume.png | {Institution} uniform | {scene_list} | ⬜/✅ |
+
+(repeat per character)
+
+## Product References
+| Filename | Content | Used in Scenes | Status |
+|----------|---------|----------------|--------|
+| ref/product-{name}.png | {description} | {scene_list} | ⬜/✅ |
+
+## Environment References
+| Filename | Content | Used in Scenes | Status |
+|----------|---------|----------------|--------|
+| ref/env-{location}.png | {description} | {scene_list} | ⬜/✅ |
+
+## Brand Assets
+| Filename | Content | Used in Scenes | Status |
+|----------|---------|----------------|--------|
+| ref/brand-{asset}.png | {description} | {scene_list} | ⬜/✅ |
+
+## Costume/Uniform (Institution: {name})
+| Filename | Content | Used in Scenes | Status |
+|----------|---------|----------------|--------|
+| ref/costume-{institution}.png | {uniform_type} front view | All cast scenes | ⬜/✅ |
+
+## Validation Summary
+- Total required: {N}
+- Uploaded: {M}/{N}
+- Status: ❌ BLOCKED / ✅ PASSED
+```
+
+### Scene-to-Ref Mapping
+
+After manifest is built, create a reverse mapping showing which refs each scene needs:
+
+```markdown
+## Scene-to-Reference Map
+
+| Scene # | Beat | Characters | Product | Environment | Brand | Costume |
+|---------|------|-----------|---------|-------------|-------|---------|
+| 1 | Pattern Interrupt | — | — | ref/env-outdoor.png | — | — |
+| 2 | Hook | c1, c3 | — | ref/env-studio.png | — | ref/costume-kai.png |
+| 3 | Foreshadow | c1 | ref/product-hero.png | ref/env-studio.png | — | ref/costume-kai.png |
+| ... | ... | ... | ... | ... | ... | ... |
+```
+
+This map is used in Phase 4 to ensure each scene's NB2 prompts reference the correct files.
