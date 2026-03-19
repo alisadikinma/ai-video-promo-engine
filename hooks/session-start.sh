@@ -1,0 +1,10 @@
+#!/bin/bash
+echo "ai-video-promo-engine loaded. Skills available:"
+echo "  promo-engine — end-to-end video promo pipeline (brainstorm → script → images → video)"
+echo "  promo-validate — cross-file consistency checker (22 reference files)"
+echo "  promo-add-platform — scaffold new AI video platform support"
+echo ""
+echo "Agent available:"
+echo "  promo-engine-agent — subagent for batch/complex promo production"
+echo ""
+echo "REMINDER: Read reference/global-promo-config.md FIRST for any prompt generation."
