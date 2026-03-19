@@ -18,6 +18,18 @@ Each phase has a user approval gate before proceeding to the next.
 
 ## Installation
 
+### Via Claude Code Marketplace (Recommended)
+
+```bash
+# Step 1: Add marketplace source
+claude plugins marketplace add alisadikinma/ai-content-suite
+
+# Step 2: Install plugin
+claude plugins install ai-video-promo-engine
+```
+
+### Manual Installation
+
 Clone into your Claude Code plugins directory:
 
 ```bash
