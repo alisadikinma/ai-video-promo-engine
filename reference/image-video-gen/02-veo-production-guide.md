@@ -86,11 +86,17 @@ Unspecified audio = model guesses (random laughter, wrong sounds).
 "~8s, 1080p, [aspect].
 Camera: [movement], [speed].
 Subject: [micro-movements — blinks, breathing, gestures].
+Maintain exact facial identity from reference image: ref/cast-c{N}-face.png.
 Expression shift: [if any].
 Ambient: [particles, environmental].
 Audio: [ambient], [music/no music], no subtitles, no audience sounds.
 Maintain exact lighting, environment, appearance from reference image."
 ```
+
+**CRITICAL — Reference Image Injection:**
+All VEO prompts involving characters MUST embed reference image filenames directly in the prompt text. Without explicit injection, VEO generates from text only — causing identity drift.
+
+Every VEO prompt MUST also include a **Required Reference Images** table listing all ref files needed. See `global-promo-config.md` Section 16.
 
 ## Lip Sync Mastery
 

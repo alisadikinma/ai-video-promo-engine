@@ -158,5 +158,7 @@ Before finalizing any prompt, verify:
 4. Dialogue uses colon syntax, not quotation marks
 5. 720p if extending, 1080p only for final non-extendable clips
 6. Claims are grounded in knowledge files — flag anything unverified as [PERLU VERIFIKASI]
+7. ALL reference images explicitly embedded in prompt text (e.g., "maintain exact facial identity from reference image: ref/cast-c{N}-face.png") — NOT just uploaded as files
+8. Required Reference Images table included after EACH generated prompt (NB2 and VEO) so user never misses uploading a file
 </output_format>
 ```

@@ -126,7 +126,13 @@ Generate TWO NB2 images per scene:
 ```
 SUBJECT: {character/product description from script}.
 {Creator reference phrase from creator-profile.md}
+Maintain exact facial identity from reference image: ref/cast-c{N}-face.png.
+Maintain exact body proportions from reference image: ref/cast-c{N}-body.png.
+{If institutional: Wearing exact uniform as shown in reference image: ref/cast-c{N}-costume.png.}
 SCENE: {environment from script A/V direction}.
+Match environment from reference image: ref/env-{location}.png.
+{If product visible: Match exact product from reference image: ref/product-{name}.png.}
+{If brand visible: Use exact brand asset from reference image: ref/brand-{asset}.png.}
 EXPRESSION: {emotion from beat — see 04-cinematography-lookup.md}.
 CAMERA: {shot size} {lens} {aperture}, {angle}.
 LIGHTING: {pattern} {ratio}, {kelvin}K {film stock}.
@@ -141,7 +147,12 @@ WARDROBE: {wardrobe from creator profile}.
 ```
 SUBJECT: {SAME character, NEW pose/position reflecting end-of-scene state}.
 {SAME creator reference phrase — verbatim}
+Maintain exact facial identity from reference image: ref/cast-c{N}-face.png.
+Maintain exact body proportions from reference image: ref/cast-c{N}-body.png.
+{If institutional: Wearing exact uniform as shown in reference image: ref/cast-c{N}-costume.png.}
 SCENE: {SAME environment — verbatim}.
+Match environment from reference image: ref/env-{location}.png.
+{If product visible: Match exact product from reference image: ref/product-{name}.png.}
 EXPRESSION: {evolved emotion — e.g., concern → realization}.
 CAMERA: {SAME lens}, {potentially different shot size or angle}.
 LIGHTING: {SAME pattern, SAME ratio, SAME kelvin — critical for consistency}.
@@ -150,6 +161,18 @@ CULTURAL CONTEXT: {SAME cultural context — verbatim}.
 TECHNICAL: {SAME aspect ratio}, {SAME resolution}.
 TONE: {SAME tone atmosphere — verbatim}.
 WARDROBE: {SAME wardrobe — verbatim}.
+```
+
+**Required Reference Images Table (include after EACH prompt):**
+```markdown
+| # | Reference File | Content | Upload Status |
+|---|---------------|---------|---------------|
+| 1 | ref/cast-c{N}-face.png | {Character name} face | ⬜ |
+| 2 | ref/cast-c{N}-body.png | {Character name} full body | ⬜ |
+| 3 | ref/cast-c{N}-costume.png | {Institution} uniform | ⬜ (if institutional) |
+| 4 | ref/env-{location}.png | {Location} establishing | ⬜ |
+| 5 | ref/product-{name}.png | Product hero shot | ⬜ (if product visible) |
+| 6 | ref/brand-{asset}.png | Brand asset | ⬜ (if brand visible) |
 ```
 
 **Consistency Checklist (Start ↔ End):**
@@ -169,12 +192,21 @@ Generate 1-3 reference images:
 ```
 SUBJECT: {character full description — SAME text verbatim across ALL refs}.
 {Creator reference phrase from creator-profile.md}
+Maintain exact facial identity from reference image: ref/cast-c{N}-face.png.
 ANGLE: {front / three-quarter / profile} — generate all 3 for best consistency.
 LIGHTING: Neutral diffused (clean identity data — NOT dramatic).
 BACKGROUND: Clean, simple (studio white or neutral).
 EXPRESSION: Neutral, natural.
 TECHNICAL: {aspect_ratio}, 4K resolution, high thinking mode.
 WARDROBE: {wardrobe from creator profile}.
+```
+
+**Required Reference Images Table (include after prompt):**
+```markdown
+| # | Reference File | Content | Upload Status |
+|---|---------------|---------|---------------|
+| 1 | ref/cast-c{N}-face.png | {Character name} face | ⬜ |
+| 2 | ref/cast-c{N}-body.png | {Character name} full body | ⬜ (if Utama) |
 ```
 
 ### For Multi-Character Scenes
@@ -240,6 +272,8 @@ VEO Ingredients accepts up to 3 reference images — use 1 per character (max 3 
 ~{duration}s, {resolution}, {aspect_ratio}.
 Camera: {camera_movement from 04-cinematography-lookup.md}, {speed}.
 Subject: {micro-movements — subtle eye blinks every 2-3 seconds, gentle breathing motion}.
+Maintain exact facial identity from reference image: ref/cast-c{N}-face.png.
+{If institutional: Wearing exact uniform as shown in reference image: ref/cast-c{N}-costume.png.}
 {Character} says: {narration text from script — max 8-15 words per 8s}.
 Expression shift: {start_emotion} to {end_emotion} over {duration}s.
 SFX: {sound effects from script}.
@@ -249,12 +283,24 @@ Tone atmosphere: {from global-promo-config.md Section 13 per video_tone}.
 Maintain exact lighting, environment, appearance from reference image.
 ```
 
+**Required Reference Images Table (include after EACH VEO prompt):**
+```markdown
+| # | Reference File | Content | Upload Status |
+|---|---------------|---------|---------------|
+| 1 | ref/cast-c{N}-face.png | {Character name} face | ⬜ |
+| 2 | ref/cast-c{N}-costume.png | Costume/uniform | ⬜ (if institutional) |
+| 3 | ref/env-{location}.png | Environment | ⬜ (if location-specific) |
+```
+
 ### B-Roll Scene (Voiceover, No Lip Sync) Template
 
 ```
 ~{duration}s, {resolution}, {aspect_ratio}.
 Camera: {camera_movement}, {speed}.
 Subject: {product/environment action from script}.
+{If product visible: Match exact product from reference image: ref/product-{name}.png.}
+{If environment: Match environment from reference image: ref/env-{location}.png.}
+{If brand visible: Use exact brand asset from reference image: ref/brand-{asset}.png.}
 {ambient_motion — floating particles, screen content shifting, etc.}
 Voiceover: {narration text from script}.
 SFX: {sound effects}.
@@ -263,6 +309,15 @@ Tone atmosphere: {from global-promo-config.md Section 13 per video_tone — e.g.
 Cultural context: {from strategic-brief.md — local ambient sounds, weather atmosphere, architectural backdrop}.
 {veo_negative_prompt}
 No character lip sync. Voiceover is background narration track only.
+```
+
+**Required Reference Images Table (include after EACH VEO prompt):**
+```markdown
+| # | Reference File | Content | Upload Status |
+|---|---------------|---------|---------------|
+| 1 | ref/product-{name}.png | Product shot | ⬜ (if product visible) |
+| 2 | ref/env-{location}.png | Environment | ⬜ (if location-specific) |
+| 3 | ref/brand-{asset}.png | Brand asset | ⬜ (if brand visible) |
 ```
 
 ### Extension Prompt Template
@@ -284,6 +339,10 @@ When 2+ characters have dialogue in the same scene:
 ~{duration}s, {resolution}, {aspect_ratio}.
 Camera: {camera_movement — typically wider shot to fit both characters}, {speed}.
 Character {A} and Character {B} in {setting from scene}.
+Maintain exact facial identity from reference image: ref/cast-c{A}-face.png for Character {A}.
+Maintain exact facial identity from reference image: ref/cast-c{B}-face.png for Character {B}.
+{If institutional: Character {A} wearing exact uniform from ref/cast-c{A}-costume.png.}
+{If institutional: Character {B} wearing exact uniform from ref/cast-c{B}-costume.png.}
 Character {A} says: {dialogue line — max 8-15 words}.
 [0.3-0.5s pause — Character {B} reacts with {micro-expression}]
 Character {B} says: {response — max 8-15 words}.
@@ -292,6 +351,17 @@ SFX: {sound effects from script}.
 Ambient: {background atmosphere + music direction}.
 {veo_negative_prompt from global-promo-config.md}
 Maintain exact appearance from reference images for ALL characters.
+```
+
+**Required Reference Images Table (include after EACH multi-char VEO prompt):**
+```markdown
+| # | Reference File | Content | Upload Status |
+|---|---------------|---------|---------------|
+| 1 | ref/cast-c{A}-face.png | {Character A name} face | ⬜ |
+| 2 | ref/cast-c{B}-face.png | {Character B name} face | ⬜ |
+| 3 | ref/cast-c{A}-costume.png | {Character A} costume | ⬜ (if institutional) |
+| 4 | ref/cast-c{B}-costume.png | {Character B} costume | ⬜ (if institutional) |
+| 5 | ref/env-{location}.png | Environment | ⬜ |
 ```
 
 **CRITICAL VEO LIP SYNC RULE:** VEO handles 1 speaker at a time.
@@ -305,6 +375,11 @@ Maintain exact appearance from reference images for ALL characters.
 ~{duration}s, {resolution}, {aspect_ratio}.
 Camera: {camera_movement}, {speed}.
 Character {A} and Character {B} {action from script — e.g., walking through facility, reviewing dashboard}.
+Maintain exact facial identity from reference image: ref/cast-c{A}-face.png for Character {A}.
+Maintain exact facial identity from reference image: ref/cast-c{B}-face.png for Character {B}.
+{If institutional: Character {A} wearing exact uniform from ref/cast-c{A}-costume.png.}
+{If institutional: Character {B} wearing exact uniform from ref/cast-c{B}-costume.png.}
+{If product visible: Match exact product from reference image: ref/product-{name}.png.}
 {ambient_motion — characters interact naturally with environment}.
 Voiceover: {narration text from script}.
 SFX: {sound effects}.
@@ -312,6 +387,18 @@ Ambient: {background music + atmosphere}.
 {veo_negative_prompt}
 No character lip sync. Voiceover is background narration track only.
 Maintain appearance consistency for all characters from reference images.
+```
+
+**Required Reference Images Table:**
+```markdown
+| # | Reference File | Content | Upload Status |
+|---|---------------|---------|---------------|
+| 1 | ref/cast-c{A}-face.png | {Character A name} face | ⬜ |
+| 2 | ref/cast-c{B}-face.png | {Character B name} face | ⬜ |
+| 3 | ref/cast-c{A}-costume.png | {Character A} costume | ⬜ (if institutional) |
+| 4 | ref/cast-c{B}-costume.png | {Character B} costume | ⬜ (if institutional) |
+| 5 | ref/product-{name}.png | Product shot | ⬜ (if product visible) |
+| 6 | ref/env-{location}.png | Environment | ⬜ |
 ```
 
 ---
@@ -392,6 +479,9 @@ Before finalizing each scene's prompts:
 - [ ] ref-manifest.md validated before generating any prompts (Phase 3.5 gate)
 - [ ] Max 3 characters per frame (4+ use shot/reverse-shot)
 - [ ] VEO dialogue scenes: 1 speaker at a time, sequential delivery
+- [ ] **All reference images explicitly embedded in prompt text** (not just uploaded as files)
+- [ ] **Reference image injection syntax used** (`maintain exact facial identity from reference image: ref/cast-c{N}-face.png`)
+- [ ] **Required Reference Images table included after EACH prompt** (NB2 and VEO)
 
 ---
 
@@ -449,14 +539,14 @@ Total refs: {N}/{N} ✅
 {full extension prompt}
 ```
 
-#### Reference Images
-| Filename | Character/Content | Usage |
-|----------|------------------|-------|
-| ref/cast-c1-face.png | {Character 1 name} face | Identity lock |
-| ref/cast-c2-face.png | {Character 2 name} face | Identity lock |
-| ref/product-{name}.png | Product shot | Scene context |
-| ref/env-{location}.png | Environment | Background |
-| ref/costume-{institution}.png | Institutional uniform | Wardrobe ref |
+#### Required Reference Images (MANDATORY — upload before generating)
+| # | Filename | Content | Embedded in Prompt? | Upload Status |
+|---|----------|---------|--------------------|----|
+| 1 | ref/cast-c1-face.png | {Character 1 name} face — identity lock | ✅ Yes | ⬜ |
+| 2 | ref/cast-c2-face.png | {Character 2 name} face — identity lock | ✅ Yes | ⬜ |
+| 3 | ref/product-{name}.png | Product shot — scene context | ✅ Yes | ⬜ |
+| 4 | ref/env-{location}.png | Environment — background | ✅ Yes | ⬜ |
+| 5 | ref/costume-{institution}.png | Institutional uniform — wardrobe ref | ✅ Yes | ⬜ |
 
 ---
 

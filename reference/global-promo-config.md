@@ -286,3 +286,47 @@ Save to `strategic-brief.md` > Cultural Context section:
 | Product | Hero angle, commercial lighting, clean bg | Real product photo if physical product |
 | Environment | Wide establishing shot, cultural details, time of day | — |
 | Brand logo | N/A | MUST be provided by user (AI cannot reliably generate logos) |
+
+---
+
+## 16. Reference Image Injection Rules
+
+### CRITICAL: All reference images MUST be embedded directly in prompts
+
+Reference images are NOT just files to upload — they MUST be explicitly referenced inside the NB2/VEO prompt text using character reference syntax. Without explicit injection, AI models will NOT maintain identity consistency.
+
+### Injection Syntax
+
+| Category | Injection Phrase (embed in prompt) |
+|----------|-----------------------------------|
+| Cast face | `maintain exact facial identity from reference image: ref/cast-c{N}-face.png` |
+| Cast body | `maintain exact body proportions and build from reference image: ref/cast-c{N}-body.png` |
+| Cast costume | `wearing exact uniform/costume as shown in reference image: ref/cast-c{N}-costume.png` |
+| Product | `match exact product appearance from reference image: ref/product-{name}.png` |
+| Environment | `match environment and architectural style from reference image: ref/env-{location}.png` |
+| Brand asset | `use exact brand asset from reference image: ref/brand-{asset}.png` |
+| Institution uniform | `match exact institutional uniform from reference image: ref/costume-{institution}.png` |
+
+### Reference Image Table (MANDATORY per prompt)
+
+Every generated NB2 or VEO prompt MUST include a **Required Reference Images** table listing all ref files needed for that specific prompt. This ensures the user uploads every required file before generating.
+
+**Format:**
+
+```markdown
+#### Required Reference Images for Scene {N}
+
+| # | Reference File | Content | Upload Status |
+|---|---------------|---------|---------------|
+| 1 | `ref/cast-c1-face.png` | {Character 1 name} face — front view | ⬜ |
+| 2 | `ref/cast-c1-body.png` | {Character 1 name} full body | ⬜ |
+| 3 | `ref/product-{name}.png` | Product hero shot | ⬜ |
+| 4 | `ref/env-{location}.png` | Environment establishing shot | ⬜ |
+```
+
+### Why This Matters
+
+- Without explicit reference injection, AI generates from text description only → identity drift
+- Face identity is the MOST critical — even slight deviation is immediately noticeable
+- The reference image table per prompt prevents users from missing uploads
+- Character reference concept = the model actively looks at and matches the ref image

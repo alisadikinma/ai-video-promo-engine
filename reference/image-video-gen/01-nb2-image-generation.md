@@ -74,6 +74,17 @@ Track up to **5 characters + 14 objects** per workflow.
 4. Inject via `@identity` tag: "Place @character1 in rainy Shibuya street"
 5. Quality audit via multi-turn: "Keep facial features identical to Image 1"
 
+**CRITICAL — Reference Image Injection Rule:**
+All reference images MUST be explicitly embedded in the prompt text, not just uploaded as files. The prompt must tell the model to look at and match the reference:
+
+```
+maintain exact facial identity from reference image: ref/cast-c1-face.png
+```
+
+Without this injection, the model generates from text description only — causing identity drift. This is especially critical for faces where even slight deviation is immediately noticeable.
+
+Every NB2 prompt MUST also include a **Required Reference Images** table listing all ref files needed for that prompt, so the user never misses uploading a file. See `global-promo-config.md` Section 16 for table format.
+
 ## Text Rendering (94.2% Accuracy)
 
 - Exact wording in **quotes**: `"SALE"`
