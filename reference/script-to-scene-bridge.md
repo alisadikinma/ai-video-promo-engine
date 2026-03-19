@@ -741,7 +741,10 @@ Templates for generating reference images when user doesn't have them. Used in P
 
 Reference `global-promo-config.md` Section 15 for NB2 defaults (ref images use neutral lighting, clean bg, 4K, CFG 6.0, Denoise 0.40, Thinking High).
 
-### Cast Face Reference Template
+**CRITICAL: Follow dependency order from `global-promo-config.md` Section 17.**
+Generate in this order: Tier 1 (face + product + env) → Tier 2 (body) → Tier 3 (costume) → Tier 4 (scene images). Each downstream tier MUST inject upstream refs in its prompt.
+
+### Cast Face Reference Template — TIER 1 (no upstream dependency)
 
 ```
 SUBJECT: {ethnicity} {gender}, {age_range}, {key_features from cast-profile.md}.
@@ -754,10 +757,13 @@ TECHNICAL: {aspect_ratio}, 4K resolution, CFG 6.0, Denoise 0.40, Thinking High.
 No accessories obscuring face. Hair naturally styled. Skin texture visible.
 ```
 
-### Cast Body Reference Template
+**Dependency:** None — this is the foundational identity anchor. Generate FIRST.
+
+### Cast Body Reference Template — TIER 2 (depends on face ref)
 
 ```
 SUBJECT: {ethnicity} {gender}, {age_range}, {key_features from cast-profile.md}.
+Maintain exact facial identity from reference image: ref/cast-c{N}-face.png.
 Full body standing pose, feet visible, arms relaxed at sides.
 WARDROBE: {wardrobe from cast-profile.md — e.g., "navy blazer, white open-collar shirt"}.
 EXPRESSION: Neutral, confident posture.
@@ -766,12 +772,24 @@ LIGHTING: Neutral diffused soft light, even from head to toe.
 CAMERA: Full body shot, 50mm f/4, eye-level.
 TECHNICAL: {aspect_ratio}, 4K resolution, CFG 6.0, Denoise 0.40, Thinking High.
 Full wardrobe clearly visible. Natural standing pose.
+Face MUST match ref/cast-c{N}-face.png exactly — same person, same features.
 ```
 
-### Cast Costume/Uniform Reference Template
+**Dependency:** ref/cast-c{N}-face.png MUST exist before generating this.
+
+**Required Upstream Reference:**
+```markdown
+| # | Reference File | Content | Status |
+|---|---------------|---------|--------|
+| 1 | ref/cast-c{N}-face.png | Face identity anchor (Tier 1) | Must be ✅ |
+```
+
+### Cast Costume/Uniform Reference Template — TIER 3 (depends on face + body ref)
 
 ```
-SUBJECT: Official {institution} uniform displayed on standing figure.
+SUBJECT: Official {institution} uniform worn by {ethnicity} {gender}, {age_range}.
+Maintain exact facial identity from reference image: ref/cast-c{N}-face.png.
+Maintain exact body proportions and build from reference image: ref/cast-c{N}-body.png.
 Front view, full uniform visible from collar to shoes.
 DETAILS: {uniform_color}, {emblem/badge description — position, colors, text if known}.
 {Rank insignia if applicable}. {Hat/headwear if applicable}.
@@ -780,10 +798,21 @@ BACKGROUND: Clean neutral gray.
 LIGHTING: Neutral diffused, even illumination to show all uniform details.
 CAMERA: Full body, 50mm f/4, eye-level.
 TECHNICAL: {aspect_ratio}, 4K resolution, CFG 6.0, Denoise 0.40, Thinking High.
+Face and body MUST match ref/cast-c{N}-face.png and ref/cast-c{N}-body.png — same person in uniform.
 NOTE: AI cannot generate accurate institutional logos/badges — describe placement and colors instead.
 ```
 
-### Product Reference Template
+**Dependency:** ref/cast-c{N}-face.png AND ref/cast-c{N}-body.png MUST exist before generating this.
+
+**Required Upstream References:**
+```markdown
+| # | Reference File | Content | Status |
+|---|---------------|---------|--------|
+| 1 | ref/cast-c{N}-face.png | Face identity anchor (Tier 1) | Must be ✅ |
+| 2 | ref/cast-c{N}-body.png | Body proportions (Tier 2) | Must be ✅ |
+```
+
+### Product Reference Template — TIER 1 (no upstream dependency)
 
 ```
 SUBJECT: {product_name} — {brief product description from strategic-brief.md}.
@@ -796,7 +825,9 @@ TECHNICAL: {aspect_ratio}, 4K resolution, CFG 6.0, Denoise 0.40, Thinking High.
 Professional product photography style. No distracting elements.
 ```
 
-### Environment Reference Template
+**Dependency:** None — independent of character refs. Can be generated in parallel with Tier 1 face refs.
+
+### Environment Reference Template — TIER 1 (depends on cultural research, not other refs)
 
 ```
 SUBJECT: Wide establishing shot of {location}, {region}, Indonesia.
@@ -812,6 +843,8 @@ LIGHTING: Natural {time_of_day} light, {cultural_weather_kelvin}K.
 TECHNICAL: 16:9, 4K resolution, CFG 6.0, Denoise 0.40, Thinking High.
 Photorealistic, authentic Indonesian {region} atmosphere.
 ```
+
+**Dependency:** Cultural research data (Step 3.5.2a) must be completed first. No dependency on other ref images. Can be generated in parallel with Tier 1 face/product refs.
 
 ### Brand Logo — CANNOT GENERATE
 
@@ -837,3 +870,7 @@ akan berbeda dari logo asli. Sangat direkomendasikan pakai file logo yang sudah 
 4. Cultural context (from Step 3.5.2a) is ONLY injected into **Environment** template
 5. Cast face/body templates pull description from **cast-profile.md** verbatim
 6. If institution detected, costume template pulls from **global-promo-config.md** Section 12
+7. **MUST follow dependency order** from `global-promo-config.md` Section 17: face → body → costume → scene images
+8. **Downstream refs MUST inject upstream refs** — body prompt injects face ref, costume prompt injects face + body ref
+9. **Within each tier, generate in parallel** — all Tier 1 refs can be generated simultaneously
+10. **Validate each tier before advancing** — all Tier 1 refs must be ✅ before starting Tier 2

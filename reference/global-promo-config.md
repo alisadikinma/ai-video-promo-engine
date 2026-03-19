@@ -330,3 +330,93 @@ Every generated NB2 or VEO prompt MUST include a **Required Reference Images** t
 - Face identity is the MOST critical — even slight deviation is immediately noticeable
 - The reference image table per prompt prevents users from missing uploads
 - Character reference concept = the model actively looks at and matches the ref image
+
+---
+
+## 17. Reference Image Dependency Graph & Generation Order
+
+Reference images have dependencies — generating them in the wrong order causes identity drift because downstream refs can't lock onto upstream refs that don't exist yet.
+
+### Dependency Graph
+
+```
+Tier 0: USER-PROVIDED (cannot AI-generate)
+├── ref/brand-{name}.png           ← user uploads logo file
+└── Cultural research data         ← web search (Step 3.5.2a), needed before environment
+
+Tier 1: FOUNDATION (no ref image dependencies — parallel-safe)
+├── ref/cast-c{N}-face.png        ← THE identity anchor, generated FIRST
+├── ref/product-{name}.png        ← independent, no character dependency
+└── ref/env-{location}.png        ← depends on cultural research data, NOT on other refs
+
+Tier 2: IDENTITY-LOCKED (depends on Tier 1 face)
+├── ref/cast-c{N}-body.png        ← MUST inject face ref for identity lock
+└── ref/costume-{institution}.png ← master uniform template (standalone)
+
+Tier 3: COMPOSITE (depends on Tier 1 face + Tier 2 body)
+└── ref/cast-c{N}-costume.png     ← MUST inject face + body ref for identity lock
+
+Tier 4: SCENE IMAGES (depends on ALL above)
+├── NB2 start/end frames          ← uses face, body, costume, product, env refs
+└── NB2 ingredient refs           ← uses face, body refs
+```
+
+### Generation Order (MANDATORY)
+
+Engine MUST generate reference images in this exact order. Within each tier, items can be generated in parallel.
+
+| Order | Tier | What to Generate | Dependencies | Parallel? |
+|-------|------|-----------------|--------------|-----------|
+| 0 | Pre-req | User uploads brand logo + cultural research completes | None | — |
+| 1 | Tier 1 | All cast face refs + product refs + environment refs | Cultural data for env only | ✅ Yes, all Tier 1 parallel |
+| 2 | Tier 2 | All cast body refs | Each body injects its own face ref | ✅ Yes, all Tier 2 parallel |
+| 3 | Tier 3 | All cast costume refs | Each costume injects face + body ref | ✅ Yes, all Tier 3 parallel |
+| 4 | Tier 4 | Scene NB2 images (start/end frames, ingredients) | ALL refs from Tier 0-3 | Per scene |
+
+### Upstream Injection Rules
+
+| Ref Being Generated | MUST Inject These Upstream Refs |
+|--------------------|---------------------------------|
+| Cast face | None (foundational) |
+| Cast body | `maintain exact facial identity from reference image: ref/cast-c{N}-face.png` |
+| Cast costume | `maintain exact facial identity from reference image: ref/cast-c{N}-face.png` + `maintain exact body proportions from reference image: ref/cast-c{N}-body.png` |
+| Product | None (independent) |
+| Environment | None (uses cultural research data, not other refs) |
+| Scene NB2 image | ALL relevant refs (face + body + costume + product + env) |
+
+### Why Order Matters
+
+1. **Face first** — face is the identity anchor. Body/costume without face ref = different-looking person
+2. **Body before costume** — costume on a body that doesn't match the face ref = inconsistent character
+3. **All refs before scenes** — scene images reference ALL upstream refs. Missing any = identity drift in that scene
+4. **Parallel within tier** — Character 1 face and Character 2 face have no dependency on each other
+
+### Validation Gate
+
+Before advancing to the next tier:
+- Verify ALL images in current tier are generated/uploaded
+- Verify identity consistency (face matches across face → body → costume chain)
+- If any ref fails quality check, regenerate THAT ref only (don't cascade)
+
+### Example: 2-Character Video (Ali Sadikin + Supporting)
+
+```
+Tier 0: User uploads ref/brand-logo.png
+        Cultural research: Dumai → plat BM, Melayu Riau, pelabuhan, etc.
+
+Tier 1 (parallel):
+  ├── Generate ref/cast-c1-face.png (Ali Sadikin)
+  ├── Generate ref/cast-c2-face.png (Supporting character)
+  ├── Generate ref/product-app.png
+  └── Generate ref/env-pelabuhan.png (uses Dumai cultural data)
+
+Tier 2 (parallel, after Tier 1 complete):
+  ├── Generate ref/cast-c1-body.png ← injects ref/cast-c1-face.png
+  └── Generate ref/cast-c2-body.png ← injects ref/cast-c2-face.png
+
+Tier 3 (parallel, after Tier 2 complete):
+  ├── Generate ref/cast-c1-costume.png ← injects c1-face + c1-body
+  └── Generate ref/cast-c2-costume.png ← injects c2-face + c2-body
+
+Tier 4: Scene NB2 images ← injects ALL refs per scene
+```
