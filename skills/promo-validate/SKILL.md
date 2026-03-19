@@ -1,14 +1,14 @@
 ---
 name: promo-validate
 description: >
-  Cross-file consistency checker for AI Video Promo Engine references (11 checks).
+  Cross-file consistency checker for AI Video Promo Engine references (13 checks).
   Run after editing any reference file, before commits, or after adding new knowledge.
   Triggers on: validate, consistency check, reference check, cek referensi, cek konsistensi.
 ---
 
 # Validate References
 
-Run 11 automated consistency checks across all operational files. Reports PASS/FAIL per check with exact file:line.
+Run 13 automated consistency checks across all operational files. Reports PASS/FAIL per check with exact file:line.
 
 ## Scope
 
@@ -95,6 +95,25 @@ Run 11 automated consistency checks across all operational files. Reports PASS/F
 - Costume: `ref/costume-{institution}.png`
 **How to verify:** Search all operational files for `ref/` image references — all must match one of the 7 naming patterns above. No `ref/creator-*` or `ref/ref-*` patterns should remain.
 
+### Check 12: Language Selection Consistency
+**Pattern:** Language handling across pipeline files
+**Expected:** SKILL.md has Step 1.0 Language Selection with 3 options. global-promo-config.md Section 1 has Language Options table with Bahasa Indonesia/English/Bilingual. agent.md mentions language capability. Strategic brief template in SKILL.md has `Language:` field. Phase 2 in SKILL.md references narration_language.
+**How to verify:**
+1. Search SKILL.md for "Step 1.0" and "Language Selection" — must exist
+2. Search global-promo-config.md for "Language Options" — must have 3-row table
+3. Search agent.md for "language" in capabilities — must exist
+4. Search SKILL.md Step 1.8 for "Language:" — must be in strategic brief template
+5. Search SKILL.md Phase 2 for "narration_language" — must reference it
+
+### Check 13: Tone System Consistency
+**Pattern:** Tone handling across pipeline files
+**Expected:** SKILL.md has Step 1.7b Tone Selection with 6 options (humorous, serious, professional, inspirational, casual, edgy). global-promo-config.md Section 13 has Tone Impact Matrix with same 6 tones. script-to-scene-bridge.md has tone-to-cinematography mapping (Section 10) with same 6 tones. agent.md mentions tone capability.
+**How to verify:**
+1. Search SKILL.md for "Step 1.7b" and "Tone" — must exist with 6 options
+2. Search global-promo-config.md for "Tone Impact Matrix" — must have 6 tone columns
+3. Search script-to-scene-bridge.md for "Tone-to-Cinematography" — must have Section 10 with 6 tones
+4. Verify same 6 tone keywords appear in all 3 files (humorous, serious, professional, inspirational, casual, edgy)
+
 ## Output Format
 
 ```
@@ -111,8 +130,10 @@ Check 8: Face Minimum Percentage ............. PASS (30%)
 Check 9: Cast System Consistency ............. PASS (0 legacy refs)
 Check 10: Phase 3.5 Hard Block ............... PASS
 Check 11: Ref Naming Convention .............. PASS (7/7 patterns)
+Check 12: Language Selection Consistency .... PASS
+Check 13: Tone System Consistency ........... PASS
 
-Result: 11/11 checks passed
+Result: 13/13 checks passed
 ```
 
 If any check FAILS, show:

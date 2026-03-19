@@ -101,6 +101,9 @@ Copy `agents/promo-engine-agent.md` to your project's `.claude/agents/` director
 15. **Max 5 cast members** — 1-3 Pemeran Utama + 0-2 Pemeran Pendamping (NB2 identity lock limit)
 16. **Phase 3.5 is HARD BLOCK** — cannot proceed to Phase 4 without ALL reference images validated in ref-manifest.md
 17. **Cast ref by role** — Utama: face+body+costume(if institutional) MANDATORY. Pendamping: face MANDATORY, body/costume OPTIONAL.
+18. **Narration language from Step 1.0** — script dialogue and VEO `says:` text MUST be in user's chosen language. NB2/VEO prompt structure stays English.
+19. **Tone consistency** — `video_tone` from Step 1.7b MUST be applied across ALL phases: script word choice (Phase 2), cinematography (Phase 4), atmosphere (Phase 5). Reference global-promo-config.md Section 13 Tone Impact Matrix.
+20. **Cultural accuracy** — when location is specified, web search MUST be performed (Step 3.5.2a) and cultural details MUST be injected into environment NB2 prompts and VEO scene prompts. Wrong license plate / wrong ethnicity / wrong architecture = rejection signal.
 
 ---
 
@@ -109,6 +112,22 @@ Copy `agents/promo-engine-agent.md` to your project's `.claude/agents/` director
 ### Phase 1: BRAINSTORM (Output: strategic-brief.md)
 
 **Read first:** `global-promo-config.md`, `creator-profile-system.md`, `F1_Audience_Psychology_Matrix.md`, `F8_Awareness_Level_Routing.md`
+
+#### Step 1.0: Language Selection
+
+```
+AskUserQuestion:
+"Bahasa apa yang mau digunakan untuk narasi/voiceover video?"
+
+Options:
+A) Bahasa Indonesia
+B) English
+C) Bilingual (Indonesia primary, English for tech terms)
+```
+
+Save selection as `narration_language` in strategic-brief.md.
+This affects: script dialogue (Phase 2), VEO `says:` text (Phase 5), strategic brief language.
+NB2/VEO prompt structure always stays English (per `global-promo-config.md` `prompt_language`).
 
 #### Step 1.1: Welcome & Cast Setup
 
@@ -243,16 +262,103 @@ D) Interested → Urgent (FOMO/scarcity)
 E) Custom (jelaskan sendiri)
 ```
 
-#### Step 1.7: Storyline Discussion
+#### Step 1.7: Storyline Input
 
-Engage user in free-form discussion about:
-- Key pain points of their target audience
+```
+AskUserQuestion:
+"Apakah kamu punya ide storyline/cerita untuk video ini?"
+
+Options:
+A) Ya, saya mau ketik/paste storyline saya
+B) Tidak, bantu saya brainstorm dari nol
+C) Saya punya referensi video yang mirip (share link/description)
+```
+
+**If A (user has storyline):**
+
+User pastes freeform text in the next message. AI then:
+
+1. Parse storyline against the 7-beat arc (per `storytelling_script_gen/project-instruction.md`):
+   - Pattern Interrupt, Hook, Foreshadow, Agitate, Guide+Plan, Peak, CTA, Won Day
+2. Present beat mapping:
+
+```markdown
+## Storyline → 7-Beat Arc Mapping
+
+| Beat | Status | Your Storyline Element |
+|------|--------|----------------------|
+| Pattern Interrupt | ✅ Covered | "{extracted element}" |
+| Hook | ✅ Covered | "{extracted element}" |
+| Foreshadow | ❌ Missing | — |
+| Agitate | ✅ Covered | "{extracted element}" |
+| Guide + Plan | ✅ Covered | "{extracted element}" |
+| Peak | ❌ Missing | — |
+| CTA | ✅ Covered | "{extracted element}" |
+| Won Day | ❌ Missing | — |
+```
+
+3. For missing beats, suggest additions:
+
+```
+AskUserQuestion:
+"Storyline kamu sudah cover {X}/8 beats. Saya suggest tambahan untuk beat yang missing:
+
+- Foreshadow: {suggestion based on storyline context}
+- Peak: {suggestion for emotional climax}
+- Won Day: {suggestion for future-state visualization}
+
+Approve suggestions?"
+
+Options:
+A) Approve semua suggestions
+B) Approve sebagian (saya pilih mana)
+C) Saya mau revise storyline sendiri
+D) Skip — biarkan AI lengkapi di Phase 2
+```
+
+**If B (brainstorm from scratch):**
+
+Engage user in guided discussion via AskUserQuestion:
+- Key pain points of target audience
 - Unique selling proposition
 - Competitor landscape
 - Success stories / case studies
 - Desired CTA (what should viewer DO after watching?)
 
 Use AskUserQuestion to present options and brainstorm ideas together.
+
+**If C (reference video):**
+
+User describes or shares reference. AI:
+1. Extract narrative structure from description
+2. Map to 7-beat arc
+3. Adapt to user's product/context
+4. Present adapted storyline for approval
+
+#### Step 1.7b: Tone/Mood Selection
+
+```
+AskUserQuestion:
+"Apa tone/mood yang kamu inginkan untuk video ini?"
+
+Options:
+A) Humorous / Playful — ringan, ada jokes, approachable
+B) Serious / Dramatic — berat, impactful, emosional
+C) Professional / Corporate — formal, data-driven, polished
+D) Inspirational / Motivational — uplifting, empowering
+E) Casual / Friendly — santai, conversational, relatable
+F) Edgy / Bold — provocative, disruptive, berani
+```
+
+Save as `video_tone` in strategic-brief.md.
+
+Tone affects ALL subsequent phases — reference `global-promo-config.md` Section 13 (Tone Impact Matrix) for per-phase adjustments to:
+- Script word choice and pacing (Phase 2)
+- Hook style selection from F5 Hook Vault (Phase 2)
+- Lighting ratio and camera style (Phase 4 NB2)
+- Music and SFX direction (Phase 5 VEO)
+- Character expression guidance (Phase 4 NB2)
+- Atmosphere keywords (Phase 5 VEO)
 
 #### Step 1.8: Strategic Brief Presentation
 
@@ -264,6 +370,8 @@ Present the Strategic Brief for approval:
 ## Product: {name}
 ## Target: {market} — {awareness_level}
 ## Platform: {platform} ({aspect_ratio}, {duration})
+## Language: {narration_language}
+## Tone: {video_tone}
 ## Emotional Arc: {from_state} → {to_state}
 
 ## Core Value Proposition
@@ -282,6 +390,12 @@ Present the Strategic Brief for approval:
 
 ## CTA
 {specific action}
+
+## Storyline (User Input)
+{user's original storyline or "AI-generated from brainstorm"}
+
+## Cultural Context
+(Populated in Phase 3.5 via web search — see Step 3.5.2a)
 ```
 
 ```
@@ -301,6 +415,9 @@ C) Start over — mulai brainstorm dari awal
 ### Phase 2: SCRIPT GENERATION (Output: av-script.md)
 
 **Read:** `project-instruction.md`, `F2`, `F3`, `F5`, `F6`, `F7`, `F9`, `F10`, `F11` (and `F4` if EV product)
+
+**Language:** Write all narration/dialogue in `narration_language` from strategic-brief.md. NB2/VEO prompt structure stays English.
+**Tone:** Apply `video_tone` from strategic-brief.md — reference `global-promo-config.md` Section 13 (Tone Impact Matrix) for word choice, pacing, hook style, and audio direction adjustments.
 
 #### Step 2.1: Execute Script Engine
 
@@ -481,6 +598,119 @@ B) Mau adjust manifest (tambah/hapus item)
 ```
 
 **NOTE: No skip option. No "lanjut dulu". This is a hard block.**
+
+#### Step 3.5.2a: Cultural Location Research
+
+For each unique location identified in scene-plan.md, perform web search per `global-promo-config.md` Section 14:
+
+```
+FOR each unique location:
+    WebSearch: "{location} Indonesia kota karakteristik budaya"
+    WebSearch: "{location} plat nomor kendaraan kode"
+    WebSearch: "{location} arsitektur tradisional landmark"
+
+    EXTRACT 5 essential facts:
+    1. Plat kendaraan kota (e.g., BM for Dumai/Riau)
+    2. Etnis dominan & ciri fisik umum
+    3. Landmark ikonik
+    4. Arsitektur lokal
+    5. Cuaca/musim khas
+```
+
+Present findings:
+
+```
+AskUserQuestion:
+"Saya sudah research cultural context untuk lokasi di video:
+
+## Cultural Context — {Location}
+| Fact | Detail |
+|------|--------|
+| Plat Kendaraan | {code} ({region}) |
+| Etnis Dominan | {ethnicity} — {features} |
+| Landmark | {landmarks} |
+| Arsitektur | {style} |
+| Cuaca | {climate} |
+
+Apakah informasi ini sudah akurat?"
+
+Options:
+A) Akurat, lanjut
+B) Ada yang perlu dikoreksi (jelaskan)
+C) Tambah lokasi lain
+```
+
+Save to `strategic-brief.md` > Cultural Context section (replacing the placeholder from Phase 1).
+Cultural details will be injected into:
+- NB2 environment prompts (Step 3.5.2b and Phase 4)
+- VEO scene prompts (Phase 5)
+
+#### Step 3.5.2b: Generate NB2 Prompts for Missing References
+
+After manifest is presented and cultural research is done, check for missing refs:
+
+```
+AskUserQuestion:
+"Ada {M} reference image yang belum tersedia. Mau saya buatkan NB2 prompt supaya kamu bisa generate sendiri?"
+
+Options:
+A) Ya, generate semua prompt sekaligus
+B) Ya, tapi pilih mana yang perlu prompt
+C) Tidak, saya akan cari/foto sendiri
+```
+
+**If A or B → Generate batch NB2 prompts:**
+
+Reference `global-promo-config.md` Section 15 for ref image NB2 defaults.
+Reference `script-to-scene-bridge.md` Section 11 for per-category templates.
+
+Generate prompts per category:
+
+**Cast face:** Portrait, front view, neutral diffused lighting, studio white bg. Use ethnicity/age/features from cast-profile.md. Neutral expression. 4K, CFG 6.0, Denoise 0.40, Thinking High.
+
+**Cast body:** Full body standing pose, wardrobe from cast-profile.md visible, neutral bg. Same technical specs as face.
+
+**Cast costume:** Institution uniform front view, emblem/badge clearly visible. Describe emblem position and colors (don't generate actual logo). Clean bg.
+
+**Product:** Commercial photography, hero angle, clean bg, soft commercial lighting. Describe product from strategic-brief.md.
+
+**Environment:** Wide establishing shot. **INJECT cultural context from Step 3.5.2a:** local architecture, landmarks, license plate codes in background, weather/atmosphere. 16:9, 4K.
+
+**Brand logo:** ⚠️ CANNOT generate. Output warning:
+"Brand logo tidak bisa di-generate oleh AI dengan reliabel. Silakan provide file logo asli ke ref/brand-{name}.png"
+
+Output all prompts in a single block:
+
+```markdown
+# NB2 Prompts untuk Missing Reference Images
+
+## 1. ref/cast-c1-face.png — {Character Name} Face
+**NB2 Prompt:**
+{full prompt}
+
+---
+
+## 2. ref/env-{location}.png — {Location} Environment
+**NB2 Prompt:**
+{full prompt with cultural context injected}
+
+---
+
+## ⚠️ Cannot Generate (Provide Manually):
+- ref/brand-logo.png — Upload actual brand logo file
+```
+
+```
+AskUserQuestion:
+"NB2 prompts di atas sudah siap. Copy-paste ke NB2 untuk generate, lalu save hasilnya ke folder ref/. Sudah selesai generate semua?"
+
+Options:
+A) Sudah semua, validate refs
+B) Ada prompt yang perlu direvisi
+C) Saya generate sebagian dulu, validate nanti
+```
+
+After user confirms → proceed to Step 3.5.3 (Validate File Existence).
 
 #### Step 3.5.3: Validate File Existence
 

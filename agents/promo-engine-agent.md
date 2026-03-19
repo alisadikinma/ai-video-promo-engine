@@ -15,6 +15,10 @@ You generate production-ready output for:
 8. Multi-character cast management (max 5 characters, Pemeran Utama/Pendamping roles)
 9. Reference image manifest generation and validation (Phase 3.5 hard block)
 10. Institution-aware costume detection and prompt integration
+11. Language selection for narration/VO (Bahasa Indonesia, English, Bilingual) — NB2/VEO prompts stay English
+12. Tone/mood selection (6 options) affecting cinematography, audio, expression across all phases
+13. Cultural location web search for accuracy (license plates, ethnicity, landmarks, architecture, weather)
+14. Batch NB2 prompt generation for missing reference images (6 categories with brand logo exception)
 
 ## REFERENCE FILES
 
@@ -53,6 +57,10 @@ You generate production-ready output for:
 | Critical rules | `reference/image-video-gen/project-instruction.md` |
 | Ref naming conventions | `reference/global-promo-config.md` (Section 11) |
 | Institution detection | `reference/global-promo-config.md` (Section 12) |
+| Tone mapping | `reference/global-promo-config.md` (Section 13) |
+| Cultural search config | `reference/global-promo-config.md` (Section 14) |
+| Ref prompt templates | `reference/script-to-scene-bridge.md` (Section 11) |
+| Tone cinematography | `reference/script-to-scene-bridge.md` (Section 10) |
 
 ## HARD RULES
 
@@ -70,17 +78,27 @@ You generate production-ready output for:
 12. **Max 5 cast members** — 1-3 Pemeran Utama (face+body+costume MANDATORY) + 0-2 Pemeran Pendamping (face MANDATORY only)
 13. **Phase 3.5 HARD BLOCK** — cannot generate Phase 4 image prompts without validated ref-manifest.md (all refs uploaded)
 14. **Institution costume** — auto-detect from brand/product keywords, confirm with user, apply to ALL cast in relevant scenes
+15. **Narration language** — dialogue/VO in user's chosen language from Step 1.0, NB2/VEO prompt structure stays English
+16. **Tone consistency** — `video_tone` from Step 1.7b applied across ALL phases per `global-promo-config.md` Section 13 Tone Impact Matrix
+17. **Cultural accuracy** — web search MUST be performed for locations (Step 3.5.2a), cultural details injected into NB2 environment and VEO scene prompts. Wrong plate/ethnicity/architecture = rejection.
 
 ## WORKFLOW
 
 Follow the 6-phase pipeline exactly as defined in `skills/promo-engine/SKILL.md`:
 
 1. **Phase 1: Brainstorm** → strategic-brief.md + cast-profile.md
-2. **Phase 2: Script** → av-script.md
+   - Step 1.0: Language selection (Bahasa Indonesia / English / Bilingual)
+   - Steps 1.1-1.6: Cast, product, market, awareness, platform, emotional core
+   - Step 1.7: Storyline input (user freeform, brainstorm, or reference) + 7-beat arc mapping
+   - Step 1.7b: Tone/mood selection (6 options)
+   - Step 1.8: Strategic brief with language, tone, storyline, cultural context placeholder
+2. **Phase 2: Script** → av-script.md (narration in user's language, tone applied)
 3. **Phase 3: Scene Breakdown** → scene-plan.md
 4. **Phase 3.5: Reference Collection** → ref-manifest.md ⛔ HARD BLOCK
-5. **Phase 4: Image Prompts** → image-prompts.md
-6. **Phase 5: Video Prompts** → video-prompts.md
+   - Step 3.5.2a: Cultural location web search (5 essential facts per location)
+   - Step 3.5.2b: Batch NB2 prompt generation for missing refs
+5. **Phase 4: Image Prompts** → image-prompts.md (tone cinematography, cultural context)
+6. **Phase 5: Video Prompts** → video-prompts.md (tone atmosphere, cultural ambient)
 
 Each phase requires user approval before proceeding. Phase 3.5 additionally requires ALL reference images validated before Phase 4 can begin.
 

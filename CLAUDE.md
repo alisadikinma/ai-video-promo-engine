@@ -68,12 +68,14 @@ The plugin operates as a single end-to-end pipeline with mandatory approval gate
 
 ```
 Phase 1: BRAINSTORM          → Output: strategic-brief.md + cast-profile.md
-  ├─ Upload tech doc (optional)
+  ├─ Language selection (Bahasa Indonesia / English / Bilingual)
   ├─ Cast builder (1-5 characters, Utama/Pendamping roles)
   ├─ Institution detection + costume confirmation
-  ├─ Discuss product, storyline, pain points
-  ├─ Select target market (C-Level / Manager / Social Media / etc.)
-  ├─ Select awareness level
+  ├─ Product discovery + tech doc upload
+  ├─ Target market, awareness level, platform selection
+  ├─ Emotional core discovery
+  ├─ Storyline input (user freeform / brainstorm / reference) + 7-beat arc mapping
+  ├─ Tone/mood selection (Humorous / Serious / Professional / Inspirational / Casual / Edgy)
   └─ [USER APPROVAL GATE]
 
 Phase 2: SCRIPT               → Output: av-script.md
@@ -93,7 +95,9 @@ Phase 3: SCENE BREAKDOWN       → Output: scene-plan.md
 Phase 3.5: REFERENCE COLLECTION  → Output: ref-manifest.md
   ├─ Auto-derive from scene-plan.md + cast-profile.md
   ├─ Present manifest checklist (5 categories)
-  ├─ User uploads to {project}/ref/
+  ├─ Cultural location web search (5 facts per location via WebSearch)
+  ├─ Batch NB2 prompt generation for missing refs (6 categories)
+  ├─ User generates/uploads to {project}/ref/
   ├─ Validate ALL refs exist
   └─ [HARD BLOCK — 100% required before Phase 4]
 
@@ -225,6 +229,42 @@ Replaces the single-creator model. Supports 1-5 characters per video.
 - **Reference images**: `{project-folder}/ref/` using naming convention `cast-c{N}-face.png`, `cast-c{N}-body.png`, `cast-c{N}-costume.png`
 - **Max characters**: 5 total (matches NB2 identity lock limit of 5 characters + 14 objects)
 
+### Language Selection
+
+Pipeline starts with language choice (Phase 1 Step 1.0):
+
+| Option | Narration/Dialogue | NB2/VEO Prompts | Strategic Brief |
+|--------|-------------------|-----------------|-----------------|
+| Bahasa Indonesia | Indonesian | English (fixed) | Indonesian |
+| English | English | English (fixed) | English |
+| Bilingual | Indonesian + English tech terms | English (fixed) | Indonesian |
+
+**Key rule:** NB2/VEO prompt structure ALWAYS stays English (technical requirement for AI models). Only narration text and `says:` dialogue follow user's language choice.
+
+### Tone/Mood System
+
+Selected in Phase 1 Step 1.7b. Affects ALL subsequent phases.
+
+| Tone | Script Style | Lighting | Camera | Music | Expression |
+|------|-------------|----------|--------|-------|------------|
+| Humorous | Witty, puns | 2:1 bright | Wider, bouncy | Upbeat, quirky | Warm smile |
+| Serious | Weighty, stark | 4:1+ dramatic | Tight CU, slow | Orchestral | Stern, intense |
+| Professional | Precise, data | 2:1 clean | Steady, precise | Corporate | Confident |
+| Inspirational | Uplifting | 3:1 warm | Sweeping | Swelling strings | Hopeful |
+| Casual | Conversational | 2:1 natural | Handheld feel | Acoustic | Relaxed |
+| Edgy | Provocative | 6:1+ harsh | Dutch angles | Electronic | Intense |
+
+Full impact matrix in `global-promo-config.md` Section 13. Operational lookup in `script-to-scene-bridge.md` Section 10.
+
+### User Storyline Input
+
+Phase 1 Step 1.7 offers 3 modes:
+- **Freeform input:** User pastes their storyline. AI maps it to the 7-beat arc, shows which beats are covered vs missing, and suggests additions for gaps.
+- **Brainstorm from scratch:** AI guides the user through pain points, USP, competitor landscape, and CTA via AskUserQuestion.
+- **Reference video:** User describes a video they like. AI extracts the narrative structure and adapts it to the user's product.
+
+The storyline feeds into Phase 2 (Script Generation) where it's refined into the full A/V script following the 7-beat arc and storytelling commandments.
+
 ### Phase 3.5: Reference Image Validation Gate
 
 Mandatory gate between Scene Breakdown (Phase 3) and Image Prompts (Phase 4).
@@ -252,6 +292,36 @@ Auto-detects if the product/brand is tied to a specific Indonesian institution a
 **Detection:** Engine scans brand name + product description for keywords (KAI, Pelindo, BRI, PLN, Pertamina, Garuda, RS, TNI/Polri, Pos Indonesia, Damri, Telkom, BUMN generic) → confirms with user via AskUserQuestion → flags costume_type = "institutional"
 
 **Impact:** When institutional, ALL cast members in relevant scenes MUST have costume reference uploaded. NB2 prompts inject: "wearing official {institution} uniform as shown in reference image ref/cast-c{N}-costume.png"
+
+### Cultural Location Research
+
+Web search performed in Phase 3.5 Step 3.5.2a for each unique video location.
+
+**5 Essential Facts per Location:**
+1. **Plat kendaraan** — license plate code (e.g., BM for Dumai, B for Jakarta)
+2. **Etnis dominan** — local ethnicity and physical characteristics
+3. **Landmark ikonik** — recognizable buildings, monuments, natural features
+4. **Arsitektur lokal** — traditional building style, materials, ornaments
+5. **Cuaca/musim** — climate, temperature range, seasonal phenomena
+
+**Injection points:** NB2 environment prompts (architecture, plates, people), VEO scene prompts (atmosphere, ambient), script narasi (local terms).
+
+**Why this matters:** Without cultural research, AI generates generic Indonesian visuals — wrong plate numbers (B instead of BM), wrong ethnicity, wrong architecture. This causes immediate credibility loss with local audiences.
+
+### Ref Image Prompt Generation
+
+When user doesn't have reference images, Phase 3.5 Step 3.5.2b generates NB2 prompts.
+
+| Category | Can AI Generate? | Strategy |
+|----------|-----------------|----------|
+| Cast face | Yes | Portrait, neutral bg, clean lighting, ethnicity/features from cast-profile |
+| Cast body | Yes | Full body, wardrobe visible, neutral bg |
+| Cast costume | Partial | Uniform visible, but actual logos/badges described not generated |
+| Product | Partial | Works for digital products; physical products better photographed |
+| Environment | Yes | Cultural context from web search injected (architecture, plates, weather) |
+| Brand logo | **NO** | User MUST provide actual logo file — AI cannot generate reliable logos |
+
+Ref image NB2 defaults: neutral diffused lighting, clean bg, 4K, CFG 6.0, Denoise 0.40, Thinking High. Templates in `script-to-scene-bridge.md` Section 11.
 
 ### Target Market Differentiation
 
@@ -309,6 +379,7 @@ The script engine auto-checks for 22 failure patterns including:
 Every phase uses `AskUserQuestion` for user interaction:
 
 **Phase 1 (Brainstorm + Cast Builder):**
+- "Bahasa apa yang mau digunakan?" → Bahasa Indonesia / English / Bilingual
 - "What product/service is this video for?"
 - "Do you have technical documentation to upload?"
 - "How many characters in this video?" → 1-5, with role assignment (Pemeran Utama / Pemeran Pendamping)
@@ -316,6 +387,8 @@ Every phase uses `AskUserQuestion` for user interaction:
 - "Who is the target audience?" → C-Level / Manager / Social Media / etc.
 - "What's the awareness level?" → Unaware / Problem-Aware / Solution-Aware / Product-Aware / Most-Aware
 - "What's the core emotional transformation?" → options based on product category
+- "Apakah kamu punya ide storyline?" → Ya (paste) / Brainstorm dari nol / Referensi video
+- "Apa tone/mood video?" → Humorous / Serious / Professional / Inspirational / Casual / Edgy
 
 **Phase 2 (Script):**
 - Present script with A/V table
@@ -327,6 +400,8 @@ Every phase uses `AskUserQuestion` for user interaction:
 
 **Phase 3.5 (Reference Collection):**
 - Present ref-manifest.md checklist (5 categories)
+- "Cultural context akurat?" → Akurat / Perlu koreksi / Tambah lokasi
+- "Mau NB2 prompt untuk missing refs?" → Ya semua / Pilih / Tidak
 - "Upload all required reference images to {project}/ref/"
 - Engine validates 100% — HARD BLOCK until all refs present
 
@@ -379,10 +454,14 @@ When switching to a different scene:
 8. **Multi-Character Cast System** — 1-5 characters with Pemeran Utama/Pendamping roles, per-character identity lock
 9. **Reference Image Validation Gate** — Phase 3.5 hard block, auto-derive manifest from scene plan
 10. **Institution-Aware Costume** — auto-detect Indonesian institutions, require uniform reference images
-11. **Production Plan** — full production plan with storyboard notes, checklists (--full mode)
-12. **Copy-Paste Prompts** — direct NB2/VEO prompts ready for platform (--quick mode)
-13. **Platform Extensibility** — add new video AI platforms via /promo-add-platform skill
-14. **Cross-File Validation** — consistency checker across all 22 reference files
+11. **Language Selection** — Bahasa Indonesia, English, or Bilingual for narration/dialogue
+12. **Tone/Mood System** — 6 tones affecting cinematography, audio, expression across pipeline
+13. **Cultural Location Research** — web search for license plates, ethnicity, landmarks, architecture, weather
+14. **Ref Image Prompt Generation** — batch NB2 prompts for missing reference images with cultural context
+15. **Production Plan** — full production plan with storyboard notes, checklists (--full mode)
+16. **Copy-Paste Prompts** — direct NB2/VEO prompts ready for platform (--quick mode)
+17. **Platform Extensibility** — add new video AI platforms via /promo-add-platform skill
+18. **Cross-File Validation** — consistency checker across all 22 reference files
 
 ## Technical Defaults
 
@@ -407,6 +486,11 @@ When switching to a different scene:
 | Ref naming convention | Per global-promo-config.md Section 11 |
 | Institution keywords | Per global-promo-config.md Section 12 |
 | Ref validation mode | Per global-promo-config.md `ref_validation_mode` |
+| Narration language | Per user selection in Step 1.0 |
+| Video tone | Per user selection in Step 1.7b |
+| Cultural search facts | Per global-promo-config.md Section 14 |
+| Ref prompt NB2 defaults | Per global-promo-config.md Section 15 |
+| Tone impact matrix | Per global-promo-config.md Section 13 |
 
 ## Conventions for Contributors
 
@@ -461,9 +545,15 @@ When switching to a different scene:
 | Missing ref blocks Phase 4 | ref-manifest.md validation failed — upload ALL required refs to `{project}/ref/` per manifest |
 | Multi-char dialogue overlap | VEO renders garbled speech — lip sync is 1 speaker at a time, use sequential delivery with reaction pauses |
 | Cast member inconsistent across scenes | Weak reference phrase — use EXACT verbatim phrase from cast-profile.md in EVERY NB2 prompt |
+| Wrong language in dialogue | narration_language not applied in Phase 2 — check strategic-brief.md Language field, ensure script uses it |
+| Tone inconsistent across scenes | video_tone not applied uniformly — reference global-promo-config.md Section 13 Tone Impact Matrix |
+| Wrong license plate in video | No cultural research performed — run Step 3.5.2a web search, check plat kendaraan fact |
+| Wrong ethnicity for local extras | Cultural context missing — check strategic-brief.md Cultural Context, inject into NB2 |
+| AI-generated logo looks wrong | Logo generation unreliable — brand logo MUST be user-provided, not AI-generated |
+| Storyline missing beats | User input incomplete — Step 1.7 maps to 7-beat arc, AI suggests missing beats |
 | Cross-file drift | Run `/promo-validate` — checks all 22 reference files for consistency |
 
 ---
 
-**Version:** 1.1.0
+**Version:** 1.2.0
 **Last Updated:** March 2026

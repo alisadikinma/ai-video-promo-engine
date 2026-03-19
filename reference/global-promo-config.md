@@ -6,12 +6,20 @@ All configurable values for the AI Video Promo Engine. Edit THIS file to change 
 
 ## 1. Language
 
-| Setting | Value |
-|---------|-------|
-| `default_language` | `Bahasa Indonesia` |
-| `technical_terms` | `English` (keep technical terms in English) |
-| `script_language` | `Bilingual` (Bahasa Indonesia primary, English for tech terms) |
-| `narration_language` | Per user preference (asked during brainstorm) |
+| Setting | Value | Notes |
+|---------|-------|-------|
+| `narration_language` | Per user selection (Step 1.0) | Bahasa Indonesia / English / Bilingual |
+| `prompt_language` | `English` | NB2/VEO prompts always in English (technical requirement) |
+| `technical_terms` | `English` | Keep technical terms in English regardless of narration language |
+| `script_language` | Follows `narration_language` | Script narration/dialogue in user's chosen language |
+
+### Language Options (Step 1.0)
+
+| Option | Narration | Dialogue (`says:`) | VEO/NB2 Prompt | Strategic Brief |
+|--------|-----------|-------------------|----------------|-----------------|
+| Bahasa Indonesia | Indonesian | Indonesian | English | Indonesian |
+| English | English | English | English | English |
+| Bilingual | Indonesian (primary) | Indonesian + English tech terms | English | Indonesian |
 
 ---
 
@@ -134,7 +142,7 @@ All configurable values for the AI Video Promo Engine. Edit THIS file to change 
 
 | Setting | Value |
 |---------|-------|
-| `config_version` | `1.1.0` |
+| `config_version` | `1.2.0` |
 | `last_updated` | `2026-03-19` |
 
 ---
@@ -192,3 +200,89 @@ All configurable values for the AI Video Promo Engine. Edit THIS file to change 
 2. If match → AskUserQuestion to confirm: "Terdeteksi produk untuk {institution}. Pakai seragam?"
 3. If confirmed → ALL cast in relevant scenes MUST have costume ref
 4. If no match → skip costume category (unless user manually adds)
+
+---
+
+## 13. Tone/Mood System
+
+| Tone | Keyword | Description |
+|------|---------|-------------|
+| `humorous` | Humorous / Playful | Ringan, ada jokes, approachable |
+| `serious` | Serious / Dramatic | Berat, impactful, emosional |
+| `professional` | Professional / Corporate | Formal, data-driven, polished |
+| `inspirational` | Inspirational / Motivational | Uplifting, empowering |
+| `casual` | Casual / Friendly | Santai, conversational, relatable |
+| `edgy` | Edgy / Bold | Provocative, disruptive, berani |
+
+### Tone Impact Matrix
+
+| Phase | Humorous | Serious | Professional | Inspirational | Casual | Edgy |
+|-------|----------|---------|-------------|---------------|--------|------|
+| Script word choice | Witty, puns, wordplay | Weighty, stark | Precise, data-backed | Uplifting, aspirational | Conversational, slang OK | Provocative, confrontational |
+| Hook style (F5) | Unexpected twist | Shocking stat/fact | Authority/credibility | Visionary question | Relatable complaint | Controversial statement |
+| Lighting ratio | 2:1 (bright, flat) | 4:1+ (dramatic) | 2:1 (clean, even) | 3:1 (warm) | 2:1 (natural) | 6:1+ (harsh contrast) |
+| Camera style | Wider shots, movement | Tight CU, slow | Steady, precise | Sweeping, grand | Handheld feel | Dutch angles, fast |
+| Music | Upbeat, quirky | Orchestral, minimal | Corporate ambient | Swelling, emotional | Acoustic, chill | Electronic, aggressive |
+| SFX | Comic timing, playful | Impact hits, silence | Subtle, clean | Swells, risers | Natural, minimal | Glitch, distortion |
+| Expression (NB2) | Warm smile, playful | Stern, determined | Confident, neutral | Hopeful, inspired | Relaxed, friendly | Intense, challenging |
+| Atmosphere (VEO) | Lighthearted, bright | Tense, dramatic | Clean, polished | Warm, golden | Natural, relaxed | Gritty, raw |
+
+---
+
+## 14. Cultural Location Research
+
+### Essential Facts Checklist (5 per location)
+
+| # | Fact | Example (Dumai) | Injection Point |
+|---|------|-----------------|-----------------|
+| 1 | Plat kendaraan | BM (Bengkalis/Dumai region) | NB2 environment prompts, VEO background |
+| 2 | Etnis dominan & ciri fisik | Melayu Riau — kulit sawo matang, rambut hitam | NB2 character prompts (extras), cast-profile guidance |
+| 3 | Landmark ikonik | Pelabuhan Dumai, Kilang Pertamina, Tugu Ikan Terubuk | NB2 establishing shots, VEO B-Roll |
+| 4 | Arsitektur lokal | Rumah Melayu, atap lipat kajang, ornamen ukiran | NB2 environment detail, set design |
+| 5 | Cuaca/musim khas | Tropis lembab, 26-33°C, musim kabut asap (Jul-Sep) | VEO atmosphere, NB2 sky/lighting |
+
+### Search Strategy
+
+| Query | Purpose |
+|-------|---------|
+| `{location} Indonesia kota karakteristik budaya` | General cultural overview |
+| `{location} plat nomor kendaraan kode` | License plate code |
+| `{location} arsitektur tradisional landmark` | Architecture and landmarks |
+
+### Cultural Context Output Template
+
+Save to `strategic-brief.md` > Cultural Context section:
+
+| Fact | Detail | Source |
+|------|--------|--------|
+| Plat Kendaraan | {code} ({region}) | Web search |
+| Etnis Dominan | {ethnicity} — {physical features} | Web search |
+| Landmark | {list} | Web search |
+| Arsitektur | {style} | Web search |
+| Cuaca | {climate} | Web search |
+
+---
+
+## 15. Ref Image Prompt Generation
+
+### NB2 Defaults for Reference Images (vs Scene Images)
+
+| Setting | Ref Image | Scene Image | Notes |
+|---------|-----------|-------------|-------|
+| Background | Clean studio white / neutral | Scene-specific environment | Ref images need clean bg for identity lock |
+| Lighting | Neutral diffused | Cinematic per mood | Ref images need even lighting for AI to extract features |
+| Resolution | 4K | 4K (final) / 1K (draft) | Ref images always high-res |
+| Thinking mode | High | Per stage | Ref images need max quality |
+| CFG | 6.0 | 5.0-7.0 | Middle-range for ref reliability |
+| Denoise | 0.40 | 0.35-0.45 | Balanced for ref clarity |
+
+### Prompt Strategy per Category
+
+| Category | Key Elements | Cannot Generate (user must provide) |
+|----------|-------------|--------------------------------------|
+| Cast face | Front view, ethnicity, age, features, neutral expression | — |
+| Cast body | Standing pose, full wardrobe visible, neutral bg | — |
+| Cast costume | Front view, institution-specific, emblem/badge detail | Actual institution logo/badge (describe instead) |
+| Product | Hero angle, commercial lighting, clean bg | Real product photo if physical product |
+| Environment | Wide establishing shot, cultural details, time of day | — |
+| Brand logo | N/A | MUST be provided by user (AI cannot reliably generate logos) |

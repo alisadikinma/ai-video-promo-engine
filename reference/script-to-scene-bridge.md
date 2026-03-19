@@ -131,7 +131,9 @@ EXPRESSION: {emotion from beat — see 04-cinematography-lookup.md}.
 CAMERA: {shot size} {lens} {aperture}, {angle}.
 LIGHTING: {pattern} {ratio}, {kelvin}K {film stock}.
 ATMOSPHERE: {atmosphere type}.
+CULTURAL CONTEXT: {from strategic-brief.md Cultural Context — local architecture, landmarks, plate codes, ethnicity of background figures}.
 TECHNICAL: {aspect_ratio}, {resolution}, high thinking mode.
+TONE: {atmosphere keywords from global-promo-config.md Section 13 per video_tone}.
 WARDROBE: {wardrobe from creator profile}.
 ```
 
@@ -144,7 +146,9 @@ EXPRESSION: {evolved emotion — e.g., concern → realization}.
 CAMERA: {SAME lens}, {potentially different shot size or angle}.
 LIGHTING: {SAME pattern, SAME ratio, SAME kelvin — critical for consistency}.
 ATMOSPHERE: {SAME atmosphere}.
+CULTURAL CONTEXT: {SAME cultural context — verbatim}.
 TECHNICAL: {SAME aspect ratio}, {SAME resolution}.
+TONE: {SAME tone atmosphere — verbatim}.
 WARDROBE: {SAME wardrobe — verbatim}.
 ```
 
@@ -240,6 +244,7 @@ Subject: {micro-movements — subtle eye blinks every 2-3 seconds, gentle breath
 Expression shift: {start_emotion} to {end_emotion} over {duration}s.
 SFX: {sound effects from script}.
 Ambient: {background atmosphere + music direction}.
+Tone atmosphere: {from global-promo-config.md Section 13 per video_tone}.
 {veo_negative_prompt from global-promo-config.md}
 Maintain exact lighting, environment, appearance from reference image.
 ```
@@ -254,6 +259,8 @@ Subject: {product/environment action from script}.
 Voiceover: {narration text from script}.
 SFX: {sound effects}.
 Ambient: {background music + atmosphere}.
+Tone atmosphere: {from global-promo-config.md Section 13 per video_tone — e.g., "lighthearted, bright" or "tense, dramatic"}.
+Cultural context: {from strategic-brief.md — local ambient sounds, weather atmosphere, architectural backdrop}.
 {veo_negative_prompt}
 No character lip sync. Voiceover is background narration track only.
 ```
@@ -576,3 +583,167 @@ After manifest is built, create a reverse mapping showing which refs each scene 
 ```
 
 This map is used in Phase 4 to ensure each scene's NB2 prompts reference the correct files.
+
+---
+
+## 10. Tone-to-Cinematography Mapping
+
+Reference `global-promo-config.md` Section 13 for the full Tone Impact Matrix. This section provides operational lookup for Phase 4 (NB2) and Phase 5 (VEO).
+
+### Tone → Lighting Setup
+
+| Tone | Lighting Ratio | Kelvin | Atmosphere | Film Stock Override |
+|------|---------------|--------|------------|-------------------|
+| Humorous | 2:1 (bright, flat) | 5600K (daylight) | Clean, bright | Kodak Portra 400 (warm, friendly) |
+| Serious | 4:1+ (dramatic) | 3200K (tungsten) | Heavy haze, shadows | Kodak Vision3 500T (default) |
+| Professional | 2:1 (clean, even) | 4500K (neutral) | Clean, minimal | Kodak Ektar 100 (sharp, precise) |
+| Inspirational | 3:1 (warm glow) | 3500K (golden) | Light haze, warm | Kodak Portra 400 (warm) |
+| Casual | 2:1 (natural) | 5600K (daylight) | Natural, minimal | Fujifilm Pro 400H (soft, natural) |
+| Edgy | 6:1+ (harsh contrast) | Mixed warm/cool | Smoke, grit | Kodak T-MAX 3200 (grainy, raw) |
+
+### Tone → Camera Style
+
+| Tone | Default Shot | Lens | Movement | Angle |
+|------|-------------|------|----------|-------|
+| Humorous | MS/MWS (wider) | 35mm | Handheld-style, bounce | Eye-level, playful |
+| Serious | CU/MCU (tight) | 85mm | Slow dolly/push | Eye-level to low |
+| Professional | MCU/MS (standard) | 50mm | Steady, precise | Eye-level |
+| Inspirational | MS to WS (sweeping) | 35mm | Crane/jib, reveal | Low angle (heroic) |
+| Casual | MCU/MS | 50mm | Gentle handheld | Eye-level |
+| Edgy | CU/ECU (extreme) | 24mm wide | Fast whip pan, dutch | Dutch tilt 10-15° |
+
+### Tone → Audio Direction
+
+| Tone | Music Style | SFX | Ambient |
+|------|------------|-----|---------|
+| Humorous | Upbeat, quirky, pizzicato | Comic timing whooshes, playful pops | Light, airy room tone |
+| Serious | Orchestral, minimal, sparse | Impact hits, silence beats, bass drops | Deep rumble, tension drone |
+| Professional | Corporate ambient, clean synth | Subtle UI clicks, clean transitions | Quiet office hum |
+| Inspirational | Swelling strings, piano, emotional build | Risers, swells, chime accents | Open air, nature |
+| Casual | Acoustic guitar, chill lo-fi | Natural sounds, soft transitions | Cafe ambiance, street life |
+| Edgy | Electronic, aggressive beats, distortion | Glitch effects, bass stabs, static | Industrial hum, urban noise |
+
+### Tone → Character Expression (NB2)
+
+| Tone | Default Expression | Eye Direction | Micro-movements |
+|------|-------------------|---------------|-----------------|
+| Humorous | Warm smile, playful, expressive | Direct to camera, wink | Active gestures, head tilts |
+| Serious | Stern, determined, intense | Direct to camera, unwavering | Minimal, controlled |
+| Professional | Confident, neutral, composed | Direct, slight nod | Measured hand gestures |
+| Inspirational | Hopeful, inspired, eyes bright | Upward/forward, visionary | Open palms, expansive |
+| Casual | Relaxed, friendly, natural | Varied, conversational | Natural fidgets, nods |
+| Edgy | Intense, challenging, sharp | Piercing direct stare | Sharp head turns, pointed |
+
+### How to Apply
+
+When generating NB2/VEO prompts:
+1. Read `video_tone` from strategic-brief.md
+2. Look up tone in tables above
+3. Override default cinematography values with tone-specific values
+4. Inject tone atmosphere keywords into VEO prompt
+5. Apply tone expression to character NB2 prompts
+
+---
+
+## 11. Ref Image NB2 Prompt Templates
+
+Templates for generating reference images when user doesn't have them. Used in Phase 3.5 Step 3.5.2b.
+
+Reference `global-promo-config.md` Section 15 for NB2 defaults (ref images use neutral lighting, clean bg, 4K, CFG 6.0, Denoise 0.40, Thinking High).
+
+### Cast Face Reference Template
+
+```
+SUBJECT: {ethnicity} {gender}, {age_range}, {key_features from cast-profile.md}.
+Portrait, front view, looking directly at camera.
+EXPRESSION: Neutral, natural, relaxed.
+BACKGROUND: Clean studio white, seamless.
+LIGHTING: Neutral diffused soft light, even illumination, no dramatic shadows.
+CAMERA: Medium close-up, 85mm f/2.8, eye-level.
+TECHNICAL: {aspect_ratio}, 4K resolution, CFG 6.0, Denoise 0.40, Thinking High.
+No accessories obscuring face. Hair naturally styled. Skin texture visible.
+```
+
+### Cast Body Reference Template
+
+```
+SUBJECT: {ethnicity} {gender}, {age_range}, {key_features from cast-profile.md}.
+Full body standing pose, feet visible, arms relaxed at sides.
+WARDROBE: {wardrobe from cast-profile.md — e.g., "navy blazer, white open-collar shirt"}.
+EXPRESSION: Neutral, confident posture.
+BACKGROUND: Clean studio white, seamless.
+LIGHTING: Neutral diffused soft light, even from head to toe.
+CAMERA: Full body shot, 50mm f/4, eye-level.
+TECHNICAL: {aspect_ratio}, 4K resolution, CFG 6.0, Denoise 0.40, Thinking High.
+Full wardrobe clearly visible. Natural standing pose.
+```
+
+### Cast Costume/Uniform Reference Template
+
+```
+SUBJECT: Official {institution} uniform displayed on standing figure.
+Front view, full uniform visible from collar to shoes.
+DETAILS: {uniform_color}, {emblem/badge description — position, colors, text if known}.
+{Rank insignia if applicable}. {Hat/headwear if applicable}.
+ACCESSORIES: {ID badge, belt, shoes specific to institution}.
+BACKGROUND: Clean neutral gray.
+LIGHTING: Neutral diffused, even illumination to show all uniform details.
+CAMERA: Full body, 50mm f/4, eye-level.
+TECHNICAL: {aspect_ratio}, 4K resolution, CFG 6.0, Denoise 0.40, Thinking High.
+NOTE: AI cannot generate accurate institutional logos/badges — describe placement and colors instead.
+```
+
+### Product Reference Template
+
+```
+SUBJECT: {product_name} — {brief product description from strategic-brief.md}.
+Hero angle, {product_orientation — e.g., "three-quarter view showing interface"}.
+{Key visual features — screen content, buttons, packaging details}.
+BACKGROUND: Clean white or light gradient.
+LIGHTING: Soft commercial lighting, subtle shadow for depth, even illumination.
+CAMERA: Product shot, {lens based on product size — 50mm for small, 35mm for large}, f/5.6.
+TECHNICAL: {aspect_ratio}, 4K resolution, CFG 6.0, Denoise 0.40, Thinking High.
+Professional product photography style. No distracting elements.
+```
+
+### Environment Reference Template
+
+```
+SUBJECT: Wide establishing shot of {location}, {region}, Indonesia.
+ARCHITECTURE: {cultural_architecture from strategic-brief.md Cultural Context}.
+LANDMARKS: {cultural_landmarks visible in mid-ground or background}.
+VEHICLES: Vehicles with {cultural_plate_code}-series license plates visible in street/parking.
+PEOPLE: Background figures with {cultural_ethnicity} appearance — {cultural_physical_features}.
+SKY/WEATHER: {cultural_weather — e.g., "tropical humid atmosphere, bright equatorial sun, cumulus clouds"}.
+VEGETATION: {local_flora — e.g., "tropical palms, frangipani trees"}.
+TIME OF DAY: {morning/midday/afternoon/evening — based on scene requirement}.
+CAMERA: Wide shot, 24mm f/8, eye-level.
+LIGHTING: Natural {time_of_day} light, {cultural_weather_kelvin}K.
+TECHNICAL: 16:9, 4K resolution, CFG 6.0, Denoise 0.40, Thinking High.
+Photorealistic, authentic Indonesian {region} atmosphere.
+```
+
+### Brand Logo — CANNOT GENERATE
+
+```
+⚠️ Brand logo CANNOT be reliably generated by AI image models.
+Logos require exact typography, specific color codes, and precise geometry
+that AI models cannot reproduce accurately.
+
+INSTRUCTION TO USER:
+"Brand logo tidak bisa di-generate oleh AI. Silakan provide file logo asli
+dalam format PNG (transparent background preferred) ke: ref/brand-{name}.png"
+
+If user insists on AI generation, warn:
+"Logo yang di-generate AI TIDAK akan akurat — typography, warna, dan proporsi
+akan berbeda dari logo asli. Sangat direkomendasikan pakai file logo yang sudah ada."
+```
+
+### Template Usage Notes
+
+1. All ref image templates use **neutral lighting** — NOT cinematic/dramatic
+2. All ref image templates use **clean backgrounds** — NOT scene environments
+3. Ref images are for AI identity lock — they need CLARITY over AESTHETICS
+4. Cultural context (from Step 3.5.2a) is ONLY injected into **Environment** template
+5. Cast face/body templates pull description from **cast-profile.md** verbatim
+6. If institution detected, costume template pulls from **global-promo-config.md** Section 12
