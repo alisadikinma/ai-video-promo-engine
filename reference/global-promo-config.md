@@ -9,17 +9,25 @@ All configurable values for the AI Video Promo Engine. Edit THIS file to change 
 | Setting | Value | Notes |
 |---------|-------|-------|
 | `narration_language` | Per user selection (Step 1.0) | Bahasa Indonesia / English / Bilingual |
-| `prompt_language` | `English` | NB2/VEO prompts always in English (technical requirement) |
-| `technical_terms` | `English` | Keep technical terms in English regardless of narration language |
+| `prompt_language` | `English` | NB2/VEO prompt INSTRUCTIONS always in English (technical requirement — AI model needs English) |
+| `technical_terms` | `English` | Keep technical terms/abbreviations in English regardless of narration language |
 | `script_language` | Follows `narration_language` | Script narration/dialogue in user's chosen language |
+| `ui_text_language` | Follows `narration_language` | On-screen text (dashboards, labels, signage) in user's chosen language |
 
 ### Language Options (Step 1.0)
 
-| Option | Narration | Dialogue (`says:`) | VEO/NB2 Prompt | Strategic Brief |
-|--------|-----------|-------------------|----------------|-----------------|
-| Bahasa Indonesia | Indonesian | Indonesian | English | Indonesian |
-| English | English | English | English | English |
-| Bilingual | Indonesian (primary) | Indonesian + English tech terms | English | Indonesian |
+| Option | Narration/VO | Dialogue (`says:`) | On-screen UI text | NB2/VEO Prompt Instructions | Strategic Brief |
+|--------|-------------|-------------------|-------------------|------------------------------|-----------------|
+| Bahasa Indonesia | Indonesian | Indonesian | Indonesian | English (ALWAYS) | Indonesian |
+| English | English | English | English | English (ALWAYS) | English |
+| Bilingual | Indonesian primary | Indonesian + English tech terms | Indonesian + English tech terms | English (ALWAYS) | Indonesian |
+
+### Language Separation Summary
+
+See Section 21 for full rules and examples. Key principle:
+- **Prompt instructions** (SUBJECT, CAMERA, LIGHTING, reference image injection) → ALWAYS English
+- **Content in final video** (dialogue, voiceover, on-screen text, labels) → follows `narration_language`
+- **Technical abbreviations** (ANPR, GPS, RFID, etc.) → ALWAYS English everywhere
 
 ---
 
@@ -88,10 +96,12 @@ All configurable values for the AI Video Promo Engine. Edit THIS file to change 
 |---------|-------|-------|
 | `output_mode` | `full` | `full` = production plan, `quick` = copy-paste prompts |
 | `output_folder` | `{project-folder}/output/` | All output files saved here |
+| `asset_output_folder` | `ref/` | All generated assets saved here (flat, no subfolders) |
 | `strategic_brief_file` | `strategic-brief.md` | Phase 1 output |
 | `script_file` | `av-script.md` | Phase 2 output |
 | `scene_plan_file` | `scene-plan.md` | Phase 3 output |
-| `image_prompts_file` | `image-prompts.md` | Phase 4 output |
+| `nb2_ref_prompts_file` | `nb2-reference-prompts.md` | Phase 4A output — Asset Library (atoms) |
+| `image_prompts_file` | `image-prompts.md` | Phase 4B output — Scene Keyframes (molecules FROM assets) |
 | `video_prompts_file` | `video-prompts.md` | Phase 5 output |
 
 ---
@@ -142,8 +152,8 @@ All configurable values for the AI Video Promo Engine. Edit THIS file to change 
 
 | Setting | Value |
 |---------|-------|
-| `config_version` | `1.2.0` |
-| `last_updated` | `2026-03-19` |
+| `config_version` | `1.3.0` |
+| `last_updated` | `2026-03-20` |
 
 ---
 
@@ -324,99 +334,548 @@ Every generated NB2 or VEO prompt MUST include a **Required Reference Images** t
 | 4 | `ref/env-{location}.png` | Environment establishing shot | ⬜ |
 ```
 
+### Ref-to-Prompt Body Binding (MANDATORY)
+
+Every ref in the upload table MUST have a corresponding injection line in the prompt body text. Having a ref in the upload table but NOT in the prompt body = the model won't use it.
+
+```
+RULE: For EACH row in the Required Reference Images table:
+  → There MUST be a matching line in the prompt text:
+    "Using reference image ref/xxx.png for [specific purpose]"
+
+  EXAMPLES:
+    Upload table has: ref/cast-c1-face.png
+    Prompt body MUST have: "maintain exact facial identity from reference image: ref/cast-c1-face.png"
+
+    Upload table has: ref/env-gate-pelabuhan.png
+    Prompt body MUST have: "match environment EXACTLY as shown in reference image: ref/env-gate-pelabuhan.png"
+
+    Upload table has: ref/vehicle-truck-hino.png
+    Prompt body MUST have: "match exact vehicle appearance from reference image: ref/vehicle-truck-hino.png"
+```
+
+### Output Filename (MANDATORY per prompt)
+
+Every generated NB2 prompt MUST include an explicit `**Output →**` line so the user knows exactly where to save the generated image.
+
+```markdown
+**Output →** ref/{filename}.png
+```
+
+**Naming for scene keyframes:**
+- Start frame: `ref/scene-{NN}-start.png` (e.g., `ref/scene-07-start.png`)
+- End frame: `ref/scene-{NN}-end.png` (e.g., `ref/scene-07-end.png`)
+- Ingredient: `ref/scene-{NN}-ingredient-{N}.png`
+
+**Naming for assets (Phase 4A):** Follow naming patterns in Section 17 Asset Categories table.
+
 ### Why This Matters
 
 - Without explicit reference injection, AI generates from text description only → identity drift
 - Face identity is the MOST critical — even slight deviation is immediately noticeable
 - The reference image table per prompt prevents users from missing uploads
 - Character reference concept = the model actively looks at and matches the ref image
+- Without output filename, users don't know where to save → naming chaos → broken references
 
 ---
 
-## 17. Reference Image Dependency Graph & Generation Order
+## 17. Asset-First Production Model (CRITICAL ARCHITECTURE)
 
-Reference images have dependencies — generating them in the wrong order causes identity drift because downstream refs can't lock onto upstream refs that don't exist yet.
+### The Core Problem
 
-### Dependency Graph
+Scene keyframes that describe visual elements from scratch (text only) → AI hallucinates inconsistently. The same truck looks different in every scene. The same driver's face changes. The same gate has barriers in one scene and not in another.
+
+### The Solution: Atoms → Molecules
+
+Image production is split into TWO explicit phases:
 
 ```
-Tier 0: USER-PROVIDED (cannot AI-generate)
-├── ref/brand-{name}.png           ← user uploads logo file
-└── Cultural research data         ← web search (Step 3.5.2a), needed before environment
+Phase 4A: ASSET LIBRARY (atoms)         → nb2-reference-prompts.md
+  Generate individual reusable building blocks:
+  - Characters (face, body, costume per cast member)
+  - Vehicles (trucks, cars, boats — each as standalone)
+  - Objects (products, equipment, tools, UI screens)
+  - Locations (environments, buildings, facilities)
+  - Branding (logos, signage — user-provided, not AI-generated)
 
-Tier 1: FOUNDATION (no ref image dependencies — parallel-safe)
-├── ref/cast-c{N}-face.png        ← THE identity anchor, generated FIRST
-├── ref/product-{name}.png        ← independent, no character dependency
-└── ref/env-{location}.png        ← depends on cultural research data, NOT on other refs
+Phase 4B: SCENE KEYFRAMES (molecules)   → image-prompts.md
+  Compose scene images FROM pre-generated assets:
+  - Every visual element REFERENCES a Phase 4A asset
+  - NEVER describe a visual element from scratch if an asset exists
+  - Scene keyframes are COMPOSITIONS, not standalone generations
+```
 
-Tier 2: IDENTITY-LOCKED (depends on Tier 1 face)
-├── ref/cast-c{N}-body.png        ← MUST inject face ref for identity lock
-└── ref/costume-{institution}.png ← master uniform template (standalone)
+### The Rule
 
-Tier 3: COMPOSITE (depends on Tier 1 face + Tier 2 body)
-└── ref/cast-c{N}-costume.png     ← MUST inject face + body ref for identity lock
+> **Scene keyframes NEVER describe visual elements from text alone — always reference an asset file.**
 
-Tier 4: SCENE IMAGES (depends on ALL above)
-├── NB2 start/end frames          ← uses face, body, costume, product, env refs
-└── NB2 ingredient refs           ← uses face, body refs
+If a scene shows a truck → the prompt says `match exact truck appearance from reference image: ref/vehicle-truck-{name}.png`
+If a scene shows a driver → the prompt says `maintain exact facial identity from reference image: ref/cast-c{N}-face.png`
+If a scene shows a gate → the prompt says `match environment from reference image: ref/env-{location}.png`
+
+### Asset Categories (Extended)
+
+| # | Category | Naming Pattern | Example | Notes |
+|---|----------|---------------|---------|-------|
+| 1 | Cast face | `ref/cast-c{N}-face.png` | `ref/cast-c1-face.png` | Identity anchor |
+| 2 | Cast body | `ref/cast-c{N}-body.png` | `ref/cast-c1-body.png` | Proportions + wardrobe |
+| 3 | Cast costume | `ref/cast-c{N}-costume.png` | `ref/cast-c1-costume.png` | Institutional uniform |
+| 4 | Vehicle | `ref/vehicle-{type}-{name}.png` | `ref/vehicle-truck-hino.png` | NEW: recurring vehicles |
+| 5 | Object | `ref/object-{name}.png` | `ref/object-weighbridge.png` | NEW: recurring objects/equipment |
+| 6 | Product | `ref/product-{name}.png` | `ref/product-cpo.png` | Product closeup |
+| 7 | Product closeup | `ref/product-closeup-{name}.png` | `ref/product-closeup-cangkang.png` | MANDATORY detailed texture |
+| 8 | Environment | `ref/env-{location}.png` | `ref/env-pelabuhan.png` | Location establishing |
+| 9 | Brand logo | `ref/brand-{name}.png` | `ref/brand-pelindo.png` | User-provided ONLY |
+| 10 | UI/Screen | `ref/ui-{name}.png` | `ref/ui-anpr-screen.png` | Composite — depends on sub-elements |
+| 11 | Institutional uniform | `ref/costume-{institution}.png` | `ref/costume-pelindo.png` | Master uniform template |
+
+---
+
+## 18. Dependency Graph & Dynamic Tier Assignment
+
+### Recurring Element Auto-Detection Algorithm
+
+BEFORE generating ANY asset or keyframe, engine MUST scan the entire av-script.md for recurring visual elements:
+
+```
+ALGORITHM: Build Dependency Graph
+
+INPUT: av-script.md (all scenes)
+
+STEP 1: EXTRACT all visual elements from every scene
+  FOR each scene in av-script.md:
+    EXTRACT: characters, vehicles, objects, products, locations, branding, UI screens
+    STORE: element_name → [list of scene numbers where it appears]
+
+STEP 2: IDENTIFY recurring elements (appear 2+ times)
+  FOR each element:
+    IF appearance_count >= 2:
+      → FLAG as "MUST be standalone asset"
+      → Add to asset library (Phase 4A)
+    IF appearance_count == 1:
+      → Can be described inline in scene keyframe (Phase 4B)
+      → BUT if user has a reference photo, still use it
+
+STEP 3: DETECT sub-element dependencies
+  FOR each asset prompt:
+    SCAN prompt text for visual elements that match other assets
+    IF prompt contains element X AND element X is a standalone asset:
+      → This prompt DEPENDS ON element X
+      → This prompt's tier = max(dependency tiers) + 1
+
+  EXAMPLE:
+    "ANPR screen showing truck and driver face in CCTV feed"
+    → Contains "truck" (standalone asset) + "driver face" (standalone asset)
+    → ANPR screen tier = max(truck.tier, driver.tier) + 1
+
+STEP 4: ASSIGN tiers automatically
+  Tier 0: User-provided (brand logos, cultural research data)
+  Tier 1: Assets with NO dependencies on other assets (faces, standalone products, environments)
+  Tier 2: Assets that depend on Tier 1 (body depends on face)
+  Tier 3: Assets that depend on Tier 1+2 (costume depends on face+body)
+  Tier N: Composites that contain lower-tier elements
+  Tier LAST: Scene keyframes (reference ALL relevant assets)
+```
+
+### Static Dependency Rules (Always Apply)
+
+| Asset Being Generated | MUST Inject These Upstream Refs |
+|--------------------|---------------------------------|
+| Cast face | None (foundational) |
+| Cast body | Face ref: `maintain exact facial identity from reference image: ref/cast-c{N}-face.png` |
+| Cast costume | Face ref + body ref |
+| Vehicle | None (foundational — unless variant of base vehicle) |
+| Object | None (unless composite containing other assets) |
+| Product | None (independent) |
+| Product closeup | Product hero ref (if exists) for consistency |
+| Environment | None (uses cultural research data, not other refs) |
+| UI/Screen composite | ALL sub-elements shown in the screen (vehicles, faces, products) |
+| Scene keyframe | ALL relevant assets from every category |
+
+### Dynamic Dependency Rules (Auto-Detected)
+
+Any prompt that visually depicts an element that exists as a standalone asset → MUST reference that asset.
+
+**Example dependency chains:**
+
+```
+Simple chain:
+  cast-c1-face → cast-c1-body → cast-c1-costume → scene keyframe
+
+Complex chain (ANPR screen):
+  cast-c1-face ─┐
+  vehicle-truck ─┤→ ui-anpr-screen → scene keyframe
+  brand-logo   ─┘
+
+Cross-chain (multi-element scene):
+  cast-c1-face ──┐
+  cast-c1-body ──┤
+  cast-c1-costume┤
+  vehicle-truck ─┤→ scene-07-start.png
+  env-gate ──────┤
+  product-cpo ───┘
 ```
 
 ### Generation Order (MANDATORY)
 
-Engine MUST generate reference images in this exact order. Within each tier, items can be generated in parallel.
+Within each tier, items can be generated in parallel. NEVER start a tier before ALL items in the previous tier are complete.
 
-| Order | Tier | What to Generate | Dependencies | Parallel? |
-|-------|------|-----------------|--------------|-----------|
-| 0 | Pre-req | User uploads brand logo + cultural research completes | None | — |
-| 1 | Tier 1 | All cast face refs + product refs + environment refs | Cultural data for env only | ✅ Yes, all Tier 1 parallel |
-| 2 | Tier 2 | All cast body refs | Each body injects its own face ref | ✅ Yes, all Tier 2 parallel |
-| 3 | Tier 3 | All cast costume refs | Each costume injects face + body ref | ✅ Yes, all Tier 3 parallel |
-| 4 | Tier 4 | Scene NB2 images (start/end frames, ingredients) | ALL refs from Tier 0-3 | Per scene |
+| Order | Tier | What to Generate | Dependencies |
+|-------|------|-----------------|--------------|
+| 0 | Pre-req | User uploads brand logos + cultural research completes | None |
+| 1 | Tier 1 | Cast faces, standalone products, product closeups, environments, standalone vehicles, standalone objects | Cultural data for env only |
+| 2 | Tier 2 | Cast bodies (inject face), vehicle variants (inject base) | Tier 1 complete |
+| 3 | Tier 3 | Cast costumes (inject face+body) | Tier 2 complete |
+| N | Tier N | Composites (inject all sub-elements) — e.g., UI screens showing truck+face | All dependency tiers complete |
+| LAST | Scene | Scene keyframes (reference ALL relevant assets) | ALL assets complete |
 
-### Upstream Injection Rules
-
-| Ref Being Generated | MUST Inject These Upstream Refs |
-|--------------------|---------------------------------|
-| Cast face | None (foundational) |
-| Cast body | `maintain exact facial identity from reference image: ref/cast-c{N}-face.png` |
-| Cast costume | `maintain exact facial identity from reference image: ref/cast-c{N}-face.png` + `maintain exact body proportions from reference image: ref/cast-c{N}-body.png` |
-| Product | None (independent) |
-| Environment | None (uses cultural research data, not other refs) |
-| Scene NB2 image | ALL relevant refs (face + body + costume + product + env) |
-
-### Why Order Matters
-
-1. **Face first** — face is the identity anchor. Body/costume without face ref = different-looking person
-2. **Body before costume** — costume on a body that doesn't match the face ref = inconsistent character
-3. **All refs before scenes** — scene images reference ALL upstream refs. Missing any = identity drift in that scene
-4. **Parallel within tier** — Character 1 face and Character 2 face have no dependency on each other
-
-### Validation Gate
+### Validation Gate (Per Tier)
 
 Before advancing to the next tier:
 - Verify ALL images in current tier are generated/uploaded
 - Verify identity consistency (face matches across face → body → costume chain)
-- If any ref fails quality check, regenerate THAT ref only (don't cascade)
+- Verify recurring elements match across their standalone asset and any scene they appear in
+- If any ref fails quality check → regenerate THAT ref only (don't cascade)
 
-### Example: 2-Character Video (Ali Sadikin + Supporting)
+### Example: Pelindo Port Video (3 Characters, Truck, ANPR)
 
 ```
-Tier 0: User uploads ref/brand-logo.png
-        Cultural research: Dumai → plat BM, Melayu Riau, pelabuhan, etc.
+Tier 0 (user-provided):
+  ├── ref/brand-pelindo.png (logo — user uploads)
+  └── Cultural research: Dumai → plat BM, Melayu, pelabuhan modern, tropis
 
-Tier 1 (parallel):
-  ├── Generate ref/cast-c1-face.png (Ali Sadikin)
-  ├── Generate ref/cast-c2-face.png (Supporting character)
-  ├── Generate ref/product-app.png
-  └── Generate ref/env-pelabuhan.png (uses Dumai cultural data)
+Tier 1 (parallel, no dependencies):
+  ├── ref/cast-c1-face.png (Port Operator)
+  ├── ref/cast-c2-face.png (Truck Driver)
+  ├── ref/cast-c3-face.png (Japanese Buyer)
+  ├── ref/vehicle-truck-hino.png (Hino dump truck, recurring in 4 scenes)
+  ├── ref/product-closeup-cangkang.png (CPO shell closeup texture)
+  ├── ref/env-gate-pelabuhan.png (actual gate photo or AI gen with cultural context)
+  ├── ref/env-weighbridge.png (weighbridge area)
+  └── ref/object-weighbridge-display.png (digital display panel)
 
-Tier 2 (parallel, after Tier 1 complete):
-  ├── Generate ref/cast-c1-body.png ← injects ref/cast-c1-face.png
-  └── Generate ref/cast-c2-body.png ← injects ref/cast-c2-face.png
+Tier 2 (parallel, after Tier 1):
+  ├── ref/cast-c1-body.png ← injects c1-face
+  ├── ref/cast-c2-body.png ← injects c2-face
+  └── ref/cast-c3-body.png ← injects c3-face
 
-Tier 3 (parallel, after Tier 2 complete):
-  ├── Generate ref/cast-c1-costume.png ← injects c1-face + c1-body
-  └── Generate ref/cast-c2-costume.png ← injects c2-face + c2-body
+Tier 3 (parallel, after Tier 2):
+  ├── ref/cast-c1-costume.png ← injects c1-face + c1-body (Pelindo uniform)
+  └── ref/cast-c2-costume.png ← injects c2-face + c2-body (driver workwear)
+  (c3 = Japanese buyer, no institutional costume)
 
-Tier 4: Scene NB2 images ← injects ALL refs per scene
+Tier 4 (composite, after Tier 3):
+  └── ref/ui-anpr-screen.png ← injects vehicle-truck + cast-c2-face + brand-pelindo
+      (ANPR display showing truck plate + driver face in CCTV feed)
+
+Tier LAST: Scene keyframes
+  Scene 7 start: ← injects cast-c2-face + cast-c2-body + cast-c2-costume
+                    + vehicle-truck + env-gate-pelabuhan + product-cangkang
+  Scene 7 end:   ← same assets, different composition/pose
 ```
+
+---
+
+## 19. Ref Folder Auto-Scan Protocol (MANDATORY)
+
+### CRITICAL: Check ref/ folder BEFORE generating ANY prompt
+
+Before generating ANY NB2 prompt (asset or keyframe), engine MUST:
+
+```
+PROTOCOL: Ref Folder Auto-Scan
+
+STEP 1: LIST all files in {project}/ref/
+  → Build inventory of available reference images
+
+STEP 2: MAP visual elements to existing refs
+  FOR each visual element in the prompt being generated:
+    SEARCH ref/ for matching file
+    IF match found:
+      → MUST include in prompt body as character reference
+      → MUST include in Required Reference Images table
+      → Prompt text: "Using reference image ref/xxx.png for [specific purpose]"
+    IF no match found:
+      → FLAG to user: "Apakah ada foto untuk {element}? Jika ada, save ke ref/{suggested-name}.png"
+
+STEP 3: AUTO-DETECT brand/institution assets
+  SCAN cast-profile.md for institution keywords
+  IF institution detected:
+    → CHECK ref/ for ref/brand-{institution}.png and ref/costume-{institution}.png
+    → If exists: auto-add to ALL UI/signage/branding prompts
+    → If missing: flag as hard-block requirement
+
+STEP 4: NEVER hallucinate what you can reference
+  IF ref/env-gate-pelabuhan.png exists:
+    → Prompt MUST say "match environment EXACTLY as shown in ref/env-gate-pelabuhan.png"
+    → Do NOT describe gate from imagination (wrong barriers, wrong style, wrong era)
+  IF ref/product-closeup-cangkang.png exists:
+    → Prompt MUST say "match exact product texture and appearance from ref/product-closeup-cangkang.png"
+    → Do NOT describe cangkang from text (AI will hallucinate wrong texture — e.g., sawit buah utuh instead of pecahan cangkang)
+```
+
+### Why This Matters
+
+Without auto-scan:
+- Gate photo shows modern facility → NB2 generates rusty gate with barriers (hallucination)
+- User has uniform photo → NB2 generates wrong uniform from text description
+- Logo file exists in ref/ → NB2 generates garbled AI logo instead of using real one
+- Product closeup exists → NB2 generates wrong product (cangkang → buah sawit)
+
+### Auto-Include Priority
+
+| Priority | Condition | Action |
+|----------|-----------|--------|
+| 1 | User-provided photo exists in ref/ | ALWAYS use it — it's ground truth |
+| 2 | AI-generated asset exists from Phase 4A | Reference it in Phase 4B keyframes |
+| 3 | No ref exists, element appears 2+ times | Generate standalone asset in Phase 4A FIRST |
+| 4 | No ref exists, element appears 1 time | Can describe inline BUT ask user if they have a photo |
+
+---
+
+## 20. Aspect Ratio Triple Enforcement
+
+### Problem
+
+Some NB2 prompts generate wrong aspect ratio (portrait/square) when target is 16:9. NB2 defaults to auto-detect ratio which causes mismatches.
+
+### Solution: Triple Enforcement
+
+EVERY NB2 prompt MUST enforce aspect ratio in THREE locations:
+
+```
+[LINE 1 — FIRST LINE OF PROMPT]
+IMPORTANT: Generate in LANDSCAPE 16:9 aspect ratio. Do NOT generate portrait or square.
+
+[... rest of prompt ...]
+
+[TECHNICAL SECTION]
+TECHNICAL: 16:9 landscape, {resolution}, CFG {cfg}, Denoise {denoise}, Thinking {mode}.
+
+[LAST LINE OF PROMPT]
+OUTPUT: 16:9 LANDSCAPE aspect ratio. Width > Height. Do NOT crop or change ratio.
+```
+
+Replace `16:9` with target ratio from `video_aspect_ratio` in Section 2 (e.g., `9:16` for TikTok/Reels).
+
+### Why Triple
+
+NB2 has positional attention bias:
+- First tokens get strong attention (primacy)
+- Last tokens get recency attention
+- Middle tokens can be overlooked
+- Putting ratio in all 3 positions ensures it's never missed
+
+---
+
+## 21. Language Separation Rules & UI Text Localization
+
+### The Core Rule: Prompt Text vs Content Text
+
+There are TWO types of text in every NB2/VEO prompt, and they follow DIFFERENT language rules:
+
+| Text Type | Language | Examples |
+|-----------|----------|---------|
+| **Prompt instructions** (what AI model reads) | ALWAYS English | "SUBJECT:", "CAMERA:", "LIGHTING:", "maintain exact facial identity from..." |
+| **Narration/dialogue** (what audience hears) | Per `narration_language` | `says: "Selamat datang di pelabuhan Dumai"`, `Voiceover: "Inilah solusi kami"` |
+| **On-screen UI text** (what audience reads in the video) | Per `narration_language` | Dashboard labels, signage, buttons, status messages |
+| **Technical abbreviations** | ALWAYS English | ANPR, PLC, NPE, OEE, GPS, RFID, IoT, API |
+
+### Why Prompt Instructions Stay English
+
+NB2 and VEO are trained on English prompts. Using Indonesian for technical prompt instructions (camera, lighting, subject description) → model misinterprets or ignores directives. The AI model needs English to understand what to generate.
+
+### What Gets Localized
+
+Only **content that appears in the final video output** follows the user's language selection:
+
+1. **`says:` dialogue text** — what characters speak (lip sync)
+2. **`Voiceover:` text** — narration track
+3. **On-screen text** — UI screens, dashboards, signage, labels, buttons, warnings
+4. **Text overlays** — if any text is rendered on screen
+
+### UI Text Localization Config
+
+| Setting | Value | Notes |
+|---------|-------|-------|
+| `ui_text_language` | Per `narration_language` selection | UI/label/signage text matches target market language |
+| `ui_text_exceptions` | Technical abbreviations: ANPR, PLC, NPE, OEE, GPS, RFID, IoT, API | Stay English |
+
+### Localization Pass (MANDATORY for Phase 4A + 4B)
+
+After generating any prompt that contains on-screen text (UI screens, signage, displays, labels):
+
+```
+SCAN prompt for on-screen text:
+  - Dashboard labels
+  - Button text
+  - Status messages
+  - Measurement units/labels
+  - Warning/alert text
+  - Signage text
+
+IF narration_language == "Bahasa Indonesia" OR "Bilingual":
+  TRANSLATE all on-screen text to Bahasa Indonesia
+  EXCEPT technical abbreviations in ui_text_exceptions list
+
+EXAMPLES:
+  "GROSS WEIGHT" → "BERAT KOTOR"
+  "TARE" → "TARA"
+  "NETTO" → "NETTO" (same in Indonesian)
+  "GATE EXIT: BLOCKED" → "PINTU KELUAR: DIBLOKIR"
+  "STATUS: APPROVED" → "STATUS: DISETUJUI"
+  "ANPR" → "ANPR" (exception — technical abbreviation)
+```
+
+### Example: Correct Language Separation in a Single Prompt
+
+```
+[PROMPT TEXT — ENGLISH (AI model reads this)]
+IMPORTANT: Generate in LANDSCAPE 16:9 aspect ratio. Do NOT generate portrait or square.
+SUBJECT: Port operator standing next to ANPR monitoring screen.
+Maintain exact facial identity from reference image: ref/cast-c1-face.png.
+CAMERA: Medium shot, 50mm f/4, eye-level.
+LIGHTING: Clean office lighting, 4500K neutral.
+
+[ON-SCREEN UI TEXT — BAHASA INDONESIA (audience reads this in the video)]
+UI TEXT (Bahasa Indonesia):
+  Header: "SISTEM PEMANTAUAN ANPR"
+  Label 1: "BERAT KOTOR: 45.200 kg"
+  Label 2: "TARA: 15.800 kg"
+  Label 3: "NETTO: 29.400 kg"
+  Status: "PINTU KELUAR: DISETUJUI ✓"
+  (ANPR stays English — technical abbreviation)
+
+[DIALOGUE — BAHASA INDONESIA (audience hears this)]
+Operator says: Sistem ANPR kita sudah terintegrasi penuh dengan timbangan digital.
+
+TECHNICAL: 16:9 landscape, 4K resolution, CFG 6.0, Denoise 0.40, Thinking High.
+OUTPUT: 16:9 LANDSCAPE aspect ratio. Width > Height. Do NOT crop or change ratio.
+```
+
+### Why This Matters
+
+Target market Indonesia seeing "GROSS WEIGHT" and "GATE EXIT: BLOCKED" on screens → immediately feels foreign/unrelatable. Indonesian audience expects Indonesian UI text. But the prompt instructions MUST stay English for AI model to understand correctly.
+
+---
+
+## 22. Product Closeup & Location Photo Rules
+
+### Product Closeup Reference (MANDATORY)
+
+Every product/commodity shown in the video MUST have a closeup reference image.
+
+```
+PROTOCOL: Product Closeup
+
+STEP 1: Ask user
+  AskUserQuestion:
+  "Ada foto closeup produk/komoditi? Foto asli JAUH lebih baik dari AI-generated
+  karena AI sering salah texture/bentuk (contoh: cangkang kelapa sawit di-generate
+  jadi buah sawit utuh)."
+
+  Options:
+  A) Ya, saya upload ke ref/product-closeup-{name}.png
+  B) Tidak ada, generate pakai NB2
+
+STEP 2: If user uploads → use as PRIMARY reference for ALL product prompts
+  → "match EXACTLY as shown in ref/product-closeup-{name}.png — texture, color, size, shape"
+
+STEP 3: If AI-generated → generate with EXTREME specificity
+  → Include detailed texture description: "broken/cracked pieces, not whole fruit"
+  → Include scale reference: "pieces approximately 2-5cm diameter"
+  → Include color specifics: "dark brown to black, glossy outer surface, fibrous inner texture"
+  → WARN user: "AI-generated product image may not match real product. Verify before using."
+```
+
+### Location Photo Reference (MANDATORY per unique location)
+
+Every unique location in the scene plan MUST have a reference image — either user-provided photo or AI-generated with cultural context.
+
+```
+PROTOCOL: Location Photo
+
+STEP 1: Auto-derive location list from scene-plan.md
+  EXTRACT all unique locations
+
+STEP 2: For each location, ask user
+  AskUserQuestion:
+  "Video ini ada di {N} lokasi. Ada foto asli untuk lokasi berikut?"
+
+  | # | Location | Foto? |
+  |---|----------|-------|
+  | 1 | {location_1} | ⬜ |
+  | 2 | {location_2} | ⬜ |
+
+  Options:
+  A) Ada foto untuk semua/sebagian → upload ke ref/env-{location}.png
+  B) Tidak ada foto → generate pakai NB2 (cultural context will be injected)
+
+STEP 3: If user photo → use as ground truth
+  → "match environment EXACTLY as shown in ref/env-{location}.png"
+  → Do NOT add/remove architectural elements that don't exist in the photo
+
+STEP 4: If AI-generated → inject cultural research HEAVILY
+  → Architecture style, plate codes, ethnicity, weather, landmarks
+  → WARN: "AI-generated location may not match real facility. Verify before using."
+```
+
+### Why Real Photos Are Better
+
+| Element | AI-Generated | User Photo |
+|---------|-------------|------------|
+| Gate | Adds barriers that don't exist | Shows exact gate design |
+| Weighbridge | Analog dial in modern facility | Shows actual digital display |
+| Product texture | Wrong species/shape/color | Exact texture and color |
+| Facility condition | Defaults to generic (often kumuh) | Shows actual modern facility |
+| Signage | Hallucinated text/logos | Real signs and branding |
+
+---
+
+## 23. Climate-Aware Costume Cross-Check
+
+### Problem
+
+Cast costume may be inappropriate for the video's climate/setting. Example: Japanese buyer in formal wool suit in tropical Dumai (33°C) — unrealistic.
+
+### Protocol
+
+```
+AFTER cultural research (Step 3.5.2a) completes:
+
+  FOR each cast member in cast-profile.md:
+    CROSS-CHECK costume vs climate:
+
+    IF climate == "tropis" (>28°C average) AND costume contains:
+      - "wool suit", "heavy blazer", "winter coat", "thick jacket"
+      → FLAG: "Kostum {character} terlalu tebal untuk iklim tropis {location} ({temp}°C).
+         Suggest: lightweight linen suit / batik shirt / cotton business casual."
+
+    IF climate == "formal indoor" (AC office):
+      → Standard formal wear is OK regardless of outdoor temp
+
+    IF character is "foreign visitor" (e.g., Japanese buyer):
+      → Suggest: "smart casual appropriate for tropical climate —
+         light cotton dress shirt, no tie, lightweight trousers"
+      → NOT: full wool suit with tie in 33°C heat
+
+  Present flagged issues via AskUserQuestion:
+  "Ada costume yang mungkin tidak cocok dengan iklim/setting:
+
+  {list of flagged issues}
+
+  Mau adjust?"
+
+  Options:
+  A) Ya, adjust sesuai saran
+  B) Tidak, tetap pakai costume yang sudah dipilih (override)
+```
+
+### Climate → Costume Matrix
+
+| Climate | Max Formality | Recommended | Avoid |
+|---------|-------------|-------------|-------|
+| Tropis outdoor (>28°C) | Smart casual | Linen, cotton, batik, lightweight | Wool, heavy blazer, winter fabrics |
+| Tropis indoor (AC) | Business formal | Standard suit OK (AC environment) | Winter coat, heavy layers |
+| Humid coastal | Casual-smart | Breathable fabrics, open collar | Tight collar, heavy fabrics |
+| Industrial/port | Work appropriate | Safety vest, breathable uniform | Formal suit in dusty environment |

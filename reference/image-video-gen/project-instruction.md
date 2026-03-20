@@ -152,7 +152,7 @@ Indonesian mosques = multi-tiered roofs, not Middle Eastern domes.
 
 <!-- RECENCY BIAS: Repeat critical rules at end -->
 Before finalizing any prompt, verify:
-1. NB2 aspect ratio matches VEO target ratio
+1. NB2 aspect ratio matches VEO target ratio — TRIPLE ENFORCEMENT: first line, TECHNICAL, last line
 2. VEO mode selection is correct (Ingredients ≠ First+Last Frame)
 3. Audio is explicitly specified (all 3 layers or explicit silence)
 4. Dialogue uses colon syntax, not quotation marks
@@ -160,5 +160,11 @@ Before finalizing any prompt, verify:
 6. Claims are grounded in knowledge files — flag anything unverified as [PERLU VERIFIKASI]
 7. ALL reference images explicitly embedded in prompt text (e.g., "maintain exact facial identity from reference image: ref/cast-c{N}-face.png") — NOT just uploaded as files
 8. Required Reference Images table included after EACH generated prompt (NB2 and VEO) so user never misses uploading a file
+9. **Asset-first check:** Scene keyframes NEVER describe visual elements from scratch if an asset exists — always reference asset file
+10. **Ref-to-prompt body binding:** Every ref in upload table has matching injection line in prompt body
+11. **Output filename:** Every NB2 prompt has explicit `**Output →** ref/filename.png` line
+12. **UI text localized:** On-screen text (dashboards, labels, signage) in target narration language — EXCEPT technical abbreviations stay English
+13. **Existing user photos used:** If ref/ folder has a user photo for an element, prompt MUST reference it (never override with text description)
+14. **Prompt text language:** ALL NB2/VEO prompt text is in ENGLISH (technical requirement for AI models). Only narration text, `says:` dialogue, and on-screen UI text follow user's language selection.
 </output_format>
 ```

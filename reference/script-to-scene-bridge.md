@@ -116,7 +116,12 @@ Scene 6: Clip 6a (8s, 720p) → Extend → Clip 6b (+7s) = 15s total
 
 ---
 
-## 3. Scene → NB2 Image Prompts
+## 3. Scene → NB2 Image Prompts (Phase 4B — Scene Keyframes)
+
+> **CRITICAL:** Scene keyframes are MOLECULES composed FROM Phase 4A ATOMS.
+> NEVER describe a visual element from text alone if an asset exists in ref/.
+> Every character, vehicle, object, product, environment MUST reference its asset file.
+> See `global-promo-config.md` Section 17 (Asset-First Production Model).
 
 ### For First+Last Frame Mode
 
@@ -124,44 +129,60 @@ Generate TWO NB2 images per scene:
 
 **Start Frame Template:**
 ```
+IMPORTANT: Generate in LANDSCAPE 16:9 aspect ratio. Do NOT generate portrait or square.
 SUBJECT: {character/product description from script}.
 {Creator reference phrase from creator-profile.md}
 Maintain exact facial identity from reference image: ref/cast-c{N}-face.png.
 Maintain exact body proportions from reference image: ref/cast-c{N}-body.png.
 {If institutional: Wearing exact uniform as shown in reference image: ref/cast-c{N}-costume.png.}
+{If vehicle in scene: Match exact vehicle from reference image: ref/vehicle-{type}-{name}.png.}
+{If object/equipment in scene: Match exact object from reference image: ref/object-{name}.png.}
 SCENE: {environment from script A/V direction}.
-Match environment from reference image: ref/env-{location}.png.
-{If product visible: Match exact product from reference image: ref/product-{name}.png.}
+Match environment EXACTLY as shown in reference image: ref/env-{location}.png.
+{If product visible: Match exact product texture from reference image: ref/product-closeup-{name}.png.}
+{If product hero shot: Match exact product from reference image: ref/product-{name}.png.}
 {If brand visible: Use exact brand asset from reference image: ref/brand-{asset}.png.}
+{If UI/screen visible: Match exact screen layout from reference image: ref/ui-{name}.png.}
 EXPRESSION: {emotion from beat — see 04-cinematography-lookup.md}.
 CAMERA: {shot size} {lens} {aperture}, {angle}.
 LIGHTING: {pattern} {ratio}, {kelvin}K {film stock}.
 ATMOSPHERE: {atmosphere type}.
 CULTURAL CONTEXT: {from strategic-brief.md Cultural Context — local architecture, landmarks, plate codes, ethnicity of background figures}.
-TECHNICAL: {aspect_ratio}, {resolution}, high thinking mode.
+TECHNICAL: 16:9 landscape, {resolution}, CFG {cfg}, Denoise {denoise}, Thinking High.
 TONE: {atmosphere keywords from global-promo-config.md Section 13 per video_tone}.
 WARDROBE: {wardrobe from creator profile}.
+OUTPUT: 16:9 LANDSCAPE aspect ratio. Width > Height. Do NOT crop or change ratio.
 ```
+
+**Output →** `ref/scene-{NN}-start.png`
 
 **End Frame Template:**
 ```
+IMPORTANT: Generate in LANDSCAPE 16:9 aspect ratio. Do NOT generate portrait or square.
 SUBJECT: {SAME character, NEW pose/position reflecting end-of-scene state}.
 {SAME creator reference phrase — verbatim}
 Maintain exact facial identity from reference image: ref/cast-c{N}-face.png.
 Maintain exact body proportions from reference image: ref/cast-c{N}-body.png.
 {If institutional: Wearing exact uniform as shown in reference image: ref/cast-c{N}-costume.png.}
+{If vehicle in scene: Match exact vehicle from reference image: ref/vehicle-{type}-{name}.png.}
+{If object/equipment in scene: Match exact object from reference image: ref/object-{name}.png.}
 SCENE: {SAME environment — verbatim}.
-Match environment from reference image: ref/env-{location}.png.
-{If product visible: Match exact product from reference image: ref/product-{name}.png.}
+Match environment EXACTLY as shown in reference image: ref/env-{location}.png.
+{If product visible: Match exact product texture from reference image: ref/product-closeup-{name}.png.}
+{If brand visible: Use exact brand asset from reference image: ref/brand-{asset}.png.}
+{If UI/screen visible: Match exact screen layout from reference image: ref/ui-{name}.png.}
 EXPRESSION: {evolved emotion — e.g., concern → realization}.
 CAMERA: {SAME lens}, {potentially different shot size or angle}.
 LIGHTING: {SAME pattern, SAME ratio, SAME kelvin — critical for consistency}.
 ATMOSPHERE: {SAME atmosphere}.
 CULTURAL CONTEXT: {SAME cultural context — verbatim}.
-TECHNICAL: {SAME aspect ratio}, {SAME resolution}.
+TECHNICAL: 16:9 landscape, {SAME resolution}, CFG {cfg}, Denoise {denoise}, Thinking High.
 TONE: {SAME tone atmosphere — verbatim}.
 WARDROBE: {SAME wardrobe — verbatim}.
+OUTPUT: 16:9 LANDSCAPE aspect ratio. Width > Height. Do NOT crop or change ratio.
 ```
+
+**Output →** `ref/scene-{NN}-end.png`
 
 **Required Reference Images Table (include after EACH prompt):**
 ```markdown
@@ -172,7 +193,11 @@ WARDROBE: {SAME wardrobe — verbatim}.
 | 3 | ref/cast-c{N}-costume.png | {Institution} uniform | ⬜ (if institutional) |
 | 4 | ref/env-{location}.png | {Location} establishing | ⬜ |
 | 5 | ref/product-{name}.png | Product hero shot | ⬜ (if product visible) |
-| 6 | ref/brand-{asset}.png | Brand asset | ⬜ (if brand visible) |
+| 6 | ref/product-closeup-{name}.png | Product texture closeup | ⬜ (if product texture visible) |
+| 7 | ref/brand-{asset}.png | Brand asset | ⬜ (if brand visible) |
+| 8 | ref/vehicle-{type}-{name}.png | Vehicle | ⬜ (if vehicle in scene) |
+| 9 | ref/object-{name}.png | Object/equipment | ⬜ (if object in scene) |
+| 10 | ref/ui-{name}.png | UI/screen | ⬜ (if screen visible) |
 ```
 
 **Consistency Checklist (Start ↔ End):**
@@ -747,21 +772,25 @@ Generate in this order: Tier 1 (face + product + env) → Tier 2 (body) → Tier
 ### Cast Face Reference Template — TIER 1 (no upstream dependency)
 
 ```
+IMPORTANT: Generate in LANDSCAPE 16:9 aspect ratio. Do NOT generate portrait or square.
 SUBJECT: {ethnicity} {gender}, {age_range}, {key_features from cast-profile.md}.
 Portrait, front view, looking directly at camera.
 EXPRESSION: Neutral, natural, relaxed.
 BACKGROUND: Clean studio white, seamless.
 LIGHTING: Neutral diffused soft light, even illumination, no dramatic shadows.
 CAMERA: Medium close-up, 85mm f/2.8, eye-level.
-TECHNICAL: {aspect_ratio}, 4K resolution, CFG 6.0, Denoise 0.40, Thinking High.
+TECHNICAL: 16:9 landscape, 4K resolution, CFG 6.0, Denoise 0.40, Thinking High.
 No accessories obscuring face. Hair naturally styled. Skin texture visible.
+OUTPUT: 16:9 LANDSCAPE aspect ratio. Width > Height. Do NOT crop or change ratio.
 ```
 
+**Output →** `ref/cast-c{N}-face.png`
 **Dependency:** None — this is the foundational identity anchor. Generate FIRST.
 
 ### Cast Body Reference Template — TIER 2 (depends on face ref)
 
 ```
+IMPORTANT: Generate in LANDSCAPE 16:9 aspect ratio. Do NOT generate portrait or square.
 SUBJECT: {ethnicity} {gender}, {age_range}, {key_features from cast-profile.md}.
 Maintain exact facial identity from reference image: ref/cast-c{N}-face.png.
 Full body standing pose, feet visible, arms relaxed at sides.
@@ -770,11 +799,13 @@ EXPRESSION: Neutral, confident posture.
 BACKGROUND: Clean studio white, seamless.
 LIGHTING: Neutral diffused soft light, even from head to toe.
 CAMERA: Full body shot, 50mm f/4, eye-level.
-TECHNICAL: {aspect_ratio}, 4K resolution, CFG 6.0, Denoise 0.40, Thinking High.
+TECHNICAL: 16:9 landscape, 4K resolution, CFG 6.0, Denoise 0.40, Thinking High.
 Full wardrobe clearly visible. Natural standing pose.
 Face MUST match ref/cast-c{N}-face.png exactly — same person, same features.
+OUTPUT: 16:9 LANDSCAPE aspect ratio. Width > Height. Do NOT crop or change ratio.
 ```
 
+**Output →** `ref/cast-c{N}-body.png`
 **Dependency:** ref/cast-c{N}-face.png MUST exist before generating this.
 
 **Required Upstream Reference:**
@@ -787,6 +818,7 @@ Face MUST match ref/cast-c{N}-face.png exactly — same person, same features.
 ### Cast Costume/Uniform Reference Template — TIER 3 (depends on face + body ref)
 
 ```
+IMPORTANT: Generate in LANDSCAPE 16:9 aspect ratio. Do NOT generate portrait or square.
 SUBJECT: Official {institution} uniform worn by {ethnicity} {gender}, {age_range}.
 Maintain exact facial identity from reference image: ref/cast-c{N}-face.png.
 Maintain exact body proportions and build from reference image: ref/cast-c{N}-body.png.
@@ -797,11 +829,13 @@ ACCESSORIES: {ID badge, belt, shoes specific to institution}.
 BACKGROUND: Clean neutral gray.
 LIGHTING: Neutral diffused, even illumination to show all uniform details.
 CAMERA: Full body, 50mm f/4, eye-level.
-TECHNICAL: {aspect_ratio}, 4K resolution, CFG 6.0, Denoise 0.40, Thinking High.
+TECHNICAL: 16:9 landscape, 4K resolution, CFG 6.0, Denoise 0.40, Thinking High.
 Face and body MUST match ref/cast-c{N}-face.png and ref/cast-c{N}-body.png — same person in uniform.
 NOTE: AI cannot generate accurate institutional logos/badges — describe placement and colors instead.
+OUTPUT: 16:9 LANDSCAPE aspect ratio. Width > Height. Do NOT crop or change ratio.
 ```
 
+**Output →** `ref/cast-c{N}-costume.png`
 **Dependency:** ref/cast-c{N}-face.png AND ref/cast-c{N}-body.png MUST exist before generating this.
 
 **Required Upstream References:**
@@ -815,21 +849,25 @@ NOTE: AI cannot generate accurate institutional logos/badges — describe placem
 ### Product Reference Template — TIER 1 (no upstream dependency)
 
 ```
+IMPORTANT: Generate in LANDSCAPE 16:9 aspect ratio. Do NOT generate portrait or square.
 SUBJECT: {product_name} — {brief product description from strategic-brief.md}.
 Hero angle, {product_orientation — e.g., "three-quarter view showing interface"}.
 {Key visual features — screen content, buttons, packaging details}.
 BACKGROUND: Clean white or light gradient.
 LIGHTING: Soft commercial lighting, subtle shadow for depth, even illumination.
 CAMERA: Product shot, {lens based on product size — 50mm for small, 35mm for large}, f/5.6.
-TECHNICAL: {aspect_ratio}, 4K resolution, CFG 6.0, Denoise 0.40, Thinking High.
+TECHNICAL: 16:9 landscape, 4K resolution, CFG 6.0, Denoise 0.40, Thinking High.
 Professional product photography style. No distracting elements.
+OUTPUT: 16:9 LANDSCAPE aspect ratio. Width > Height. Do NOT crop or change ratio.
 ```
 
+**Output →** `ref/product-{name}.png`
 **Dependency:** None — independent of character refs. Can be generated in parallel with Tier 1 face refs.
 
 ### Environment Reference Template — TIER 1 (depends on cultural research, not other refs)
 
 ```
+IMPORTANT: Generate in LANDSCAPE 16:9 aspect ratio. Do NOT generate portrait or square.
 SUBJECT: Wide establishing shot of {location}, {region}, Indonesia.
 ARCHITECTURE: {cultural_architecture from strategic-brief.md Cultural Context}.
 LANDMARKS: {cultural_landmarks visible in mid-ground or background}.
@@ -840,10 +878,12 @@ VEGETATION: {local_flora — e.g., "tropical palms, frangipani trees"}.
 TIME OF DAY: {morning/midday/afternoon/evening — based on scene requirement}.
 CAMERA: Wide shot, 24mm f/8, eye-level.
 LIGHTING: Natural {time_of_day} light, {cultural_weather_kelvin}K.
-TECHNICAL: 16:9, 4K resolution, CFG 6.0, Denoise 0.40, Thinking High.
+TECHNICAL: 16:9 landscape, 4K resolution, CFG 6.0, Denoise 0.40, Thinking High.
 Photorealistic, authentic Indonesian {region} atmosphere.
+OUTPUT: 16:9 LANDSCAPE aspect ratio. Width > Height. Do NOT crop or change ratio.
 ```
 
+**Output →** `ref/env-{location}.png`
 **Dependency:** Cultural research data (Step 3.5.2a) must be completed first. No dependency on other ref images. Can be generated in parallel with Tier 1 face/product refs.
 
 ### Brand Logo — CANNOT GENERATE
@@ -862,15 +902,113 @@ If user insists on AI generation, warn:
 akan berbeda dari logo asli. Sangat direkomendasikan pakai file logo yang sudah ada."
 ```
 
+### Vehicle Asset Template — TIER 1 (no upstream dependency)
+
+For vehicles that appear in 2+ scenes (auto-detected by recurring element algorithm).
+
+```
+IMPORTANT: Generate in LANDSCAPE 16:9 aspect ratio. Do NOT generate portrait or square.
+SUBJECT: {vehicle_type} {brand/model if known} — {color}, {condition}, {cargo if visible}.
+{Specific identifying features — license plate region code from cultural research, damage marks, stickers, cargo type visible}.
+Three-quarter front view, slightly elevated angle to show full vehicle profile.
+CARGO: {If applicable — e.g., "bed loaded with dark brown cangkang kelapa sawit pieces, match exact cargo texture from reference image: ref/product-closeup-{name}.png"}.
+BACKGROUND: Clean neutral (light gray road surface, minimal background).
+LIGHTING: Neutral diffused, even illumination showing all vehicle details.
+CAMERA: Medium wide shot, 35mm f/5.6, slightly elevated angle.
+TECHNICAL: 16:9 landscape, 4K resolution, CFG 6.0, Denoise 0.40, Thinking High.
+Photorealistic, industrial/commercial vehicle photography style.
+OUTPUT: 16:9 LANDSCAPE aspect ratio. Width > Height. Do NOT crop or change ratio.
+```
+
+**Output →** `ref/vehicle-{type}-{name}.png`
+**Dependency:** None (unless cargo references a product closeup — then depends on that product ref).
+
+### Object/Equipment Asset Template — TIER 1 (no upstream dependency)
+
+For objects/equipment that appear in 2+ scenes.
+
+```
+IMPORTANT: Generate in LANDSCAPE 16:9 aspect ratio. Do NOT generate portrait or square.
+SUBJECT: {object_name} — {detailed description, manufacturer if known, digital/analog, condition}.
+{Specific features — display type, labels, buttons, indicators}.
+Front-facing view showing all operational details clearly.
+BACKGROUND: In-situ (actual environment where object is used) OR clean neutral if standalone.
+LIGHTING: Neutral diffused, even illumination, no dramatic shadows.
+CAMERA: {Appropriate shot size for object}, 50mm f/5.6, eye-level.
+TECHNICAL: 16:9 landscape, 4K resolution, CFG 6.0, Denoise 0.40, Thinking High.
+Photorealistic, technical/industrial photography style.
+OUTPUT: 16:9 LANDSCAPE aspect ratio. Width > Height. Do NOT crop or change ratio.
+```
+
+**Output →** `ref/object-{name}.png`
+**Dependency:** None.
+
+### Product Closeup Template — TIER 1 (no upstream dependency)
+
+MANDATORY for every product/commodity shown in the video. User photo STRONGLY preferred over AI generation.
+
+```
+IMPORTANT: Generate in LANDSCAPE 16:9 aspect ratio. Do NOT generate portrait or square.
+SUBJECT: Extreme closeup of {product_name} — {SPECIFIC texture description}.
+{If commodity: "broken/cracked pieces, NOT whole fruit/bean" or equivalent specificity}.
+{Size reference: "pieces approximately {X}-{Y}cm diameter"}.
+{Color specifics: "{primary color} to {secondary color}, {surface quality — glossy/matte/fibrous}"}.
+{Texture details: "visible grain/fiber/crystal/crack patterns, {inner vs outer surface difference}"}.
+Multiple pieces scattered naturally on {surface — e.g., "clean white surface for contrast"}.
+Scale reference object if helpful (coin, ruler, hand).
+CAMERA: Macro closeup, 100mm macro f/4, top-down or 45° angle.
+LIGHTING: Soft commercial, even illumination to show texture detail.
+TECHNICAL: 16:9 landscape, 4K resolution, CFG 6.0, Denoise 0.40, Thinking High.
+⚠️ WARNING: AI-generated product images may not match real product texture/shape.
+User photo is ALWAYS better for product accuracy.
+OUTPUT: 16:9 LANDSCAPE aspect ratio. Width > Height. Do NOT crop or change ratio.
+```
+
+**Output →** `ref/product-closeup-{name}.png`
+**Dependency:** None.
+
+### UI/Screen Composite Template — TIER N (depends on sub-elements)
+
+For UI screens, dashboards, CCTV displays, etc. that contain other visual elements.
+
+```
+IMPORTANT: Generate in LANDSCAPE 16:9 aspect ratio. Do NOT generate portrait or square.
+SUBJECT: {Screen/display type} showing operational interface.
+SCREEN CONTENT:
+  {Element 1}: Using reference image ref/{sub-element-1}.png for {purpose in screen}.
+  {Element 2}: Using reference image ref/{sub-element-2}.png for {purpose in screen}.
+  {If brand visible}: Use exact brand asset from reference image: ref/brand-{name}.png.
+UI TEXT ({language from ui_text_language config}):
+  {Label 1}: "{translated text}"
+  {Label 2}: "{translated text}"
+  {Status}: "{translated text}"
+  (Technical abbreviations stay English: ANPR, PLC, GPS, RFID)
+LAYOUT: {screen layout description — split view, grid, single view with overlay}.
+SCREEN TYPE: {LCD panel / CRT / tablet / monitor / outdoor digital signage}.
+BACKGROUND: {Screen mounted on {wall/desk/post} in {environment}}.
+CAMERA: {Shot framing screen} {lens}, {angle}.
+LIGHTING: {Screen backlight + ambient}.
+TECHNICAL: 16:9 landscape, 4K resolution, CFG 6.0, Denoise 0.40, Thinking High.
+OUTPUT: 16:9 LANDSCAPE aspect ratio. Width > Height. Do NOT crop or change ratio.
+```
+
+**Output →** `ref/ui-{name}.png`
+**Dependency:** ALL sub-elements shown in the screen MUST be generated first. Tier = max(sub-element tiers) + 1.
+
 ### Template Usage Notes
 
 1. All ref image templates use **neutral lighting** — NOT cinematic/dramatic
-2. All ref image templates use **clean backgrounds** — NOT scene environments
+2. All ref image templates use **clean backgrounds** — NOT scene environments (except object/equipment in-situ)
 3. Ref images are for AI identity lock — they need CLARITY over AESTHETICS
 4. Cultural context (from Step 3.5.2a) is ONLY injected into **Environment** template
 5. Cast face/body templates pull description from **cast-profile.md** verbatim
 6. If institution detected, costume template pulls from **global-promo-config.md** Section 12
-7. **MUST follow dependency order** from `global-promo-config.md` Section 17: face → body → costume → scene images
-8. **Downstream refs MUST inject upstream refs** — body prompt injects face ref, costume prompt injects face + body ref
-9. **Within each tier, generate in parallel** — all Tier 1 refs can be generated simultaneously
-10. **Validate each tier before advancing** — all Tier 1 refs must be ✅ before starting Tier 2
+7. **MUST follow dependency order** from `global-promo-config.md` Section 18: auto-detected tiers
+8. **Downstream refs MUST inject upstream refs** — body injects face, costume injects face+body, composite injects ALL sub-elements
+9. **Within each tier, generate in parallel** — all same-tier refs can be generated simultaneously
+10. **Validate each tier before advancing** — all tier N refs must be ✅ before starting tier N+1
+11. **Every prompt MUST have `Output →` line** — explicit filename so user knows where to save
+12. **Every prompt MUST have aspect ratio triple enforcement** — first line, TECHNICAL section, last line
+13. **UI text MUST be localized** — per `global-promo-config.md` Section 21 (`ui_text_language`)
+14. **Product closeup: user photo > AI generation** — always ask user first
+15. **Recurring elements (2+ scenes) MUST be standalone assets** — per Section 18 algorithm

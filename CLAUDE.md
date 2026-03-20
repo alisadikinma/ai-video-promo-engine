@@ -101,11 +101,24 @@ Phase 3.5: REFERENCE COLLECTION  → Output: ref-manifest.md
   ├─ Validate ALL refs exist
   └─ [HARD BLOCK — 100% required before Phase 4]
 
-Phase 4: IMAGE PROMPTS (NB2)   → Output: image-prompts.md
+Phase 4A: ASSET LIBRARY (NB2)   → Output: nb2-reference-prompts.md
+  ├─ Auto-scan ref/ folder (user photos = ground truth)
+  ├─ Recurring element detection (2+ scenes → standalone asset)
+  ├─ Dynamic tier assignment with dependency graph
+  ├─ Tier-by-tier generation with validation gates
+  ├─ Extended categories: cast, vehicles, objects, products, product closeups, environments, UI composites
+  ├─ Product closeup + location photo enforcement
+  ├─ Climate-aware costume check
+  └─ [USER APPROVAL GATE]
+
+Phase 4B: SCENE KEYFRAMES (NB2)  → Output: image-prompts.md
   ├─ Start frame + End frame per scene (Frame mode)
   ├─ Ingredient images (Ingredients mode)
-  ├─ Cast face/body/costume references per character
-  ├─ Product/brand reference images
+  ├─ EVERY visual element references Phase 4A asset (no text-only descriptions)
+  ├─ Aspect ratio triple enforcement
+  ├─ Output filename per prompt
+  ├─ Ref-to-prompt body binding
+  ├─ UI text localization
   └─ [USER APPROVAL GATE]
 
 Phase 5: VIDEO PROMPTS (VEO)   → Output: video-prompts.md
@@ -447,21 +460,32 @@ When switching to a different scene:
 1. **Brainstorm & Discovery** — interactive AskUserQuestion flow, tech doc upload, target market selection, awareness routing
 2. **Script Generation** — 2-3 min A/V script with 7-beat arc, beat labels, timing, narration, audio direction
 3. **Scene Breakdown** — auto-calculated scene count, VEO mode per scene, extension strategy, duration allocation
-4. **NB2 Image Prompts** — start/end frames, ingredient images, cast face/body/costume references, product references
-5. **VEO 3.1 Video Prompts** — per-scene prompts with camera movement, audio 3-layer, lip sync, extension prompts
-6. **Target Market Adaptation** — C-Level / VP / Manager / IC / Social Media tone and CTA differentiation
-7. **Awareness Level Routing** — 5 levels route to different narrative strategies
-8. **Multi-Character Cast System** — 1-5 characters with Pemeran Utama/Pendamping roles, per-character identity lock
-9. **Reference Image Validation Gate** — Phase 3.5 hard block, auto-derive manifest from scene plan
-10. **Institution-Aware Costume** — auto-detect Indonesian institutions, require uniform reference images
-11. **Language Selection** — Bahasa Indonesia, English, or Bilingual for narration/dialogue
-12. **Tone/Mood System** — 6 tones affecting cinematography, audio, expression across pipeline
-13. **Cultural Location Research** — web search for license plates, ethnicity, landmarks, architecture, weather
-14. **Ref Image Prompt Generation** — batch NB2 prompts for missing reference images with cultural context
-15. **Production Plan** — full production plan with storyboard notes, checklists (--full mode)
-16. **Copy-Paste Prompts** — direct NB2/VEO prompts ready for platform (--quick mode)
-17. **Platform Extensibility** — add new video AI platforms via /promo-add-platform skill
-18. **Cross-File Validation** — consistency checker across all 22 reference files
+4. **Asset Library Generation (Phase 4A)** — atoms: cast, vehicles, objects, products, product closeups, environments, UI composites with dependency graph
+5. **Scene Keyframe Generation (Phase 4B)** — molecules composed FROM Phase 4A assets, no text-only descriptions for recurring elements
+6. **VEO 3.1 Video Prompts** — per-scene prompts with camera movement, audio 3-layer, lip sync, extension prompts
+7. **Target Market Adaptation** — C-Level / VP / Manager / IC / Social Media tone and CTA differentiation
+8. **Awareness Level Routing** — 5 levels route to different narrative strategies
+9. **Multi-Character Cast System** — 1-5 characters with Pemeran Utama/Pendamping roles, per-character identity lock
+10. **Reference Image Validation Gate** — Phase 3.5 hard block, auto-derive manifest from scene plan
+11. **Institution-Aware Costume** — auto-detect Indonesian institutions, require uniform reference images
+12. **Language Selection** — Bahasa Indonesia, English, or Bilingual for narration/dialogue
+13. **Tone/Mood System** — 6 tones affecting cinematography, audio, expression across pipeline
+14. **Cultural Location Research** — web search for license plates, ethnicity, landmarks, architecture, weather
+15. **Ref Image Prompt Generation** — batch NB2 prompts for missing reference images with cultural context
+16. **Recurring Element Auto-Detection** — any visual element in 2+ scenes → standalone asset first
+17. **Dynamic Tier Assignment** — composites auto-assigned tier = max(sub-elements) + 1
+18. **Ref Folder Auto-Scan** — maps existing user photos before generating, user photo = ground truth
+19. **Aspect Ratio Triple Enforcement** — first line, TECHNICAL, last line in every NB2 prompt
+20. **UI Text Localization** — on-screen text in target language, technical abbreviations stay English
+21. **Product Closeup Enforcement** — mandatory product texture reference, user photo preferred
+22. **Location Photo Enforcement** — mandatory location reference per unique location
+23. **Output Filename Convention** — explicit `Output →` line per NB2 prompt
+24. **Ref-to-Prompt Body Binding** — every ref in upload table → matching injection line in prompt
+25. **Climate-Aware Costume Check** — cross-check costume vs location climate
+26. **Production Plan** — full production plan with storyboard notes, checklists (--full mode)
+27. **Copy-Paste Prompts** — direct NB2/VEO prompts ready for platform (--quick mode)
+28. **Platform Extensibility** — add new video AI platforms via /promo-add-platform skill
+29. **Cross-File Validation** — consistency checker across all 22 reference files
 
 ## Technical Defaults
 
@@ -552,8 +576,18 @@ When switching to a different scene:
 | AI-generated logo looks wrong | Logo generation unreliable — brand logo MUST be user-provided, not AI-generated |
 | Storyline missing beats | User input incomplete — Step 1.7 maps to 7-beat arc, AI suggests missing beats |
 | Cross-file drift | Run `/promo-validate` — checks all 22 reference files for consistency |
+| Same element looks different across scenes | Recurring element not generated as standalone asset — auto-detect from av-script.md, generate in Phase 4A first |
+| Gate/facility hallucinated wrong | No user photo used — auto-scan ref/ folder, existing photos = ground truth, NEVER override with text description |
+| Product texture completely wrong | No product closeup reference — user photo mandatory (AI generates wrong species/shape for commodities like cangkang) |
+| Wrong aspect ratio in NB2 output | Missing triple enforcement — add aspect ratio to FIRST line, TECHNICAL section, and LAST line of every prompt |
+| UI text in wrong language | ui_text_language not applied — on-screen text must match narration_language, except technical abbreviations |
+| Composite asset has wrong sub-elements | Wrong tier assignment — composite tier = max(sub-element tiers) + 1. Generate sub-elements FIRST |
+| Ref in upload table but model ignores it | Missing ref-to-prompt body binding — every ref in table needs matching injection line in prompt body text |
+| User doesn't know where to save output | Missing Output filename — every NB2 prompt needs explicit `**Output →** ref/filename.png` line |
+| Costume inappropriate for climate | No climate-aware check — cross-check costume vs location climate after cultural research (Step 3.5.2a) |
+| Scene keyframe describes element from scratch | Asset-first violation — if element has ref in Phase 4A, scene keyframe MUST reference it, not describe from text |
 
 ---
 
-**Version:** 1.2.0
+**Version:** 1.3.0
 **Last Updated:** March 2026

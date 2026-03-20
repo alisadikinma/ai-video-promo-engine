@@ -104,6 +104,17 @@ Copy `agents/promo-engine-agent.md` to your project's `.claude/agents/` director
 18. **Narration language from Step 1.0** — script dialogue and VEO `says:` text MUST be in user's chosen language. NB2/VEO prompt structure stays English.
 19. **Tone consistency** — `video_tone` from Step 1.7b MUST be applied across ALL phases: script word choice (Phase 2), cinematography (Phase 4), atmosphere (Phase 5). Reference global-promo-config.md Section 13 Tone Impact Matrix.
 20. **Cultural accuracy** — when location is specified, web search MUST be performed (Step 3.5.2a) and cultural details MUST be injected into environment NB2 prompts and VEO scene prompts. Wrong license plate / wrong ethnicity / wrong architecture = rejection signal.
+21. **Asset-first, scene-second** — Phase 4A generates ASSET LIBRARY (atoms: people, vehicles, objects, locations). Phase 4B generates SCENE KEYFRAMES (molecules FROM assets). Scene keyframes NEVER describe visual elements from scratch — always reference an asset file. See `global-promo-config.md` Section 17.
+22. **Recurring element detection** — any visual element appearing in 2+ scenes MUST be generated as standalone asset first. Auto-detect from av-script.md scan. See `global-promo-config.md` Section 18.
+23. **Auto-scan ref/ folder** — before generating ANY prompt, list ref/ folder, map every visual element to existing refs. Existing user photos = ground truth, NEVER override with text description. See `global-promo-config.md` Section 19.
+24. **Aspect ratio triple enforcement** — every NB2 prompt MUST specify target ratio in FIRST line, TECHNICAL section, and LAST line. See `global-promo-config.md` Section 20.
+25. **UI text localization** — on-screen text (dashboards, signage, displays) MUST match `narration_language`. Technical abbreviations stay English. See `global-promo-config.md` Section 21.
+26. **Product closeup mandatory** — every product/commodity MUST have closeup reference image. User photo preferred over AI. See `global-promo-config.md` Section 22.
+27. **Location photo mandatory** — every unique location MUST have reference image (user photo or AI-generated with cultural context). See `global-promo-config.md` Section 22.
+28. **Output filename per prompt** — every NB2 prompt MUST include explicit `**Output →** ref/filename.png` line. See `global-promo-config.md` Section 16.
+29. **Ref-to-prompt body binding** — every ref in upload table MUST have matching injection line in prompt body. Having ref in table but NOT in prompt = model won't use it. See `global-promo-config.md` Section 16.
+30. **Climate-aware costume** — cross-check cast costume vs location climate after cultural research. Flag inappropriate combinations. See `global-promo-config.md` Section 23.
+31. **Dynamic tier assignment** — composite assets (UI screens showing truck+face) auto-assigned to tier = max(sub-element tiers) + 1. Never generate composite before its sub-elements. See `global-promo-config.md` Section 18.
 
 ---
 
@@ -752,28 +763,119 @@ B) Mau review manifest lagi
 
 ---
 
-### Phase 4: IMAGE PROMPTS — NB2 (Output: image-prompts.md)
+### Phase 4A: ASSET LIBRARY — NB2 (Output: nb2-reference-prompts.md)
 
-**Read:** `01-nb2-image-generation.md`, `04-cinematography-lookup.md`, `05-creator-and-holidays.md`, `creator-profile-system.md`
+**Read:** `01-nb2-image-generation.md`, `04-cinematography-lookup.md`, `05-creator-and-holidays.md`, `creator-profile-system.md`, `global-promo-config.md` (Sections 17-23)
 
-#### Step 4.1: Load Validated References
+> **CRITICAL: Assets FIRST, scenes SECOND.** This phase generates individual reusable building blocks (atoms). Phase 4B composes scene keyframes (molecules) FROM these assets. See `global-promo-config.md` Section 17.
 
-Load `ref-manifest.md` from Phase 3.5 (all references already validated — no re-check needed).
+#### Step 4A.0: Auto-Scan ref/ Folder
 
-For each scene, map reference images from manifest:
-- Character refs → NB2 identity lock per cast member
-- Product refs → scene context
-- Environment refs → First+Last Frame backgrounds
-- Brand refs → logo/UI placement
-- Costume refs → wardrobe direction
+Before generating anything:
 
-#### Step 4.2: Generate NB2 Prompts per Scene
+```
+1. LIST all files in {project}/ref/
+2. MAP each file to its category (cast, product, env, vehicle, object, brand, ui)
+3. IDENTIFY which assets already exist (user photos = ground truth)
+4. IDENTIFY which assets need AI generation
+5. Present to user: "Ini asset yang sudah ada vs yang perlu di-generate"
+```
+
+#### Step 4A.1: Recurring Element Detection
+
+Scan av-script.md for recurring visual elements:
+
+```
+FOR each visual element across ALL scenes:
+  COUNT appearances
+  IF count >= 2 AND no asset exists in ref/:
+    → ADD to asset generation queue
+    → ASSIGN to appropriate tier
+
+PRESENT detected recurring elements:
+"Detected {N} recurring visual elements that need standalone assets:
+| # | Element | Appears in Scenes | Asset Needed |
+|---|---------|-------------------|-------------|
+| 1 | Hino dump truck | 7, 12, 13, 14 | ref/vehicle-truck-hino.png |
+| 2 | Driver face | 4, 7, 12, 14 | ref/cast-c2-face.png |
+| ... | ... | ... | ... |"
+```
+
+#### Step 4A.2: Build Dependency Graph
+
+Auto-assign tiers per `global-promo-config.md` Section 18 algorithm:
+
+```
+Tier 0: User-provided assets (brand logos, user photos already in ref/)
+Tier 1: Faces, standalone products, product closeups, environments, vehicles, objects
+Tier 2: Bodies (inject face ref)
+Tier 3: Costumes (inject face + body ref)
+Tier N: Composites (inject all sub-elements — e.g., UI screens showing truck+face)
+```
+
+Present dependency graph to user for approval.
+
+#### Step 4A.3: Generate Asset Prompts (Tier by Tier)
+
+Follow templates from `script-to-scene-bridge.md` Section 11.
+
+**For each tier (in order):**
+1. Generate all prompts for current tier (parallel within tier)
+2. Include aspect ratio triple enforcement (first line, TECHNICAL, last line)
+3. Include `**Output →** ref/{filename}.png` per prompt
+4. Include Required Reference Images table (upstream refs from previous tiers)
+5. Include ref-to-prompt body binding (every ref in table → matching injection line in prompt)
+6. Apply UI text localization if prompt contains on-screen text
+7. **Wait for user to generate/upload all current tier assets**
+8. Validate all current tier assets exist before advancing to next tier
+
+#### Step 4A.4: Climate-Aware Costume Check
+
+After cultural research and before generating costume prompts:
+
+```
+Cross-check cast costume vs location climate.
+FLAG inappropriate combinations (e.g., wool suit in 33°C tropical climate).
+See global-promo-config.md Section 23.
+```
+
+#### Step 4A.5: Asset Library Approval
+
+```
+AskUserQuestion:
+"Asset library ({N} assets across {M} tiers) sudah lengkap. Review?"
+
+Options:
+A) Approve — lanjut ke scene keyframes (Phase 4B)
+B) Regenerate specific assets
+C) Add more assets
+```
+
+**Save output:** `{output_folder}/nb2-reference-prompts.md`
+
+---
+
+### Phase 4B: SCENE KEYFRAMES — NB2 (Output: image-prompts.md)
+
+**Read:** `script-to-scene-bridge.md` (Section 3), `04-cinematography-lookup.md`
+
+> **CRITICAL: Scene keyframes are MOLECULES composed FROM Phase 4A ATOMS.**
+> NEVER describe a visual element from text alone if an asset exists in ref/.
+> Every character, vehicle, object, product, environment MUST reference its asset file.
+
+#### Step 4B.1: Load All Assets
+
+Load all assets from ref/ (Phase 4A output + user photos + user-provided files).
+Build scene-to-asset mapping from scene-plan.md.
+
+#### Step 4B.2: Generate Scene Keyframe Prompts
 
 For each scene in scene-plan.md:
 
 **If Frame mode:**
 - Generate START frame prompt (per `script-to-scene-bridge.md` Section 3)
 - Generate END frame prompt (maintain consistency checklist)
+- **Every visual element MUST reference its asset file** — no text-only descriptions
 
 **If Ingredients mode:**
 - Generate 1-3 character reference prompts
@@ -784,14 +886,17 @@ For each scene in scene-plan.md:
 - Apply creator reference phrase **per character** from `cast-profile.md` (verbatim)
 - For multi-character scenes, use Cast Interaction Templates from `creator-profile-system.md` Section 8
 - NB2 technical parameters (CFG 5-7, denoise 0.35-0.45)
-- Aspect ratio matching VEO target
+- **Aspect ratio triple enforcement** (first line, TECHNICAL, last line)
 - Central 60% rule
+- **`Output →` filename** per prompt (ref/scene-{NN}-start.png, ref/scene-{NN}-end.png)
+- **Ref-to-prompt body binding** — every ref in upload table MUST have matching line in prompt
+- **UI text localization** — on-screen text in narration language
 
-#### Step 4.3: Image Prompts Approval
+#### Step 4B.3: Scene Keyframes Approval
 
 ```
 AskUserQuestion:
-"Image prompts untuk semua scene sudah sesuai?"
+"Scene keyframe prompts untuk semua scene sudah sesuai?"
 
 Options:
 A) Approve all — lanjut ke video prompts
@@ -885,13 +990,29 @@ Present final summary:
 - [ ] ref-manifest.md shows 100% validation
 - [ ] Naming convention matches global-promo-config.md Section 11
 
-### Image Prompt Quality Gate (Phase 4)
-- [ ] NB2 aspect ratio matches VEO target
+### Asset Library Quality Gate (Phase 4A)
+- [ ] Auto-scan ref/ folder completed before generating any prompt
+- [ ] Recurring elements (2+ scenes) detected and queued as standalone assets
+- [ ] Dependency graph built with correct tier assignments
+- [ ] Composites (UI screens, etc.) assigned tier = max(sub-element tiers) + 1
+- [ ] Each tier fully validated before advancing to next tier
+- [ ] Product closeup reference exists for every product/commodity
+- [ ] Location reference exists for every unique location
+- [ ] User photos used as ground truth (not overridden by AI generation)
+- [ ] Climate-aware costume check completed
+- [ ] Brand logos are user-provided (not AI-generated)
+
+### Scene Keyframe Quality Gate (Phase 4B)
+- [ ] NB2 aspect ratio triple enforcement (first line, TECHNICAL, last line)
 - [ ] CFG 5-7, Denoise 0.35-0.45
 - [ ] Start/End frames share same lighting Kelvin
 - [ ] Cast reference phrase verbatim per character from cast-profile.md
 - [ ] Central 60% rule applied
 - [ ] Thinking mode specified (minimal for draft, high for final)
+- [ ] EVERY visual element references its asset file (no text-only descriptions for recurring elements)
+- [ ] Output filename specified per prompt (`ref/scene-{NN}-start.png`)
+- [ ] Every ref in upload table has matching injection line in prompt body
+- [ ] UI text localized per narration_language (except technical abbreviations)
 
 ### Video Prompt Quality Gate (Phase 5)
 - [ ] VEO mode correct per scene (no Ingredients + Frame mix)

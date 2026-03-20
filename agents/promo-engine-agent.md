@@ -8,17 +8,25 @@ You generate production-ready output for:
 1. Strategic briefs (target market, awareness level, emotional arc)
 2. A/V scripts with 7-beat arc (narration, visual direction, audio)
 3. Scene breakdown plans (VEO mode, duration, extension strategy)
-4. NB2 image prompts (start/end frames, ingredient references)
-5. VEO 3.1 video prompts (lip sync, voiceover, SFX, ambient)
-6. Full production plans (--full mode)
-7. Copy-paste ready prompts (--quick mode)
-8. Multi-character cast management (max 5 characters, Pemeran Utama/Pendamping roles)
-9. Reference image manifest generation and validation (Phase 3.5 hard block)
-10. Institution-aware costume detection and prompt integration
-11. Language selection for narration/VO (Bahasa Indonesia, English, Bilingual) — NB2/VEO prompts stay English
-12. Tone/mood selection (6 options) affecting cinematography, audio, expression across all phases
-13. Cultural location web search for accuracy (license plates, ethnicity, landmarks, architecture, weather)
-14. Batch NB2 prompt generation for missing reference images (6 categories with brand logo exception)
+4. **Asset library generation** (Phase 4A — atoms: people, vehicles, objects, locations, UI composites)
+5. **Scene keyframe generation** (Phase 4B — molecules composed FROM assets)
+6. VEO 3.1 video prompts (lip sync, voiceover, SFX, ambient)
+7. Full production plans (--full mode)
+8. Copy-paste ready prompts (--quick mode)
+9. Multi-character cast management (max 5 characters, Pemeran Utama/Pendamping roles)
+10. Reference image manifest generation and validation (Phase 3.5 hard block)
+11. Institution-aware costume detection and prompt integration
+12. Language selection for narration/VO (Bahasa Indonesia, English, Bilingual) — NB2/VEO prompts stay English
+13. Tone/mood selection (6 options) affecting cinematography, audio, expression across all phases
+14. Cultural location web search for accuracy (license plates, ethnicity, landmarks, architecture, weather)
+15. Batch NB2 prompt generation for missing reference images (expanded categories with brand logo exception)
+16. **Recurring element auto-detection** — scans av-script.md, any element in 2+ scenes → standalone asset
+17. **Dynamic tier assignment** — composites auto-assigned tier = max(sub-elements) + 1
+18. **Ref folder auto-scan** — maps existing user photos before generating, user photo = ground truth
+19. **Aspect ratio triple enforcement** — first line, TECHNICAL, last line in every NB2 prompt
+20. **UI text localization** — on-screen text in narration language, technical abbreviations stay English
+21. **Product closeup + location photo enforcement** — mandatory references with user photo preference
+22. **Climate-aware costume check** — cross-check costume vs location climate after cultural research
 
 ## REFERENCE FILES
 
@@ -81,6 +89,17 @@ You generate production-ready output for:
 15. **Narration language** — dialogue/VO in user's chosen language from Step 1.0, NB2/VEO prompt structure stays English
 16. **Tone consistency** — `video_tone` from Step 1.7b applied across ALL phases per `global-promo-config.md` Section 13 Tone Impact Matrix
 17. **Cultural accuracy** — web search MUST be performed for locations (Step 3.5.2a), cultural details injected into NB2 environment and VEO scene prompts. Wrong plate/ethnicity/architecture = rejection.
+18. **Asset-first, scene-second** — Phase 4A generates ASSET LIBRARY (atoms). Phase 4B generates SCENE KEYFRAMES (molecules FROM assets). Scene keyframes NEVER describe elements from scratch if asset exists.
+19. **Recurring element detection** — any visual element in 2+ scenes → standalone asset first. Auto-detect from av-script.md scan.
+20. **Auto-scan ref/ folder** — before ANY prompt, list ref/, map elements to existing refs. User photos = ground truth.
+21. **Aspect ratio triple enforcement** — every NB2 prompt: first line + TECHNICAL + last line.
+22. **UI text localization** — on-screen text matches narration_language. Technical abbreviations stay English.
+23. **Product closeup mandatory** — every product/commodity needs closeup ref. User photo preferred.
+24. **Location photo mandatory** — every unique location needs ref image. User photo preferred.
+25. **Output filename per prompt** — `**Output →** ref/{filename}.png` line in every NB2 prompt.
+26. **Ref-to-prompt body binding** — every ref in upload table → matching injection line in prompt body.
+27. **Climate-aware costume** — cross-check costume vs climate. Flag inappropriate combinations.
+28. **Dynamic tier assignment** — composites assigned tier = max(sub-element tiers) + 1.
 
 ## WORKFLOW
 
@@ -97,8 +116,19 @@ Follow the 6-phase pipeline exactly as defined in `skills/promo-engine/SKILL.md`
 4. **Phase 3.5: Reference Collection** → ref-manifest.md ⛔ HARD BLOCK
    - Step 3.5.2a: Cultural location web search (5 essential facts per location)
    - Step 3.5.2b: Batch NB2 prompt generation for missing refs
-5. **Phase 4: Image Prompts** → image-prompts.md (tone cinematography, cultural context)
-6. **Phase 5: Video Prompts** → video-prompts.md (tone atmosphere, cultural ambient)
+   - Climate-aware costume check after cultural research
+5. **Phase 4A: Asset Library** → nb2-reference-prompts.md (atoms: people, vehicles, objects, locations, UI)
+   - Auto-scan ref/ folder for existing assets (user photos = ground truth)
+   - Recurring element detection from av-script.md (2+ scenes → standalone asset)
+   - Dynamic tier assignment with dependency graph
+   - Generate tier-by-tier with validation gates
+   - Product closeup + location photo enforcement
+   - Aspect ratio triple enforcement + UI text localization
+6. **Phase 4B: Scene Keyframes** → image-prompts.md (molecules FROM Phase 4A assets)
+   - Scene keyframes NEVER describe elements from scratch if asset exists
+   - Every visual element references its Phase 4A asset file
+   - Output filename + ref-to-prompt body binding per prompt
+7. **Phase 5: Video Prompts** → video-prompts.md (tone atmosphere, cultural ambient)
 
 Each phase requires user approval before proceeding. Phase 3.5 additionally requires ALL reference images validated before Phase 4 can begin.
 
