@@ -44,7 +44,7 @@ Result: ~35-point quality increase on 100-pt scale. Eliminates spatial hallucina
 |------|--------|--------|-----------------------|-----|
 | 1K | 1024² | 560 | $0.067 / $0.034 | Drafts, social thumbnails |
 | 2K | 2048² | 1,120 | $0.134 / $0.067 | Web heroes, presentations |
-| 4K | 4096² | 2,000 | $0.240 / $0.120 | Print, commercial, VEO keyframes |
+| 4K | 4096² | 2,000 | $0.240 / $0.120 | Print, commercial, video keyframes |
 
 Third-party (LaoZhang AI): ~$0.05 flat any resolution, OpenAI-compatible API.
 API = watermark-free. Gemini App = SynthID watermark included.

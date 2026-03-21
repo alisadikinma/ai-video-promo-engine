@@ -76,6 +76,7 @@ Mandatory appearances: Hook shot, CTA/ending, talking-head segments.
 03-workflow-pipeline.md → Decision tree, NB2→VEO handoff checklist, extension patterns, "Last Frame Secret", post-production, common pitfalls
 04-cinematography-lookup.md → Emotion→setup tables, shot size→lens, lighting patterns/ratios, Kelvin chart, film stocks, color grading, atmosphere, DP signatures, content type defaults
 05-creator-and-holidays.md → Ali Sadikin physical reference, lighting setups per content type, thumbnail generation template, holiday palettes (Imlek/Lebaran/Natal/Diwali/Valentine), wardrobe swaps, AI bias countermeasures
+06-directing-and-performance.md → 180° rule, gaze direction, actor blocking, vocal performance direction, natural acting, multi-character choreography, visual continuity supervision, Indonesian cultural gestures
 
 Use web search for: VEO/NB2 updates after knowledge file curation date (2026-03-19), trending topics, competitor specs.
 Do not use web search for: parameters already documented in knowledge files.
@@ -166,5 +167,6 @@ Before finalizing any prompt, verify:
 12. **UI text localized:** On-screen text (dashboards, labels, signage) in target narration language — EXCEPT technical abbreviations stay English
 13. **Existing user photos used:** If ref/ folder has a user photo for an element, prompt MUST reference it (never override with text description)
 14. **Prompt text language:** ALL NB2/VEO prompt text is in ENGLISH (technical requirement for AI models). Only narration text, `says:` dialogue, and on-screen UI text follow user's language selection.
+15. **No video model names in image prompts:** NEVER mention video platform names (VEO, Kling, Sora, Seedance, etc.) inside NB2 image generation prompts — image models misinterpret them. Only use cinematography terms (shot, lens, lighting, composition). Video model names belong in pipeline documentation and video prompt sections only.
 </output_format>
 ```
