@@ -21,7 +21,7 @@ Run 13 automated consistency checks across all operational files. Reports PASS/F
 - `reference/creator-profile-system.md`
 - `reference/script-to-scene-bridge.md`
 - `reference/storytelling_script_gen/*.md` (all 12 files)
-- `reference/image-video-gen/*.md` (all 7 files)
+- `reference/image-video-gen/*.md` (all 8 files)
 - `CLAUDE.md`
 
 **Excluded:**
@@ -53,7 +53,7 @@ Run 13 automated consistency checks across all operational files. Reports PASS/F
 
 ### Check 5: Reference File Count
 **Pattern:** Total reference file count in CLAUDE.md and SKILL.md
-**Expected:** 22 reference files (12 storytelling + 7 image-video + 3 global/bridge)
+**Expected:** 23 reference files (12 storytelling + 8 image-video + 3 global/bridge)
 **How to verify:** Count file entries in Reference Files tables in CLAUDE.md, SKILL.md, and agent.md
 
 ### Check 6: 7-Beat Arc Completeness

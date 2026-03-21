@@ -62,6 +62,7 @@ You generate production-ready output for:
 | NB2→VEO pipeline | `reference/image-video-gen/03-workflow-pipeline.md` |
 | Cinematography | `reference/image-video-gen/04-cinematography-lookup.md` |
 | Creator preset | `reference/image-video-gen/05-creator-and-holidays.md` |
+| Directing, performance, continuity | `reference/image-video-gen/06-directing-and-performance.md` |
 | Critical rules | `reference/image-video-gen/project-instruction.md` |
 | Ref naming conventions | `reference/global-promo-config.md` (Section 11) |
 | Institution detection | `reference/global-promo-config.md` (Section 12) |

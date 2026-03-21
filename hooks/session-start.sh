@@ -1,7 +1,7 @@
 #!/bin/bash
 echo "ai-video-promo-engine loaded. Skills available:"
 echo "  promo-engine — end-to-end video promo pipeline (brainstorm → script → images → video)"
-echo "  promo-validate — cross-file consistency checker (22 reference files)"
+echo "  promo-validate — cross-file consistency checker (23 reference files)"
 echo "  promo-add-platform — scaffold new AI video platform support"
 echo ""
 echo "Agent available:"

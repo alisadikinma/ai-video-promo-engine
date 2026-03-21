@@ -72,6 +72,7 @@ Copy `agents/promo-engine-agent.md` to your project's `.claude/agents/` director
 | NB2 image specs | `reference/image-video-gen/01-nb2-image-generation.md` |
 | Cinematography lookup | `reference/image-video-gen/04-cinematography-lookup.md` |
 | Creator profile/preset | `reference/image-video-gen/05-creator-and-holidays.md` |
+| Directing, performance, continuity | `reference/image-video-gen/06-directing-and-performance.md` |
 
 ### Phase 5: Video Prompts
 | Task | Read |
@@ -765,7 +766,7 @@ B) Mau review manifest lagi
 
 ### Phase 4A: ASSET LIBRARY — NB2 (Output: nb2-reference-prompts.md)
 
-**Read:** `01-nb2-image-generation.md`, `04-cinematography-lookup.md`, `05-creator-and-holidays.md`, `creator-profile-system.md`, `global-promo-config.md` (Sections 17-23)
+**Read:** `01-nb2-image-generation.md`, `04-cinematography-lookup.md`, `05-creator-and-holidays.md`, `06-directing-and-performance.md`, `creator-profile-system.md`, `global-promo-config.md` (Sections 17-23)
 
 > **CRITICAL: Assets FIRST, scenes SECOND.** This phase generates individual reusable building blocks (atoms). Phase 4B composes scene keyframes (molecules) FROM these assets. See `global-promo-config.md` Section 17.
 

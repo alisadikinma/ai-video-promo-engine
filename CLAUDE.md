@@ -2,9 +2,17 @@
 
 ## Project Overview
 
-Claude Code plugin that generates complete promotional video production packages: from brainstorm to script to image prompts (NB2) to video prompts (VEO 3.1). 1 main skill + 2 utility skills + 1 agent + 22 reference documents as RAG knowledge base.
+Claude Code plugin that generates complete promotional video production packages: from brainstorm to script to image prompts (NB2) to video prompts (VEO 3.1). 1 main skill + 2 utility skills + 1 agent + 23 reference documents as RAG knowledge base.
 
 **Core Value:** Anyone — video agencies, freelancers, brand owners — can produce professional 2-3 minute promotional videos by following the generated production plan.
+
+## Commands
+
+| Command | Description |
+|---------|-------------|
+| `/promo-engine` | Run end-to-end video promo pipeline (brainstorm → script → images → video) |
+| `/promo-validate` | Cross-file consistency checker across all 23 reference files |
+| `/promo-add-platform` | Scaffold new AI video platform support |
 
 ## Architecture
 
@@ -17,7 +25,7 @@ Claude Code plugin that generates complete promotional video production packages
 | `skills/promo-validate/SKILL.md` | Cross-file consistency checker |
 | `skills/promo-add-platform/SKILL.md` | Scaffold new video platform support |
 | `agents/promo-engine-agent.md` | Subagent for batch/complex promo work (6-phase pipeline) |
-| `reference/` | 22 reference docs read on-demand by skill/agent |
+| `reference/` | 23 reference docs read on-demand by skill/agent |
 | `README.md` | Repo README |
 | `LICENSE` | MIT license |
 
@@ -40,7 +48,7 @@ Claude Code plugin that generates complete promotional video production packages
 | `storytelling_script_gen/F10_Modular_Asset_and_AB_Testing.md` | Modular asset creation and A/B testing strategy |
 | `storytelling_script_gen/F11_Pattern_Interrupt_and_Retention.md` | Pattern interrupt techniques and retention optimization |
 
-#### Image & Video Production (7 files)
+#### Image & Video Production (8 files)
 
 | File | When Used |
 |------|-----------|
@@ -50,6 +58,7 @@ Claude Code plugin that generates complete promotional video production packages
 | `image-video-gen/03-workflow-pipeline.md` | NB2 → VEO pipeline — decision tree, handoff rules, extension chain, "Last Frame Secret" |
 | `image-video-gen/04-cinematography-lookup.md` | Emotion → complete setup mapping (lighting, lens, film stock, atmosphere, camera motion) |
 | `image-video-gen/05-creator-and-holidays.md` | Ali Sadikin as cast slot, cast-c{N} naming, holiday palettes, cultural context |
+| `image-video-gen/06-directing-and-performance.md` | Film directing grammar — 180° rule, gaze direction, blocking, vocal performance, continuity supervision |
 | `image-video-gen/project-instruction.md` | Image/video project instructions — critical rules, example workflows |
 
 #### Global Config & Bridge (3 files)
@@ -141,20 +150,13 @@ Phase 5: VIDEO PROMPTS (VEO)   → Output: video-prompts.md
 - **Video Model**: VEO 3.1 (primary, extensible to other platforms)
 - **Pipeline**: NB2 image → VEO First+Last Frame / Ingredients → VEO Extend
 
-### Audio Strategy (Two Scene Types)
+### Critical Audio Rules
 
-| Scene Type | Lip Sync | Dialogue | SFX | Music | Ambient |
-|------------|----------|----------|-----|-------|---------|
-| **Presenter/Talking Head** | YES | `Host says: [text]` (colon syntax) | YES | Optional | YES |
-| **B-Roll** | NO | Voiceover in background (NOT lip sync) | YES | YES (mandatory) | YES |
-
-**Critical Audio Rules:**
 - Audio is NEVER optional — unspecified = VEO guesses random sounds
-- VEO dialogue uses colon syntax: `[Character] says: text` — NEVER quotation marks
-- 3-6s dialogue sweet spot, 8-15 words per 8s clip
-- B-Roll voiceover = narration track, NOT lip-synced to character
+- Presenter scenes: `[Character] says: text` (colon syntax, NEVER quotation marks) — lip sync ON, face >30% frame
+- B-Roll scenes: `Voiceover:` NOT `says:` — no lip sync, music mandatory
 - Always add: `no subtitles, no audience sounds, no text overlays`
-- Face must be >30% of frame for lip sync to work
+- See `image-video-gen/02-veo-production-guide.md` for full audio specs and duration rules
 
 ### VEO 3.1 Mode Selection (Mutual Exclusivity)
 
@@ -176,71 +178,26 @@ Need consistent CHARACTER across shots?
 
 **CRITICAL: Ingredients ≠ First+Last Frame. They are MUTUALLY EXCLUSIVE. Pick ONE per generation.**
 
-### Scene Strategy (Auto-Calculated)
+### Key Technical Rules
 
-The engine auto-calculates optimal scene count from script beats:
-
-| Video Duration | Typical Scenes | Per Scene | Strategy |
-|---------------|---------------|-----------|----------|
-| 120s (2 min) | 8-12 scenes | 8-16s each | 1 gen + 0-1 extend |
-| 150s (2.5 min) | 10-14 scenes | 8-16s each | 1 gen + 0-1 extend |
-| 180s (3 min) | 12-16 scenes | 8-16s each | 1 gen + 0-2 extend |
-
-**Scene → VEO Mode Mapping:**
-| Scene Type | VEO Mode | Reason |
-|------------|----------|--------|
-| Hook (opening) | First+Last Frame | Controlled dramatic transition |
-| Presenter talking | Ingredients | Character consistency across shots |
-| B-Roll product | First+Last Frame | Show product state change |
-| B-Roll environment | First+Last Frame | Controlled camera movement |
-| Demo/walkthrough | Ingredients + Extend | Same character, continuous action |
-| Testimonial | Ingredients + Extend | Face consistency for lip sync |
-| CTA (closing) | First+Last Frame | Dramatic ending transition |
-| Multi-char dialogue | Ingredients | Character consistency, sequential lip sync |
-| Multi-char B-Roll | First+Last Frame | Controlled environment with multiple characters |
-| Same scene continuation | Extend | 720p, +7s per hop |
-| Different scene | New generation | New start/end frames needed |
-
-### VEO Technical Constraints
-
-| Param | Value | Notes |
-|-------|-------|-------|
-| Resolution | 720p (default), 1080p | 1080p = 8s clips only, CANNOT extend |
-| Aspect | 16:9, 9:16 | No 1:1 support |
-| Frame rate | 24fps | Fixed |
-| Duration | 4, 6, 8 seconds | 8s required for extensions |
-| Max extensions | +7s per hop, max 20 | ~148s total possible |
-| Reference images | Up to 3 | Asset or style type |
-| Prompt tokens | 1,024 max | Optimal: 100-150 words |
-
-**Resolution Rule:** Generate initial clip at **720p** if ANY extensions planned. 1080p only for final non-extendable clips.
-
-### NB2 Image Generation
-
-| Parameter | Range | Notes |
-|-----------|-------|-------|
-| CFG Scale | 5.0–7.0 | >8 = hyper-processed |
-| Denoise | 0.35–0.45 | >0.50 = structural hallucination |
-| Thinking Mode | Minimal (drafts) / High (final 4K) | High = ~35pt quality increase |
-| Max Resolution | Native 4K (4096×4096) | |
-| Aspect Match | NB2 ratio MUST match VEO target | Mismatch = edge hallucination |
-| Central 60% | Keep critical action in center | Cross-platform safety |
-
-**Prompt Formula:** `Subject/Material + Lighting Architecture + Camera/Lens + Campaign Context`
-
-**Identity Lock:** Track up to 5 characters + 14 objects per workflow (maps to cast system max 5 characters). Generate hero shot → reference sheet → inject via `@identity` tag. Each cast member uses `ref/cast-c{N}-face.png` as identity anchor.
+- **Resolution Rule:** Generate initial clip at **720p** if ANY extensions planned. 1080p = 8s only, CANNOT extend.
+- **NB2 aspect ratio MUST match VEO target** — mismatch = edge hallucination.
+- **NB2 Prompt Formula:** `Subject/Material + Lighting Architecture + Camera/Lens + Campaign Context`
+- Scene count auto-calculated from script beats. Scene → VEO mode mapping in `script-to-scene-bridge.md`.
+- VEO specs (resolution, duration, extensions, prompt limits) in `image-video-gen/02-veo-production-guide.md`.
+- NB2 parameters (CFG, denoise, thinking mode, identity lock) in `image-video-gen/01-nb2-image-generation.md`.
+- Cinematography defaults per content type in `image-video-gen/04-cinematography-lookup.md`.
 
 ### Cast System (Multi-Character)
 
-Replaces the single-creator model. Supports 1-5 characters per video.
+Supports 1-5 characters per video.
 
 - **Pemeran Utama** (main, 1-3): FULL identity lock — face + body + costume ref MANDATORY
 - **Pemeran Pendamping** (supporting, 0-2): PARTIAL identity lock — face ref MANDATORY, body/costume OPTIONAL
 - **Ali Sadikin preset**: Pre-configured profile that fills 1 Pemeran Utama cast slot
 - **Institution-aware costume**: Auto-detects institutional brand (KAI, Pelindo, BRI, etc.) and requires uniform reference images
-- **Cast profile storage**: `{project-folder}/cast-profile.md` with per-character reference phrases
-- **Reference images**: `{project-folder}/ref/` using naming convention `cast-c{N}-face.png`, `cast-c{N}-body.png`, `cast-c{N}-costume.png`
-- **Max characters**: 5 total (matches NB2 identity lock limit of 5 characters + 14 objects)
+- **Reference images**: `{project-folder}/ref/` — naming: `cast-c{N}-face.png`, `cast-c{N}-body.png`, `cast-c{N}-costume.png`
+- See `creator-profile-system.md` for full cast builder details and institution keyword list
 
 ### Language Selection
 
@@ -256,27 +213,11 @@ Pipeline starts with language choice (Phase 1 Step 1.0):
 
 ### Tone/Mood System
 
-Selected in Phase 1 Step 1.7b. Affects ALL subsequent phases.
-
-| Tone | Script Style | Lighting | Camera | Music | Expression |
-|------|-------------|----------|--------|-------|------------|
-| Humorous | Witty, puns | 2:1 bright | Wider, bouncy | Upbeat, quirky | Warm smile |
-| Serious | Weighty, stark | 4:1+ dramatic | Tight CU, slow | Orchestral | Stern, intense |
-| Professional | Precise, data | 2:1 clean | Steady, precise | Corporate | Confident |
-| Inspirational | Uplifting | 3:1 warm | Sweeping | Swelling strings | Hopeful |
-| Casual | Conversational | 2:1 natural | Handheld feel | Acoustic | Relaxed |
-| Edgy | Provocative | 6:1+ harsh | Dutch angles | Electronic | Intense |
-
-Full impact matrix in `global-promo-config.md` Section 13. Operational lookup in `script-to-scene-bridge.md` Section 10.
+Selected in Phase 1 Step 1.7b. 6 tones (Humorous / Serious / Professional / Inspirational / Casual / Edgy) that affect script style, lighting, camera, music, and expression across ALL subsequent phases. Full impact matrix in `global-promo-config.md` Section 13.
 
 ### User Storyline Input
 
-Phase 1 Step 1.7 offers 3 modes:
-- **Freeform input:** User pastes their storyline. AI maps it to the 7-beat arc, shows which beats are covered vs missing, and suggests additions for gaps.
-- **Brainstorm from scratch:** AI guides the user through pain points, USP, competitor landscape, and CTA via AskUserQuestion.
-- **Reference video:** User describes a video they like. AI extracts the narrative structure and adapts it to the user's product.
-
-The storyline feeds into Phase 2 (Script Generation) where it's refined into the full A/V script following the 7-beat arc and storytelling commandments.
+Phase 1 Step 1.7 offers 3 modes: **freeform** (user pastes storyline, AI maps to 7-beat arc), **brainstorm** (AI guides through pain points/USP/CTA), or **reference video** (user describes a video, AI extracts and adapts structure).
 
 ### Phase 3.5: Reference Image Validation Gate
 
@@ -298,75 +239,17 @@ Mandatory gate between Scene Breakdown (Phase 3) and Image Prompts (Phase 4).
 
 **No skip. No override. No "lanjut dulu."**
 
-### Institution-Aware Costume System
-
-Auto-detects if the product/brand is tied to a specific Indonesian institution and requires matching uniform reference images.
-
-**Detection:** Engine scans brand name + product description for keywords (KAI, Pelindo, BRI, PLN, Pertamina, Garuda, RS, TNI/Polri, Pos Indonesia, Damri, Telkom, BUMN generic) → confirms with user via AskUserQuestion → flags costume_type = "institutional"
-
-**Impact:** When institutional, ALL cast members in relevant scenes MUST have costume reference uploaded. NB2 prompts inject: "wearing official {institution} uniform as shown in reference image ref/cast-c{N}-costume.png"
-
 ### Cultural Location Research
 
-Web search performed in Phase 3.5 Step 3.5.2a for each unique video location.
+Phase 3.5 web searches 5 facts per location (license plates, ethnicity, landmarks, architecture, climate). Without this, AI generates generic visuals — wrong plate numbers, wrong ethnicity, wrong architecture. Results inject into NB2 environment prompts and VEO atmosphere. See `global-promo-config.md` Section 14.
 
-**5 Essential Facts per Location:**
-1. **Plat kendaraan** — license plate code (e.g., BM for Dumai, B for Jakarta)
-2. **Etnis dominan** — local ethnicity and physical characteristics
-3. **Landmark ikonik** — recognizable buildings, monuments, natural features
-4. **Arsitektur lokal** — traditional building style, materials, ornaments
-5. **Cuaca/musim** — climate, temperature range, seasonal phenomena
+**Brand logos MUST be user-provided** — AI cannot generate reliable logos. Ref image NB2 templates in `script-to-scene-bridge.md` Section 11.
 
-**Injection points:** NB2 environment prompts (architecture, plates, people), VEO scene prompts (atmosphere, ambient), script narasi (local terms).
-
-**Why this matters:** Without cultural research, AI generates generic Indonesian visuals — wrong plate numbers (B instead of BM), wrong ethnicity, wrong architecture. This causes immediate credibility loss with local audiences.
-
-### Ref Image Prompt Generation
-
-When user doesn't have reference images, Phase 3.5 Step 3.5.2b generates NB2 prompts.
-
-| Category | Can AI Generate? | Strategy |
-|----------|-----------------|----------|
-| Cast face | Yes | Portrait, neutral bg, clean lighting, ethnicity/features from cast-profile |
-| Cast body | Yes | Full body, wardrobe visible, neutral bg |
-| Cast costume | Partial | Uniform visible, but actual logos/badges described not generated |
-| Product | Partial | Works for digital products; physical products better photographed |
-| Environment | Yes | Cultural context from web search injected (architecture, plates, weather) |
-| Brand logo | **NO** | User MUST provide actual logo file — AI cannot generate reliable logos |
-
-Ref image NB2 defaults: neutral diffused lighting, clean bg, 4K, CFG 6.0, Denoise 0.40, Thinking High. Templates in `script-to-scene-bridge.md` Section 11.
-
-### Target Market Differentiation
-
-The script engine adapts tone, depth, and CTA based on target market:
-
-| Target | Tone | Depth | CTA Style | Video Style |
-|--------|------|-------|-----------|-------------|
-| **C-Level** | Strategic, ROI-focused | High-level business impact | "Schedule strategic briefing" | Cinematic, data overlays |
-| **VP/Director** | Operational, efficiency | Department-level impact | "Request team demo" | Professional, case studies |
-| **Manager** | Practical, workflow | Day-to-day improvements | "Start free trial" | Demo-heavy, before/after |
-| **Individual Contributor** | Technical, hands-on | Feature deep-dive | "Try it now" | Tutorial, screen captures |
-| **Social Media** | Emotional, punchy, Gen-Z | Surface + hook | "Comment [WORD]" | Fast cuts, pattern interrupts |
-
-### Storytelling Core Axiom
+### Storytelling Core Rules
 
 **Product is NEVER the hero. Product is the BRIDGE. Customer is the hero. Brand is the guide.**
 
-### 7-Beat Universal Arc (Mandatory)
-
-| Beat | Timing | Purpose |
-|------|--------|---------|
-| Pattern Interrupt | 0–1.7s | Stop the scroll |
-| Hook | 1.7–5s | Promise value |
-| Foreshadow | 5–8s | Create anticipation |
-| Agitate | 8–15s | Deepen the problem |
-| Guide + Plan | 15–40s | Present solution |
-| Peak | 60–75% mark | Emotional climax |
-| CTA | Post-peak | Convert attention |
-| Won Day | Final frame | Future-state visualization |
-
-### 8 Scriptwriting Commandments (Cannot Be Overridden)
-
+8 Commandments (cannot be overridden):
 1. NEVER open with company name or logo
 2. NEVER use jargon without immediate translation
 3. Every feature MUST have a human consequence
@@ -376,155 +259,17 @@ The script engine adapts tone, depth, and CTA based on target market:
 7. CTA must be specific, time-bound, and low-friction
 8. The first 3 seconds determine everything
 
-### Rejection Signals (22 Structural Failure Patterns)
-
-The script engine auto-checks for 22 failure patterns including:
-- Feature listing without human consequence
-- Generic stock footage descriptions
-- Missing emotional beats
-- CTA without specificity
-- Opening with brand name
-- Jargon without translation
-- See `storytelling_script_gen/project-instruction.md` for full list
-
-### Interactive Flow (AskUserQuestion)
-
-Every phase uses `AskUserQuestion` for user interaction:
-
-**Phase 1 (Brainstorm + Cast Builder):**
-- "Bahasa apa yang mau digunakan?" → Bahasa Indonesia / English / Bilingual
-- "What product/service is this video for?"
-- "Do you have technical documentation to upload?"
-- "How many characters in this video?" → 1-5, with role assignment (Pemeran Utama / Pemeran Pendamping)
-- "Is this tied to a specific institution?" → auto-detected from brand name, confirmed with user
-- "Who is the target audience?" → C-Level / Manager / Social Media / etc.
-- "What's the awareness level?" → Unaware / Problem-Aware / Solution-Aware / Product-Aware / Most-Aware
-- "What's the core emotional transformation?" → options based on product category
-- "Apakah kamu punya ide storyline?" → Ya (paste) / Brainstorm dari nol / Referensi video
-- "Apa tone/mood video?" → Humorous / Serious / Professional / Inspirational / Casual / Edgy
-
-**Phase 2 (Script):**
-- Present script with A/V table
-- "Approve this script?" → Approve / Revise (specify) / Start over
-
-**Phase 3 (Scene Breakdown):**
-- Present scene plan with VEO modes
-- "Approve scene plan?" → Approve / Adjust scenes / Change VEO modes
-
-**Phase 3.5 (Reference Collection):**
-- Present ref-manifest.md checklist (5 categories)
-- "Cultural context akurat?" → Akurat / Perlu koreksi / Tambah lokasi
-- "Mau NB2 prompt untuk missing refs?" → Ya semua / Pilih / Tidak
-- "Upload all required reference images to {project}/ref/"
-- Engine validates 100% — HARD BLOCK until all refs present
-
-**Phase 4 (Image Prompts):**
-- Present NB2 prompts per scene
-- "Approve image prompts?" → Approve / Revise specific scenes
-
-**Phase 5 (Video Prompts):**
-- Present VEO prompts with audio specs
-- "Final approval?" → Approve / Revise
-
-### Extension Strategy for Same-Scene Continuity
-
-When a scene needs more than 8s (same location, continuous action):
-1. Generate initial clip at **720p** (mandatory for extend)
-2. Hold pose/camera movement for final 0.5s
-3. Extension prompt: `"Continue from previous clip. [New action]. Camera continues [same movement]. Maintain lighting, environment, character. Audio continues: [same ambient]. No subtitles."`
-4. Monitor for identity drift across extensions
-5. Maximum 20 extensions (~148s) per chain
-
-### Scene Transition Strategy
-
-When switching to a different scene:
-1. Generate NEW start frame + end frame in NB2
-2. Both frames must share: same aspect ratio, same lighting Kelvin, same color palette, same wardrobe, same lens
-3. Use transition end instruction in previous scene's VEO prompt
-4. **"Last Frame Secret"**: Export final frame of Clip A → feed into NB2 as reference for Clip B's start frame (preserves grading, position, lighting)
-
-### Cinematography Defaults per Content Type
-
-| Content | Shot | Lens | Lighting | Ratio | Atmosphere |
-|---------|------|------|----------|-------|------------|
-| Hook | CU/MCU | 85mm | Rembrandt 4:1 | 4:1 | Light haze |
-| Explanation | MCU/MS | 50mm | Loop 2:1 | 2:1 | Clean |
-| Demo | MS/MWS | 35mm | Soft 2:1 | 2:1 | Clean |
-| Testimonial | MCU | 85mm | Butterfly 2:1 | 2:1 | Clean |
-| CTA | CU | 85mm | Rembrandt 4:1 | 4:1 | Light haze |
-| B-roll product | Various | 50-100mm | Soft commercial | — | Minimal |
-| B-roll environment | WS/EWS | 24-35mm | Natural | — | Atmospheric |
-
-## Capabilities
-
-1. **Brainstorm & Discovery** — interactive AskUserQuestion flow, tech doc upload, target market selection, awareness routing
-2. **Script Generation** — 2-3 min A/V script with 7-beat arc, beat labels, timing, narration, audio direction
-3. **Scene Breakdown** — auto-calculated scene count, VEO mode per scene, extension strategy, duration allocation
-4. **Asset Library Generation (Phase 4A)** — atoms: cast, vehicles, objects, products, product closeups, environments, UI composites with dependency graph
-5. **Scene Keyframe Generation (Phase 4B)** — molecules composed FROM Phase 4A assets, no text-only descriptions for recurring elements
-6. **VEO 3.1 Video Prompts** — per-scene prompts with camera movement, audio 3-layer, lip sync, extension prompts
-7. **Target Market Adaptation** — C-Level / VP / Manager / IC / Social Media tone and CTA differentiation
-8. **Awareness Level Routing** — 5 levels route to different narrative strategies
-9. **Multi-Character Cast System** — 1-5 characters with Pemeran Utama/Pendamping roles, per-character identity lock
-10. **Reference Image Validation Gate** — Phase 3.5 hard block, auto-derive manifest from scene plan
-11. **Institution-Aware Costume** — auto-detect Indonesian institutions, require uniform reference images
-12. **Language Selection** — Bahasa Indonesia, English, or Bilingual for narration/dialogue
-13. **Tone/Mood System** — 6 tones affecting cinematography, audio, expression across pipeline
-14. **Cultural Location Research** — web search for license plates, ethnicity, landmarks, architecture, weather
-15. **Ref Image Prompt Generation** — batch NB2 prompts for missing reference images with cultural context
-16. **Recurring Element Auto-Detection** — any visual element in 2+ scenes → standalone asset first
-17. **Dynamic Tier Assignment** — composites auto-assigned tier = max(sub-elements) + 1
-18. **Ref Folder Auto-Scan** — maps existing user photos before generating, user photo = ground truth
-19. **Aspect Ratio Triple Enforcement** — first line, TECHNICAL, last line in every NB2 prompt
-20. **UI Text Localization** — on-screen text in target language, technical abbreviations stay English
-21. **Product Closeup Enforcement** — mandatory product texture reference, user photo preferred
-22. **Location Photo Enforcement** — mandatory location reference per unique location
-23. **Output Filename Convention** — explicit `Output →` line per NB2 prompt
-24. **Ref-to-Prompt Body Binding** — every ref in upload table → matching injection line in prompt
-25. **Climate-Aware Costume Check** — cross-check costume vs location climate
-26. **Production Plan** — full production plan with storyboard notes, checklists (--full mode)
-27. **Copy-Paste Prompts** — direct NB2/VEO prompts ready for platform (--quick mode)
-28. **Platform Extensibility** — add new video AI platforms via /promo-add-platform skill
-29. **Cross-File Validation** — consistency checker across all 22 reference files
+22 rejection signals auto-checked — see `storytelling_script_gen/project-instruction.md`. Target market adaptation in `F1_Audience_Psychology_Matrix.md`. 7-beat arc and awareness routing in `F2` and `F8`.
 
 ## Technical Defaults
 
-> All configurable values are in `reference/global-promo-config.md`. This table shows setting NAMES.
-
-| Setting | Source |
-|---------|--------|
-| Default language | Per global-promo-config.md `default_language` |
-| Video aspect ratio | Per global-promo-config.md `video_aspect_ratio` |
-| Video resolution | Per global-promo-config.md `video_resolution` |
-| Image resolution | Per global-promo-config.md `image_resolution` |
-| Film stock | Per global-promo-config.md `film_stock` |
-| Color temp | Per global-promo-config.md `color_temp` |
-| NB2 CFG Scale | Per global-promo-config.md `nb2_cfg` |
-| NB2 Denoise | Per global-promo-config.md `nb2_denoise` |
-| VEO duration | Per global-promo-config.md `veo_duration` |
-| VEO audio quality | Per global-promo-config.md `veo_audio_quality` |
-| Output mode | Per global-promo-config.md `output_mode` (full/quick) |
-| Ali Sadikin preset | Per global-promo-config.md `ali_preset_available` |
-| Max cast members | Per global-promo-config.md `max_cast` |
-| Cast ref requirements | Per global-promo-config.md Section 7 |
-| Ref naming convention | Per global-promo-config.md Section 11 |
-| Institution keywords | Per global-promo-config.md Section 12 |
-| Ref validation mode | Per global-promo-config.md `ref_validation_mode` |
-| Narration language | Per user selection in Step 1.0 |
-| Video tone | Per user selection in Step 1.7b |
-| Cultural search facts | Per global-promo-config.md Section 14 |
-| Ref prompt NB2 defaults | Per global-promo-config.md Section 15 |
-| Tone impact matrix | Per global-promo-config.md Section 13 |
+All configurable values live in `reference/global-promo-config.md` — single source of truth. Includes: resolution, aspect ratio, film stock, NB2 CFG/denoise, VEO duration, cast limits, ref naming conventions, institution keywords, tone impact matrix, and cultural search settings.
 
 ## Conventions for Contributors
 
-### Changing a Global Setting
-1. Edit `reference/global-promo-config.md` — single source of truth
+### Changing Any Setting (Global, Cast, Tone, etc.)
+1. Edit `reference/global-promo-config.md` — single source of truth (cast = Section 7)
 2. No need to edit other files — they all reference global-promo-config.md
-
-### Changing a Cast Setting
-1. Edit `reference/global-promo-config.md` Section 7 — single source of truth
-2. No need to edit other files — they reference global-promo-config.md
 
 ### Adding a New Reference File
 1. Create `.md` file in `reference/`
@@ -575,7 +320,7 @@ When switching to a different scene:
 | Wrong ethnicity for local extras | Cultural context missing — check strategic-brief.md Cultural Context, inject into NB2 |
 | AI-generated logo looks wrong | Logo generation unreliable — brand logo MUST be user-provided, not AI-generated |
 | Storyline missing beats | User input incomplete — Step 1.7 maps to 7-beat arc, AI suggests missing beats |
-| Cross-file drift | Run `/promo-validate` — checks all 22 reference files for consistency |
+| Cross-file drift | Run `/promo-validate` — checks all 23 reference files for consistency |
 | Same element looks different across scenes | Recurring element not generated as standalone asset — auto-detect from av-script.md, generate in Phase 4A first |
 | Gate/facility hallucinated wrong | No user photo used — auto-scan ref/ folder, existing photos = ground truth, NEVER override with text description |
 | Product texture completely wrong | No product closeup reference — user photo mandatory (AI generates wrong species/shape for commodities like cangkang) |
@@ -589,5 +334,5 @@ When switching to a different scene:
 
 ---
 
-**Version:** 1.3.0
+**Version:** 1.5.0
 **Last Updated:** March 2026

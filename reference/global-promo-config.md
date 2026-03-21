@@ -447,6 +447,45 @@ STEP 1: EXTRACT all visual elements from every scene
     EXTRACT: characters, vehicles, objects, products, locations, branding, UI screens
     STORE: element_name → [list of scene numbers where it appears]
 
+STEP 1.5: CLASSIFY element type using keyword heuristics
+  FOR each extracted element:
+    SCAN description text for classification keywords:
+
+    CHARACTER keywords → cast asset:
+      person name, role title (driver, operator, manager, buyer),
+      "karakter", "pemeran", pronouns referring to named character
+
+    VEHICLE keywords → vehicle asset:
+      truk, mobil, motor, kapal, forklift, bus, van, pickup,
+      brand+model (Hino, Isuzu, Toyota), "kendaraan"
+
+    OBJECT/PROP keywords → object asset:
+      helm, clipboard, laptop, smartphone, HP, tablet, radio,
+      alat, peralatan, display, timbangan, scanner, printer
+
+    PRODUCT keywords → product asset:
+      product name (from strategic-brief.md), "produk", "barang",
+      commodity names (CPO, cangkang, kelapa sawit, batu bara)
+
+    ENVIRONMENT keywords → environment asset:
+      pelabuhan, kantor, gudang, jalan, gate, gerbang, dermaga,
+      pabrik, tambang, lapangan, toko, restoran, location names
+
+    BRAND/LOGO keywords → brand asset (USER-PROVIDED ONLY):
+      logo, merk, brand, ikon, "icon aplikasi", "app icon",
+      company name, institutional emblem, signage, papan nama
+
+    UI/SCREEN keywords → UI composite asset:
+      dashboard, layar, monitor, CCTV, ANPR, display screen,
+      "tampilan aplikasi", "UI", notification, alert
+
+  IMPORTANT: One description may contain MULTIPLE elements.
+    "Driver membawa truk Hino melewati gate pelabuhan"
+    → CHARACTER: driver (c2)
+    → VEHICLE: truk Hino
+    → ENVIRONMENT: gate pelabuhan
+    = 3 separate elements extracted from 1 visual description
+
 STEP 2: IDENTIFY recurring elements (appear 2+ times)
   FOR each element:
     IF appearance_count >= 2:
@@ -455,6 +494,27 @@ STEP 2: IDENTIFY recurring elements (appear 2+ times)
     IF appearance_count == 1:
       → Can be described inline in scene keyframe (Phase 4B)
       → BUT if user has a reference photo, still use it
+
+STEP 2.5: APPLY standalone vs inline decision framework
+  ALWAYS STANDALONE (even if only 1 appearance):
+    - Any cast member face (identity anchor — consistency is paramount)
+    - Any brand logo / app icon / institutional emblem (user-provided only)
+    - Any product that is the VIDEO'S SUBJECT (even if shown once)
+    - Any element the user uploaded a photo for in ref/
+
+  STANDALONE (2+ appearances):
+    - Vehicles with specific identity (red Hino truck, not "a truck")
+    - Props that must look identical across scenes (specific phone, helmet, tool)
+    - Environments that appear in multiple scenes (same gate, same office)
+    - UI screens / digital displays (composite, needs sub-elements)
+
+  INLINE OK (1 appearance, no identity requirement):
+    - Generic background elements (a crowd, generic cars in traffic)
+    - One-time props with no specific identity (a glass of water, a pen)
+    - Atmospheric elements (rain, fog, dust — unless they must match across scenes)
+
+  WHEN IN DOUBT → make it standalone. Cost of unnecessary asset = low.
+  Cost of inconsistent element across scenes = viewer notices immediately.
 
 STEP 3: DETECT sub-element dependencies
   FOR each asset prompt:
@@ -531,10 +591,43 @@ Within each tier, items can be generated in parallel. NEVER start a tier before 
 
 ### Validation Gate (Per Tier)
 
-Before advancing to the next tier:
-- Verify ALL images in current tier are generated/uploaded
-- Verify identity consistency (face matches across face → body → costume chain)
-- Verify recurring elements match across their standalone asset and any scene they appear in
+Before advancing to the next tier, verify EACH item in this checklist:
+
+```
+VALIDATION CHECKLIST (per tier):
+
+□ COMPLETENESS: ALL assets in current tier are generated or uploaded
+  → Count expected assets vs actual files in ref/
+  → If any missing: BLOCK advancement, list missing assets
+
+□ IDENTITY CONSISTENCY: Face matches across the identity chain
+  → Compare face ref → body ref → costume ref for each cast member
+  → Same person? Same features? Same skin tone? Same glasses?
+  → If drift detected: regenerate downstream asset (body/costume), NOT face
+
+□ RECURRING ELEMENT MATCH: Same asset looks identical where referenced
+  → Vehicle ref matches in ALL scene keyframes that use it
+  → Environment ref matches in ALL scene keyframes at that location
+  → Product ref matches in ALL scene keyframes showing it
+
+□ REF-TO-PROMPT BINDING: Every ref in upload table has matching injection
+  → For each ref listed in "Required Reference Images" table of a prompt:
+    SEARCH prompt body for injection phrase containing that ref filename
+    If ref is listed but NOT injected in body → FIX prompt body
+  → Injection phrase pattern: "from reference image: ref/{filename}"
+
+□ LOGO/BRAND VERIFICATION: Brand assets are user-provided, not AI-generated
+  → If ref/brand-*.png exists → verify it appears in ALL prompts showing brand
+  → If ref/brand-*.png missing → HARD BLOCK, ask user to provide
+
+□ NO TEXT-ONLY DESCRIPTIONS: If asset ref exists, prompt uses it
+  → SEARCH each scene keyframe prompt for text descriptions of elements
+    that already have a standalone asset
+  → If found: replace text description with ref injection
+  → Example: "red Hino dump truck" in scene prompt → WRONG if ref/vehicle-truck-hino.png exists
+    → Replace with: "match exact truck from reference image: ref/vehicle-truck-hino.png"
+```
+
 - If any ref fails quality check → regenerate THAT ref only (don't cascade)
 
 ### Example: Pelindo Port Video (3 Characters, Truck, ANPR)
@@ -630,6 +723,8 @@ Without auto-scan:
 | 2 | AI-generated asset exists from Phase 4A | Reference it in Phase 4B keyframes |
 | 3 | No ref exists, element appears 2+ times | Generate standalone asset in Phase 4A FIRST |
 | 4 | No ref exists, element appears 1 time | Can describe inline BUT ask user if they have a photo |
+
+> **Cross-reference:** For visual continuity rules, pre-Phase 4A inventory template, and Continuity Supervisor mindset, see `image-video-gen/06-directing-and-performance.md` Section 7.
 
 ---
 

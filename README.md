@@ -62,7 +62,7 @@ Starts the full interactive pipeline. The engine asks questions, generates outpu
 ### Utility Skills
 
 ```
-/promo-validate        # Cross-file consistency checker (22 reference files)
+/promo-validate        # Cross-file consistency checker (23 reference files)
 /promo-add-platform    # Scaffold support for a new AI video platform
 ```
 
