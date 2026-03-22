@@ -81,7 +81,8 @@ Phase 1: BRAINSTORM          → Output: strategic-brief.md + cast-profile.md
   ├─ Cast builder (1-5 characters, Utama/Pendamping roles)
   ├─ Institution detection + costume confirmation
   ├─ Product discovery + tech doc upload
-  ├─ **Domain Deep Research (5 WebSearch queries — process, equipment, roles, workspace, product)**
+  ├─ **Location & setting context (city, country, setting type)**
+  ├─ **Domain Deep Research (6 location-aware WebSearch queries)**
   ├─ Target market, awareness level, platform selection
   ├─ Emotional core discovery
   ├─ Storyline input (user freeform / brainstorm / reference) + 7-beat arc mapping
@@ -196,23 +197,30 @@ Need consistent CHARACTER across shots?
 - NB2 parameters (CFG, denoise, thinking mode, identity lock) in `image-video-gen/01-nb2-image-generation.md`.
 - Cinematography defaults per content type in `image-video-gen/04-cinematography-lookup.md`.
 
-### Domain Deep Research (MANDATORY — Step 1.2c)
+### Location & Domain Deep Research (MANDATORY — Steps 1.2c + 1.2d)
 
-AI is blind about specific product domains. Without domain knowledge, AI generates wrong machines, wrong processes, wrong operator actions, wrong equipment. Example: for "SMT production line," AI generates random factory scenes instead of actual pick-and-place machines, reflow ovens, and AOI inspection stations.
+AI is blind about specific product domains, AND domains are **location-specific**. RS Indonesia ≠ RS USA ≠ RS Japan. Factory di Cikarang ≠ Factory di Shenzhen. Same domain, completely different visuals — architecture, equipment brands, uniforms, signage, safety standards.
 
-**Protocol:** After product discovery (Step 1.2), use WebSearch to build domain knowledge:
+**Step 1.2c: Location Context** — Confirm location/setting BEFORE domain research:
+- City/region, country, setting type (factory/hospital/port/office), indoor/outdoor
+
+**Step 1.2d: Domain Deep Research** — 6 location-qualified WebSearch queries:
 
 | # | Query | Purpose |
 |---|-------|---------|
-| 1 | `{domain} production process workflow step by step` | Process flow |
-| 2 | `{domain} equipment machines what they look like` | Equipment visuals |
-| 3 | `{domain} operator roles daily workflow` | Human actions, PPE, tools |
-| 4 | `{domain} factory floor layout typical setup` | Workspace environment |
-| 5 | `{product_name} product interface screenshots features` | Product appearance |
+| 1 | `{domain} in {country} production process workflow` | Local process flow |
+| 2 | `{domain} {country} equipment machines brands commonly used` | Local equipment brands |
+| 3 | `{domain} {country} worker roles uniforms PPE requirements` | Local workforce, dress norms |
+| 4 | `{domain} {location} facility layout photos` | Local architecture, interior |
+| 5 | `{product_name} product interface dashboard features` | Product appearance |
+| 6 | `{domain} {country} regulations standards signage` | Local safety signage, certifications |
 
-Output saved to `strategic-brief.md` > Domain Knowledge section. Feeds into ALL subsequent phases. Every NB2/VEO prompt depicting domain-specific content includes `DOMAIN CONTEXT:` line.
+Output saved to `strategic-brief.md` > Domain Knowledge section with **Local Differentiators** table (generic AI default vs actual local reality). Every NB2/VEO prompt includes `DOMAIN CONTEXT:` line with location-specific details.
 
-**HARD RULE:** Domain research MUST complete before Phase 2 (Script). Script without domain knowledge = inaccurate terminology, wrong visuals, implausible actions.
+**HARD RULES:**
+- Location MUST be confirmed before domain research begins
+- Domain research MUST complete before Phase 2 (Script)
+- Domain research + cultural research (Step 3.5.2a) are COMPLEMENTARY
 
 See `global-promo-config.md` Section 24.
 

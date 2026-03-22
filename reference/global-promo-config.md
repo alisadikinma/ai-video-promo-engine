@@ -1038,57 +1038,84 @@ AFTER cultural research (Step 3.5.2a) completes:
 
 ---
 
-## 24. Domain Deep Research (MANDATORY)
+## 24. Location & Domain Deep Research (MANDATORY)
 
 ### Problem
 
-AI is blind about specific product domains. Without deep domain knowledge, AI generates:
-- Wrong machines (generic "factory machine" instead of specific SMT pick-and-place)
-- Wrong processes (skips steps, invents nonexistent steps)
-- Wrong operator actions (workers pose instead of performing actual tasks)
-- Wrong equipment (random controls, wrong displays, wrong tool usage)
-- Wrong workspace (generic "clean room" instead of actual production floor layout)
+AI is blind about specific product domains AND domains are location-specific. A hospital in Indonesia looks completely different from one in the US or China. A factory in Cikarang differs from one in Shenzhen. Without **location-aware** domain knowledge, AI generates:
+- Wrong machines (US brands instead of locally-used equipment)
+- Wrong processes (Western workflow instead of local practice)
+- Wrong operator actions (Western PPE norms instead of local standards)
+- Wrong architecture (generic Western building instead of local construction style)
+- Wrong signage (English instead of Bahasa, wrong safety standard marks)
+- Wrong uniforms (Western scrubs instead of local hospital uniforms with jilbab)
+
+### Why Location Changes Everything
+
+| Domain | Generic AI Default | Indonesia Reality | Japan Reality | US Reality |
+|--------|-------------------|-------------------|---------------|------------|
+| Hospital | US-style ER | Lorong lebar, tile floors, jilbab nurses, Bahasa signage | Minimalis, kanji signs, tatami-influence | Large campus, English, scrubs + sneakers |
+| Factory | Clean Western factory | K3 safety signs, batik Fridays, local brands | 5S methodology, Japanese equipment | OSHA signage, American brands |
+| Port | Generic container terminal | Pelindo-style, BM plates, Melayu workers | Automated Japanese terminals | Union labor, English signage |
 
 ### When to Execute
 
-**Step 1.2c** — immediately after product/service discovery, BEFORE target market selection or scripting.
+1. **Step 1.2c: Location** — collect location/setting FIRST
+2. **Step 1.2d: Domain Research** — execute location-aware research queries
 
-### Research Protocol (5 Mandatory Queries)
+Both BEFORE target market selection or scripting.
+
+### Research Protocol (6 Mandatory Queries — ALL Location-Qualified)
 
 | # | Query Template | Purpose | Output |
 |---|---------------|---------|--------|
-| 1 | `{domain} production process workflow step by step` | Process flow | Ordered list of steps with equipment at each |
-| 2 | `{domain} equipment machines what they look like` | Equipment visuals | Size, color, shape, displays, distinguishing features |
-| 3 | `{domain} operator roles daily workflow` | Human actions | Who does what, PPE, tools, typical body positions |
-| 4 | `{domain} factory floor layout typical setup` | Workspace | Layout, flooring, lighting, signage, safety markings |
-| 5 | `{product_name} product interface screenshots features` | Product visuals | Screens, UI, physical form, in-use appearance |
+| 1 | `{domain} in {country} production process workflow` | Local process flow | How this domain operates IN THIS LOCATION |
+| 2 | `{domain} {country} equipment machines brands commonly used` | Local equipment | What brands/models are actually used locally |
+| 3 | `{domain} {country} worker roles uniforms PPE requirements` | Local workforce | Local PPE standards, dress norms, cultural dress |
+| 4 | `{domain} {location} facility layout photos` | Local facility | Architecture style, building materials, interior norms |
+| 5 | `{product_name} product interface dashboard features` | Product visuals | Actual product appearance in use |
+| 6 | `{domain} {country} regulations standards signage` | Local regulations | Safety signage language, certification marks, warning colors |
 
 ### Domain Knowledge Output Template
 
 Save to `strategic-brief.md` > Domain Knowledge section:
 
 ```markdown
-### Domain Knowledge — {domain}
+### Domain Knowledge — {domain} in {location}, {country}
 
-#### Process Flow
-1. {step_1}: {equipment} → {output}
-2. {step_2}: {equipment} → {output}
-...
+#### Location Context
+| Setting | Detail |
+|---------|--------|
+| Country | {country} |
+| City/Region | {city} |
+| Setting type | {factory/hospital/port/office/outdoor} |
+| Indoor/Outdoor | {indoor/outdoor/both} |
+| Local regulations | {K3, ISO, BPOM, JCI, OSHA, etc.} |
 
-#### Key Equipment Visual Reference
-| Equipment | Appearance | Size | Typical Color | Key Visual Feature |
-|-----------|-----------|------|---------------|-------------------|
+#### Process Flow (as practiced locally)
+1. {step_1}: {local_equipment} → {output}
+2. {step_2}: {local_equipment} → {output}
 
-#### Operator Roles & Actions
-| Role | Typical Action | PPE/Uniform | Tools/Equipment |
-|------|---------------|-------------|-----------------|
+#### Key Equipment Visual Reference (Local Brands/Models)
+| Equipment | Local Brand/Model | Appearance | Key Visual Feature |
+|-----------|------------------|-----------|-------------------|
 
-#### Workspace Environment
-| Element | Description | Visual Details |
-|---------|------------|----------------|
+#### Operator Roles & Actions (Local Workforce)
+| Role | Typical Action | Local PPE/Uniform | Tools/Equipment |
+|------|---------------|-------------------|-----------------|
+
+#### Workspace Environment (Location-Specific)
+| Element | Local Standard | Visual Details |
+|---------|---------------|----------------|
+| Signage | {Bahasa/English/bilingual} | {K3 signs, safety colors} |
+| Architecture | {local style} | {building materials, ceiling, ventilation} |
 
 #### Product Visual Reference
-{what the actual product looks like in use}
+{what the actual product looks like in this local context}
+
+#### Local Differentiators (vs generic AI default)
+| Aspect | Generic AI Default | Actual Local Reality |
+|--------|-------------------|---------------------|
 ```
 
 ### Injection Points
@@ -1097,27 +1124,31 @@ Domain knowledge feeds into ALL subsequent phases:
 
 | Phase | What Domain Knowledge Affects |
 |-------|------------------------------|
-| Phase 2 (Script) | Accurate terminology, plausible character actions, correct process descriptions |
-| Phase 3 (Scene Plan) | Realistic scene settings, correct equipment in each scene |
-| Phase 4A (Asset Library) | Accurate equipment descriptions in NB2 prompts, correct operator PPE |
-| Phase 4B (Scene Keyframes) | NB2 prompts reference domain-accurate details, correct workspace layout |
-| Phase 5 (Video Prompts) | VEO prompts with realistic ambient sounds, plausible motion descriptions |
+| Phase 2 (Script) | Accurate local terminology, plausible actions, correct process descriptions |
+| Phase 3 (Scene Plan) | Realistic local scene settings, correct local equipment per scene |
+| Phase 3.5 (Cultural Research) | Domain research + cultural research COMBINE for full location accuracy |
+| Phase 4A (Asset Library) | Local equipment descriptions in NB2, correct local PPE/uniforms |
+| Phase 4B (Scene Keyframes) | NB2 prompts reference domain + location details, local workspace layout |
+| Phase 5 (Video Prompts) | VEO prompts with locally-accurate ambient sounds, plausible motion |
 
 ### How to Use in Prompts
 
-Every NB2/VEO prompt that depicts domain-specific content MUST reference the Domain Knowledge section:
+Every NB2/VEO prompt depicting domain-specific content MUST include `DOMAIN CONTEXT:` line with location-qualified details:
 
 ```
-DOMAIN CONTEXT: {relevant domain detail from strategic-brief.md Domain Knowledge}
+DOMAIN CONTEXT: {equipment/process from Domain Knowledge — location-specific description}
 ```
 
 Examples:
-- NB2 prompt for SMT scene: `DOMAIN CONTEXT: Pick-and-place machine — large white/gray unit with conveyor belt feeding PCBs, multiple nozzle heads visible, operator monitors via attached display screen.`
-- VEO prompt for port scene: `DOMAIN CONTEXT: Container gantry crane — blue/red painted, moves on rail tracks along quay, operator cabin at top, spreader locks onto container corners.`
+- Indonesia SMT: `DOMAIN CONTEXT: Yamaha YSM20R pick-and-place machine (common in Indonesian SMT lines) — white body, green conveyor belt, Japanese-brand nozzle heads, K3 safety sticker on side panel.`
+- Indonesia hospital: `DOMAIN CONTEXT: Ruang IGD RS tipe B Indonesia — lorong ubin putih 3m lebar, AC split wall-mount, papan petunjuk Bahasa Indonesia, perawat berjilbab, bed stainless steel lokal.`
+- US warehouse: `DOMAIN CONTEXT: Amazon-style fulfillment center — concrete floors with yellow safety lines, Crown forklifts, OSHA signage in English, workers in high-vis vests + steel-toe boots.`
 
 ### Validation
 
-- Domain research MUST complete before Phase 2 begins
-- User MUST validate domain knowledge accuracy (Step 1.2c approval gate)
+- Location MUST be confirmed before domain research begins (Step 1.2c)
+- Location-aware domain research MUST complete before Phase 2 begins (Step 1.2d)
+- User MUST validate domain knowledge accuracy (Step 1.2d approval gate)
 - If user corrects domain info → update strategic-brief.md immediately
-- Every scene depicting domain-specific equipment/process → prompt must include `DOMAIN CONTEXT:` line
+- Every scene depicting domain-specific content → prompt must include `DOMAIN CONTEXT:` line
+- Domain research + cultural research (Step 3.5.2a) are COMPLEMENTARY — domain = industry knowledge, cultural = geographic/ethnic/architectural details

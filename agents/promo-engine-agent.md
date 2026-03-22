@@ -27,7 +27,7 @@ You generate production-ready output for:
 20. **UI text localization** — on-screen text in narration language, technical abbreviations stay English
 21. **Product closeup + location photo enforcement** — mandatory references with user photo preference
 22. **Climate-aware costume check** — cross-check costume vs location climate after cultural research
-23. **Domain deep research** — WebSearch the product domain BEFORE scripting (Step 1.2c). 5 queries: process flow, equipment visuals, operator roles, workspace layout, product interface. Domain Knowledge feeds into ALL phases.
+23. **Location-aware domain research** — Confirm location (Step 1.2c), then WebSearch `{domain} in {location}` BEFORE scripting (Step 1.2d). 6 queries: local process, local equipment brands, local workforce/PPE, local facility, product interface, local regulations. Domain knowledge is location-specific.
 
 ## REFERENCE FILES
 
@@ -110,7 +110,8 @@ You generate production-ready output for:
 34. **Scene Logic Realism (7-point)** — environment accuracy, behavior realism, data consistency, uniform ranks, explicit negatives, ref photos, timeline/shift. See `script-to-scene-bridge.md` Section 7B.
 35. **Character portrait-first** — any character in 2+ scenes → standalone face portrait in Phase 4A FIRST. Text-only = different faces.
 36. **Narrative arc consistency** — every prompt has `NARRATIVE CONTEXT:` block: connections, visual breadcrumbs, cause-effect, shared env refs. See `script-to-scene-bridge.md` Section 7C.
-37. **Domain deep research (MANDATORY)** — WebSearch the product domain BEFORE scripting (Step 1.2c). 5 queries: process flow, equipment visuals, operator roles, workspace layout, product interface. Without domain knowledge, AI generates wrong machines/processes/actions. See `global-promo-config.md` Section 24.
+37. **Location context first** — Location MUST be confirmed (Step 1.2c) before domain research. Same domain looks completely different by country.
+38. **Domain deep research (MANDATORY, location-aware)** — WebSearch `{domain} in {location}` (Step 1.2d). 6 location-qualified queries. See `global-promo-config.md` Section 24.
 
 ## WORKFLOW
 
@@ -119,7 +120,8 @@ Follow the 6-phase pipeline exactly as defined in `skills/promo-engine/SKILL.md`
 1. **Phase 1: Brainstorm** → strategic-brief.md + cast-profile.md
    - Step 1.0: Language selection (Bahasa Indonesia / English / Bilingual)
    - Steps 1.1-1.2b: Cast, product, institution detection
-   - **Step 1.2c: Domain Deep Research** (MANDATORY — 5 WebSearch queries about product domain)
+   - **Step 1.2c: Location & Setting Context** (MANDATORY — confirm location before domain research)
+   - **Step 1.2d: Domain Deep Research** (MANDATORY — 6 location-aware WebSearch queries)
    - Steps 1.3-1.6: Market, awareness, platform, emotional core
    - Step 1.7: Storyline input (user freeform, brainstorm, or reference) + 7-beat arc mapping
    - Step 1.7b: Tone/mood selection (6 options)

@@ -185,15 +185,17 @@ Run 22 automated consistency checks across all operational files. Reports PASS/F
 4. Search SKILL.md for "Narrative arc consistency" — must exist in hard rules
 5. Search agent.md for "Narrative arc" — must exist in hard rules
 
-### Check 22: Domain Deep Research
-**Pattern:** Domain research step in pipeline before scripting
-**Expected:** SKILL.md has Step 1.2c "Domain Deep Research" with WebSearch protocol (5 queries). `global-promo-config.md` has Section 24 with research config. Agent.md references domain research capability. NB2/VEO templates include `DOMAIN CONTEXT:` line. Strategic brief template includes "Domain Knowledge" section.
+### Check 22: Location-Aware Domain Deep Research
+**Pattern:** Location context + domain research steps in pipeline before scripting
+**Expected:** SKILL.md has Step 1.2c "Location & Setting Context" and Step 1.2d "Domain Deep Research" with location-aware WebSearch protocol (6 queries). `global-promo-config.md` has Section 24 with location-specific research config including "Local Differentiators" table. Agent.md references location-aware domain research. NB2/VEO templates include `DOMAIN CONTEXT:` line.
 **How to verify:**
-1. Search SKILL.md for "Step 1.2c" and "Domain Deep Research" — must exist
-2. Search `global-promo-config.md` for "Section 24" or "Domain Deep Research" — must exist
-3. Search agent.md for "domain deep research" (case-insensitive) — must exist in capabilities and hard rules
-4. Search `script-to-scene-bridge.md` for "DOMAIN CONTEXT:" — must appear in NB2 start frame template AND VEO templates
-5. Search SKILL.md strategic brief template for "Domain Knowledge" — must exist
+1. Search SKILL.md for "Step 1.2c" and "Location" — must exist
+2. Search SKILL.md for "Step 1.2d" and "Domain Deep Research" — must exist
+3. Search `global-promo-config.md` for "Section 24" and "Location" — must exist with location-specific queries
+4. Search `global-promo-config.md` for "Local Differentiators" — must exist in Section 24
+5. Search agent.md for "location-aware" or "domain research" — must exist in capabilities and hard rules
+6. Search `script-to-scene-bridge.md` for "DOMAIN CONTEXT:" — must appear in NB2/VEO templates
+7. Search SKILL.md strategic brief template for "Domain Knowledge" — must exist
 
 ## Output Format
 

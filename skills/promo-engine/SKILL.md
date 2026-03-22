@@ -124,7 +124,8 @@ Copy `agents/promo-engine-agent.md` to your project's `.claude/agents/` director
 37. **Scene Logic Realism (7-point)** — Every prompt passes 7 checks: environment accuracy, human behavior realism, data consistency, uniform ranks, explicit negatives, reference photos, timeline/shift consistency. See `script-to-scene-bridge.md` Section 7B.
 38. **Character portrait-first** — Any character in 2+ scenes MUST have standalone face portrait generated FIRST in Phase 4A. Text descriptions alone = different faces every time. Applies to cast AND recurring extras. See `global-promo-config.md` Section 18.
 39. **Narrative arc consistency** — Connected scenes MUST include `NARRATIVE CONTEXT:` block naming connections, visual breadcrumbs, cause-effect chains, shared environment refs. See `script-to-scene-bridge.md` Section 7C.
-40. **Domain deep research (MANDATORY)** — AI MUST WebSearch the product domain BEFORE scripting (Step 1.2c). Without domain knowledge, AI generates wrong machines, wrong processes, wrong operator actions. 5 queries minimum: process flow, equipment visuals, operator roles, workspace layout, product interface. See `global-promo-config.md` Section 24.
+40. **Location context first** — Video setting/location MUST be confirmed (Step 1.2c) BEFORE domain research. Domain knowledge is location-specific: RS Indonesia ≠ RS USA ≠ RS Japan.
+41. **Domain deep research (MANDATORY, location-aware)** — AI MUST WebSearch `{domain} in {location}` BEFORE scripting (Step 1.2d). 6 queries: local process flow, local equipment brands, local workforce/PPE, local facility layout, product interface, local regulations/signage. See `global-promo-config.md` Section 24.
 
 ---
 
@@ -227,96 +228,156 @@ If C → no costume refs required (unless user manually adds later).
 
 If no institution keyword detected → skip this step automatically.
 
-#### Step 1.2c: Domain Deep Research (MANDATORY)
+#### Step 1.2c: Location & Setting Context
 
-**Purpose:** AI is blind about specific product domains (SMT production lines, port logistics, mining operations, etc.). Without domain knowledge, AI generates visually inaccurate content — wrong machines, wrong processes, wrong equipment, wrong operator actions.
-
-**Trigger:** Immediately after product/service is identified (Step 1.2 + 1.2b).
-
-**Protocol:** Use WebSearch to build comprehensive domain knowledge BEFORE any script or visual generation.
+**Purpose:** Domain knowledge is location-specific. RS di Indonesia ≠ RS di US/China. Factory floor di Jepang ≠ di Cikarang. Location MUST be known before domain research.
 
 ```
-ALGORITHM: Domain Deep Research
+AskUserQuestion:
+"Di mana setting/lokasi video ini?"
+
+Options:
+A) Lokasi spesifik (kota/negara tertentu — misal: Surabaya, Jakarta, Shenzhen)
+B) Negara saja (Indonesia, Japan, USA, dll)
+C) Generic / tidak spesifik lokasi
+D) Multiple lokasi (jelaskan)
+```
+
+Follow-up if A or D:
+```
+AskUserQuestion:
+"Sebutkan detail lokasi:
+- Kota/daerah: {input}
+- Jenis tempat: (pabrik, kantor, rumah sakit, pelabuhan, outdoor, dll)
+- Indoor/Outdoor/Both: {input}"
+```
+
+Save as `video_location`, `video_country`, `video_setting_type` in strategic-brief.md.
+
+**Why this matters:**
+- RS Indonesia: bangunan bertingkat, lorong lebar, perawat jilbab, papan nama Bahasa Indonesia, plat kendaraan lokal
+- RS Jepang: bersih minimalis, kanji signage, staff berbaju putih rapi, tatami-style patient rooms
+- RS Amerika: large campus, English signage, scrubs + sneakers, insurance desk, parking lot
+- Same domain, completely different visuals. Location changes EVERYTHING.
+
+#### Step 1.2d: Domain Deep Research (MANDATORY)
+
+**Purpose:** AI is blind about specific product domains. Without domain knowledge, AI generates wrong machines, wrong processes, wrong operator actions. Domain research MUST be **location-aware** — `{domain} in {location}` not just `{domain}`.
+
+**Trigger:** After product (Step 1.2) + institution (1.2b) + location (1.2c) are known.
+
+**Protocol:** Use WebSearch to build location-specific domain knowledge.
+
+```
+ALGORITHM: Domain Deep Research (Location-Aware)
 
 INPUT: product_name, product_category, product_description (from Step 1.2)
+       video_location, video_country, video_setting_type (from Step 1.2c)
 
-STEP 1: Identify the DOMAIN
-  → Extract the industry/process domain from product info
-  → Examples: "SMT assembly line", "port container logistics", "palm oil refinery",
-    "UWB employee tracking", "fleet management system"
+STEP 1: Identify the DOMAIN + LOCATION context
+  → Combine industry domain + geographic context
+  → Examples:
+    "SMT assembly line in Cikarang Indonesia"
+    "port container logistics in Dumai Riau Indonesia"
+    "hospital emergency room in Jakarta Indonesia"
+    "warehouse automation in Shenzhen China"
 
-STEP 2: Execute 5 research queries (WebSearch)
+STEP 2: Execute 6 research queries (WebSearch) — ALL location-qualified
 
-  Query 1: "{domain} production process workflow step by step"
-    → OUTPUT: Process flow diagram knowledge (what happens in what order)
+  Query 1: "{domain} in {country} production process workflow"
+    → OUTPUT: How this domain operates IN THIS SPECIFIC LOCATION/COUNTRY
+    → Local regulations, standards, certifications that affect workflow
 
-  Query 2: "{domain} equipment machines what they look like"
-    → OUTPUT: Visual description of key machines/equipment
-    → CRITICAL: What does each machine ACTUALLY look like? Size, color, shape, displays
+  Query 2: "{domain} {country} equipment machines brands commonly used"
+    → OUTPUT: What brands/models are actually used locally (not US/EU defaults)
+    → CRITICAL: Indonesian factories often use different brands than US ones
 
-  Query 3: "{domain} operator roles daily workflow"
-    → OUTPUT: Who does what? What do operators wear? What tools do they use?
-    → PPE requirements, uniform details, typical body positions during work
+  Query 3: "{domain} {country} worker roles uniforms PPE requirements"
+    → OUTPUT: Local workforce — what do operators ACTUALLY wear/do here?
+    → Local PPE standards, uniform styles, cultural dress norms
+    → Example: Indonesian factory workers often wear batik on Fridays
 
-  Query 4: "{domain} factory floor layout typical setup"
-    → OUTPUT: How is the workspace organized? What's next to what?
-    → Lighting conditions, flooring, signage, safety markings
+  Query 4: "{domain} {location} facility layout photos"
+    → OUTPUT: What do REAL local facilities look like?
+    → Architecture style, building materials, interior design norms
+    → Example: Indonesian RS = wide open corridors, tile floors, AC units visible
 
-  Query 5: "{product_name} product interface screenshots features"
-    → OUTPUT: What does the actual product look like? Dashboard, UI, physical form
-    → If SaaS: what screens does the user see?
-    → If physical: what does it look like in situ?
+  Query 5: "{product_name} product interface dashboard features"
+    → OUTPUT: What the actual product looks like in use
+    → If SaaS: screens, UI language, dashboard layout
+    → If physical: in-situ appearance at the specific location type
 
-STEP 3: Compile Domain Knowledge Brief
+  Query 6: "{domain} {country} regulations standards signage"
+    → OUTPUT: Local regulatory context affecting visuals
+    → Safety signage language/style, certification marks, warning colors
+    → Example: Indonesian factory = K3 safety signs in Bahasa, yellow/black hazard tape
+
+STEP 3: Compile Location-Aware Domain Knowledge Brief
 
   Save to strategic-brief.md > Domain Knowledge section:
 
-  ### Domain Knowledge — {domain}
+  ### Domain Knowledge — {domain} in {location}, {country}
 
-  #### Process Flow
-  {step-by-step process with equipment at each step}
+  #### Location Context
+  | Setting | Detail |
+  |---------|--------|
+  | Country | {country} |
+  | City/Region | {city} |
+  | Setting type | {factory/hospital/port/office/outdoor} |
+  | Indoor/Outdoor | {indoor/outdoor/both} |
+  | Local regulations | {relevant standards — K3, ISO, BPOM, etc.} |
 
-  #### Key Equipment Visual Reference
-  | Equipment | Appearance | Size | Typical Color | Key Visual Feature |
-  |-----------|-----------|------|---------------|-------------------|
-  | {machine1} | {description} | {size} | {color} | {distinguishing feature} |
+  #### Process Flow (as practiced locally)
+  {step-by-step process with LOCALLY-USED equipment at each step}
 
-  #### Operator Roles & Actions
-  | Role | Typical Action | PPE/Uniform | Tools/Equipment |
-  |------|---------------|-------------|-----------------|
-  | {role1} | {what they actually DO} | {what they wear} | {what they hold/use} |
+  #### Key Equipment Visual Reference (Local Brands/Models)
+  | Equipment | Local Brand/Model | Appearance | Key Visual Feature |
+  |-----------|------------------|-----------|-------------------|
+  | {machine1} | {local brand} | {description} | {distinguishing feature} |
 
-  #### Workspace Environment
-  | Element | Description | Visual Details |
-  |---------|------------|----------------|
-  | Flooring | {type} | {color, markings} |
-  | Lighting | {type} | {color temp, direction} |
-  | Safety markings | {type} | {colors, placement} |
-  | Signage | {type} | {content, style} |
+  #### Operator Roles & Actions (Local Workforce)
+  | Role | Typical Action | Local PPE/Uniform | Tools/Equipment |
+  |------|---------------|-------------------|-----------------|
+  | {role1} | {what they DO locally} | {local dress norms} | {local tools} |
+
+  #### Workspace Environment (Location-Specific)
+  | Element | Local Standard | Visual Details |
+  |---------|---------------|----------------|
+  | Flooring | {local type} | {color, markings} |
+  | Signage | {language, style} | {Bahasa/English/bilingual, K3 signs} |
+  | Safety markings | {local standard} | {colors, placement per local regs} |
+  | Architecture | {local style} | {building materials, ceiling type, ventilation} |
 
   #### Product Visual Reference
-  {what the actual product looks like — screens, physical form, in-use appearance}
+  {what the actual product looks like in this specific local context}
+
+  #### Local Differentiators (vs generic/Western default)
+  | Aspect | Generic AI Default | Actual Local Reality |
+  |--------|-------------------|---------------------|
+  | {aspect1} | {what AI would generate} | {what it actually looks like here} |
+  | {aspect2} | {AI default} | {local reality} |
 ```
 
 **Present domain research summary to user for validation:**
 
 ```
 AskUserQuestion:
-"Saya sudah research domain {domain}. Berikut ringkasannya:
+"Saya sudah research domain {domain} di {location}. Berikut ringkasannya:
 
-{domain knowledge summary — key equipment, process flow, roles}
+{domain knowledge summary — location-specific equipment, process, roles, environment}
 
-Apakah informasi ini sudah akurat?"
+Apakah informasi ini sudah akurat untuk lokasi {location}?"
 
 Options:
 A) Akurat — lanjut
 B) Ada yang salah — saya koreksi (jelaskan)
-C) Saya punya info tambahan — saya akan paste/upload
+C) Saya punya info tambahan / foto referensi — saya akan paste/upload
+D) Lokasi kurang spesifik — saya mau tambah detail lokasi
 ```
 
-If B or C → user corrects/adds info → update Domain Knowledge section.
+If B, C, or D → user corrects/adds info → update Domain Knowledge section.
 
-**HARD RULE:** Domain research MUST complete before Phase 2 (Script). Script without domain knowledge = inaccurate terminology, wrong visual descriptions, implausible character actions.
+**HARD RULE:** Location-aware domain research MUST complete before Phase 2 (Script). Script without domain knowledge = wrong equipment, wrong processes, wrong uniforms, wrong architecture for the location.
 
 #### Step 1.3: Target Market Selection
 
