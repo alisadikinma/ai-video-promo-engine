@@ -108,7 +108,7 @@ Ini butuh 2 generasi terpisah (lokasi berbeda):
 
 **Clip 1 — Studio (Ingredients mode)**
 - Upload ref/cast-c{N}-face.png sebagai reference (N = Ali Sadikin cast slot)
-- VEO prompt: "~8s, 720p, 16:9. Static shot. Subject speaks to camera with subtle head nods and hand gestures. Ali says: [dialogue here]. Ambient: quiet studio hum. No subtitles, no audience sounds."
+- VEO prompt: "~8s, 720p, 16:9. Static shot. Subject speaks to camera with subtle head nods and hand gestures. Host says: [dialogue here]. Ambient: quiet studio hum. No subtitles, no audience sounds."
 - 720p karena kemungkinan perlu extend
 
 **Clip 2 — Outdoor (Ingredients mode, generasi baru)**

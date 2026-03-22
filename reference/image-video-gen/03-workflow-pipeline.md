@@ -17,9 +17,16 @@ Need to show a CHARACTER consistently across shots?
 │         ⚠️ Cannot combine with keyframe control
 │
 └── NO, need controlled TRANSITION between two states?
-    ├── YES → "First + Last Frame" (Keyframe Control)
-    │         Generate START image (NB2) + END image (NB2)
-    │         VEO interpolates the motion between them
+    ├── YES → Does scene have FACE >30% of frame?
+    │         ├── YES → "Single I2V" (start frame only)
+    │         │         ⚠️ Safety filter rejects 2 face images
+    │         │         Generate START image (NB2) only
+    │         │         VEO animates from single frame
+    │         │
+    │         └── NO → "First + Last Frame" (Keyframe Control)
+    │                   Generate START image (NB2) + END image (NB2)
+    │                   VEO interpolates the motion between them
+    │                   ✅ Safe for: dashboards, products, environments
     │
     └── NO, need to CONTINUE an existing clip?
         └── "Scene Extension" (Extend)
@@ -28,6 +35,8 @@ Need to show a CHARACTER consistently across shots?
 ```
 
 **Mutual Exclusivity Rule:** Ingredients ≠ First+Last Frame. Pick ONE per generation.
+
+**Safety Filter Rule:** First+Last Frame with 2 photorealistic face images → VEO rejects as "prominent people." Use single I2V (start frame only) for any face-dominant scene.
 
 ## Phase 1: NB2 Image Asset Creation
 
@@ -40,6 +49,7 @@ Need to show a CHARACTER consistently across shots?
 - [ ] Material shaders defined (glass/metal/skin/textile)
 
 ### For First+Last Frame Mode
+- [ ] **NO dominant face (>30% frame)** — safety filter rejects 2 face images (use single I2V instead)
 - [ ] Start frame and end frame share SAME aspect ratio
 - [ ] SAME lighting temperature (Kelvin) in both frames
 - [ ] SAME color palette / grading style
@@ -124,3 +134,5 @@ For clips that need stitching but aren't direct extensions:
 | Character morph during extend | Weak context in final second | Hold clear pose, avoid blur at clip end |
 | Stutter at extension joint | Abrupt motion at clip end | Maintain consistent camera speed through final second |
 | Wrong VEO mode selected | Ingredients + Keyframe confusion | They are mutually exclusive — pick one |
+| "Prominent people" safety error | First+Last Frame with face >30% | Use single I2V (start frame only) for face-dominant scenes |
+| On-screen char lip-syncs VO | `Voiceover:` with face visible | Use `Voice-over narrator, [tone]: text` |

@@ -95,7 +95,7 @@ Copy `agents/promo-engine-agent.md` to your project's `.claude/agents/` director
 8. **Product is NEVER the hero** — customer is hero, product is bridge
 9. **First 3 seconds determine everything** — hook must stop the scroll
 10. **Forbidden words** — synergy, leverage, robust, revolutionary, cutting-edge, seamlessly, innovative solution, state-of-the-art
-11. **B-Roll voiceover ≠ lip sync** — B-Roll uses `Voiceover:` NOT `says:`
+11. **B-Roll voiceover = Voice-over narrator** — B-Roll uses `Voice-over narrator, [tone]: text` NOT bare `Voiceover:` (which lip-syncs to visible character). Every B-Roll MUST have VO narration + `> POST-PROD VO:` backup.
 12. **Face >30% frame for lip sync** — smaller = sync failure
 13. **Every feature MUST have human consequence** — no feature listing without "so what?"
 14. **All AskUserQuestion interactions** — NEVER ask questions as plain text, ALWAYS use AskUserQuestion tool with selectable options
@@ -116,6 +116,15 @@ Copy `agents/promo-engine-agent.md` to your project's `.claude/agents/` director
 29. **Ref-to-prompt body binding** — every ref in upload table MUST have matching injection line in prompt body. Having ref in table but NOT in prompt = model won't use it. See `global-promo-config.md` Section 16.
 30. **Climate-aware costume** — cross-check cast costume vs location climate after cultural research. Flag inappropriate combinations. See `global-promo-config.md` Section 23.
 31. **Dynamic tier assignment** — composite assets (UI screens showing truck+face) auto-assigned to tier = max(sub-element tiers) + 1. Never generate composite before its sub-elements. See `global-promo-config.md` Section 18.
+32. **VEO: No real names in `says:`** — VEO safety filter rejects real person name + photorealistic face. Use `Host says:` / `Presenter says:` / `Speaker says:`. NB2 can still use real names.
+33. **VEO: No face ref filenames** — `Maintain exact facial identity from reference image: ref/xxx.png` is NB2-only. VEO prompts use generic: `Maintain visual continuity with reference frame character appearance.`
+34. **VEO: Face-dominant = single I2V** — Scene with face >30% frame → single I2V (start frame only). First+Last Frame → only for faceless scenes (dashboards, products, environments). Safety filter rejects 2 face images.
+35. **VEO: No em dash in audio text** — NEVER use `—` in `says:` or `Voice-over narrator:` text. VEO audio engine mistranslates em dashes. Replace with `,` or `. `
+36. **VEO: Every B-Roll has VO** — No silent B-Roll. Every B-Roll VEO prompt MUST have `Voice-over narrator, [tone]: text` + `> POST-PROD VO:` fallback line outside the prompt block.
+37. **Scene Logic Realism (7-point)** — Every prompt passes 7 checks: environment accuracy, human behavior realism, data consistency, uniform ranks, explicit negatives, reference photos, timeline/shift consistency. See `script-to-scene-bridge.md` Section 7B.
+38. **Character portrait-first** — Any character in 2+ scenes MUST have standalone face portrait generated FIRST in Phase 4A. Text descriptions alone = different faces every time. Applies to cast AND recurring extras. See `global-promo-config.md` Section 18.
+39. **Narrative arc consistency** — Connected scenes MUST include `NARRATIVE CONTEXT:` block naming connections, visual breadcrumbs, cause-effect chains, shared environment refs. See `script-to-scene-bridge.md` Section 7C.
+40. **Domain deep research (MANDATORY)** — AI MUST WebSearch the product domain BEFORE scripting (Step 1.2c). Without domain knowledge, AI generates wrong machines, wrong processes, wrong operator actions. 5 queries minimum: process flow, equipment visuals, operator roles, workspace layout, product interface. See `global-promo-config.md` Section 24.
 
 ---
 
@@ -217,6 +226,97 @@ If B → follow per-character costume assignment per `creator-profile-system.md`
 If C → no costume refs required (unless user manually adds later).
 
 If no institution keyword detected → skip this step automatically.
+
+#### Step 1.2c: Domain Deep Research (MANDATORY)
+
+**Purpose:** AI is blind about specific product domains (SMT production lines, port logistics, mining operations, etc.). Without domain knowledge, AI generates visually inaccurate content — wrong machines, wrong processes, wrong equipment, wrong operator actions.
+
+**Trigger:** Immediately after product/service is identified (Step 1.2 + 1.2b).
+
+**Protocol:** Use WebSearch to build comprehensive domain knowledge BEFORE any script or visual generation.
+
+```
+ALGORITHM: Domain Deep Research
+
+INPUT: product_name, product_category, product_description (from Step 1.2)
+
+STEP 1: Identify the DOMAIN
+  → Extract the industry/process domain from product info
+  → Examples: "SMT assembly line", "port container logistics", "palm oil refinery",
+    "UWB employee tracking", "fleet management system"
+
+STEP 2: Execute 5 research queries (WebSearch)
+
+  Query 1: "{domain} production process workflow step by step"
+    → OUTPUT: Process flow diagram knowledge (what happens in what order)
+
+  Query 2: "{domain} equipment machines what they look like"
+    → OUTPUT: Visual description of key machines/equipment
+    → CRITICAL: What does each machine ACTUALLY look like? Size, color, shape, displays
+
+  Query 3: "{domain} operator roles daily workflow"
+    → OUTPUT: Who does what? What do operators wear? What tools do they use?
+    → PPE requirements, uniform details, typical body positions during work
+
+  Query 4: "{domain} factory floor layout typical setup"
+    → OUTPUT: How is the workspace organized? What's next to what?
+    → Lighting conditions, flooring, signage, safety markings
+
+  Query 5: "{product_name} product interface screenshots features"
+    → OUTPUT: What does the actual product look like? Dashboard, UI, physical form
+    → If SaaS: what screens does the user see?
+    → If physical: what does it look like in situ?
+
+STEP 3: Compile Domain Knowledge Brief
+
+  Save to strategic-brief.md > Domain Knowledge section:
+
+  ### Domain Knowledge — {domain}
+
+  #### Process Flow
+  {step-by-step process with equipment at each step}
+
+  #### Key Equipment Visual Reference
+  | Equipment | Appearance | Size | Typical Color | Key Visual Feature |
+  |-----------|-----------|------|---------------|-------------------|
+  | {machine1} | {description} | {size} | {color} | {distinguishing feature} |
+
+  #### Operator Roles & Actions
+  | Role | Typical Action | PPE/Uniform | Tools/Equipment |
+  |------|---------------|-------------|-----------------|
+  | {role1} | {what they actually DO} | {what they wear} | {what they hold/use} |
+
+  #### Workspace Environment
+  | Element | Description | Visual Details |
+  |---------|------------|----------------|
+  | Flooring | {type} | {color, markings} |
+  | Lighting | {type} | {color temp, direction} |
+  | Safety markings | {type} | {colors, placement} |
+  | Signage | {type} | {content, style} |
+
+  #### Product Visual Reference
+  {what the actual product looks like — screens, physical form, in-use appearance}
+```
+
+**Present domain research summary to user for validation:**
+
+```
+AskUserQuestion:
+"Saya sudah research domain {domain}. Berikut ringkasannya:
+
+{domain knowledge summary — key equipment, process flow, roles}
+
+Apakah informasi ini sudah akurat?"
+
+Options:
+A) Akurat — lanjut
+B) Ada yang salah — saya koreksi (jelaskan)
+C) Saya punya info tambahan — saya akan paste/upload
+```
+
+If B or C → user corrects/adds info → update Domain Knowledge section.
+
+**HARD RULE:** Domain research MUST complete before Phase 2 (Script). Script without domain knowledge = inaccurate terminology, wrong visual descriptions, implausible character actions.
 
 #### Step 1.3: Target Market Selection
 
@@ -405,6 +505,9 @@ Present the Strategic Brief for approval:
 
 ## Storyline (User Input)
 {user's original storyline or "AI-generated from brainstorm"}
+
+## Domain Knowledge
+{From Step 1.2c — process flow, equipment visuals, operator roles, workspace environment, product appearance}
 
 ## Cultural Context
 (Populated in Phase 3.5 via web search — see Step 3.5.2a)
@@ -919,13 +1022,19 @@ For each scene in scene-plan.md:
 
 **Presenter scenes (lip sync):**
 - Use presenter template from `script-to-scene-bridge.md` Section 4
-- Dialogue with colon syntax: `Host says: {text}`
+- VEO mode: Single I2V (start frame only) — NOT First+Last Frame (safety filter)
+- Dialogue: `Host says: {text}` — NEVER real person names (safety filter)
+- NO em dash `—` in dialogue — replace with `,` or `. `
+- NO face ref filenames in VEO prompt — use generic continuity language
 - Face >30% frame
 - All 3 audio layers specified
 
 **B-Roll scenes (voiceover):**
 - Use B-Roll template from `script-to-scene-bridge.md` Section 4
-- Voiceover: `Voiceover: {text}` (NOT lip sync)
+- Voiceover: `Voice-over narrator, {tone}: {text}` — NOT bare `Voiceover:` (lip-syncs to visible char)
+- NO em dash `—` in voiceover text
+- EVERY B-Roll MUST have voiceover narration (no silent B-Roll)
+- Add `> POST-PROD VO:` backup line outside prompt block for every B-Roll
 - SFX + music + ambient all specified
 
 **Extension scenes:**
@@ -1017,11 +1126,24 @@ Present final summary:
 
 ### Video Prompt Quality Gate (Phase 5)
 - [ ] VEO mode correct per scene (no Ingredients + Frame mix)
+- [ ] Face-dominant scenes use single I2V (NOT First+Last Frame)
 - [ ] All 3 audio layers specified per scene
-- [ ] Dialogue uses colon syntax
+- [ ] Dialogue uses generic role: `Host says:` — no real person names
+- [ ] Voiceover uses `Voice-over narrator, [tone]: text` — no bare `Voiceover:`
+- [ ] Every B-Roll scene has voiceover narration + `> POST-PROD VO:` backup
+- [ ] No em dash `—` in any `says:` or `Voice-over narrator:` text
+- [ ] No face ref filenames (`ref/cast-c{N}-face.png`) in VEO prompts
 - [ ] Face >30% for lip sync scenes
 - [ ] 720p for extendable clips
 - [ ] Extension prompts reference previous clip
 - [ ] Transition instructions on scene-ending clips
 - [ ] Negative prompt block included
 - [ ] Total duration within target range
+
+### Cross-Cutting Quality Gate (All Phases 4-5)
+- [ ] **Scene Logic Realism 7-point** — each prompt passes: environment accuracy, behavior realism, data consistency, uniform ranks, explicit negatives, ref photos, timeline/shift
+- [ ] **Character portrait-first** — every character in 2+ scenes has standalone face ref in Phase 4A
+- [ ] **Narrative arc consistency** — every prompt has `NARRATIVE CONTEXT:` block with connections, breadcrumbs, cause-effect
+- [ ] **Visual breadcrumbs** — at least 1 shared visual element between adjacent scenes
+- [ ] **Data pinning** — dashboard names/numbers consistent across all scenes showing same data
+- [ ] **Timeline consistency** — time-of-day/lighting matches across connected scenes

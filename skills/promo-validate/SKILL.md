@@ -1,14 +1,14 @@
 ---
 name: promo-validate
 description: >
-  Cross-file consistency checker for AI Video Promo Engine references (13 checks).
+  Cross-file consistency checker for AI Video Promo Engine references (22 checks).
   Run after editing any reference file, before commits, or after adding new knowledge.
   Triggers on: validate, consistency check, reference check, cek referensi, cek konsistensi.
 ---
 
 # Validate References
 
-Run 13 automated consistency checks across all operational files. Reports PASS/FAIL per check with exact file:line.
+Run 22 automated consistency checks across all operational files. Reports PASS/FAIL per check with exact file:line.
 
 ## Scope
 
@@ -114,26 +114,116 @@ Run 13 automated consistency checks across all operational files. Reports PASS/F
 3. Search script-to-scene-bridge.md for "Tone-to-Cinematography" — must have Section 10 with 6 tones
 4. Verify same 6 tone keywords appear in all 3 files (humorous, serious, professional, inspirational, casual, edgy)
 
+### Check 14: VEO No Real Person Names in `says:`
+**Pattern:** Real person names used in VEO `says:` syntax across operational files
+**Expected:** All VEO dialogue examples and templates use generic roles (`Host says:`, `Presenter says:`, `Speaker says:`), never real person names. NB2 prompts may still use real names.
+**How to verify:**
+1. Search VEO prompt templates in `script-to-scene-bridge.md` Section 4 for `says:` — should only have generic roles
+2. Search `02-veo-production-guide.md` for `says:` examples — should use generic roles
+3. Search all operational files for `alisadikin` or `Ali says:` — should return 0 matches
+4. Verify `global-promo-config.md` Section 5 `dialogue_syntax` uses `Host says:` not `[Character] says:`
+
+### Check 15: VEO No Em Dash in Audio Text
+**Pattern:** Em dash `—` in VEO dialogue/voiceover text across templates
+**Expected:** All VEO prompt templates specify "NO em dash" rule. global-promo-config.md has `em_dash_forbidden: true`.
+**How to verify:**
+1. Search `global-promo-config.md` for `em_dash_forbidden` — should exist and be `true`
+2. Search `script-to-scene-bridge.md` VEO templates for "NO em dash" — should appear in every template
+3. Search `02-veo-production-guide.md` for em dash rule — should exist in Audio section
+
+### Check 16: VEO B-Roll Has Voice-over Narrator
+**Pattern:** B-Roll VEO templates missing voiceover narration
+**Expected:** All B-Roll VEO templates use `Voice-over narrator, [tone]: text` syntax (NOT bare `Voiceover:`). Every B-Roll has `POST-PROD VO:` backup. No silent B-Roll.
+**How to verify:**
+1. Search `script-to-scene-bridge.md` B-Roll template for `Voice-over narrator` — should exist
+2. Search `script-to-scene-bridge.md` for bare `Voiceover:` in templates — should return 0 matches (except in "DON'T" examples)
+3. Search `script-to-scene-bridge.md` for `POST-PROD VO` — should appear after every B-Roll template
+4. Search `global-promo-config.md` for `voiceover_syntax` — should be `Voice-over narrator, [tone]: text`
+
+### Check 17: VEO Face-Dominant Scenes Use Single I2V
+**Pattern:** VEO mode selection allowing First+Last Frame for face-dominant scenes
+**Expected:** Decision tree in `03-workflow-pipeline.md` and mode selection in `script-to-scene-bridge.md` route face >30% scenes to single I2V, NOT First+Last Frame. Presenter template specifies Single I2V mode.
+**How to verify:**
+1. Search `03-workflow-pipeline.md` decision tree for "face" or "single I2V" — should describe safety filter rule
+2. Search `script-to-scene-bridge.md` Step 3 for face-dominant routing — should exist
+3. Search `script-to-scene-bridge.md` Presenter template for "Single I2V" — should exist
+4. Search `02-veo-production-guide.md` for face-dominant safety rule — should exist
+
+### Check 18: VEO No Face Ref Filenames
+**Pattern:** Face reference filenames (`ref/cast-c{N}-face.png`) appearing in VEO prompt templates
+**Expected:** VEO templates use generic continuity language (`Maintain visual continuity with reference frame character appearance`), NOT explicit filenames. Face ref filenames belong ONLY in NB2 templates.
+**How to verify:**
+1. Search `script-to-scene-bridge.md` Section 4 VEO templates for `ref/cast-c` — should return 0 matches in VEO templates (OK in NB2 Section 3 templates)
+2. Search `02-veo-production-guide.md` I2V template for `ref/cast-c` — should return 0 matches
+3. Search `global-promo-config.md` Section 16 for NB2 vs VEO distinction — should exist
+
+### Check 19: Scene Logic Realism Checklist
+**Pattern:** Scene Logic Realism 7-point checklist in prompt quality gates
+**Expected:** `script-to-scene-bridge.md` has Section 7B with 7-point realism checklist. SKILL.md and agent.md reference it in hard rules. Quality gate includes scene realism check.
+**How to verify:**
+1. Search `script-to-scene-bridge.md` for "Scene Logic Realism" — must exist in Section 7B
+2. Search `script-to-scene-bridge.md` Section 7B for all 7 check names: environment accuracy, human behavior realism, data consistency, uniform ranks, explicit negatives, reference photos, timeline/shift
+3. Search SKILL.md for "Scene Logic Realism" — must exist in hard rules
+4. Search agent.md for "Scene Logic Realism" or "7-point" — must exist in hard rules
+
+### Check 20: Character Portrait-First Rule
+**Pattern:** Character portrait-first enforcement across files
+**Expected:** `global-promo-config.md` Section 18 has "Character Portrait-First Rule" as HARD BLOCK. SKILL.md and agent.md reference it in hard rules. Phase 4A quality gate checks for it.
+**How to verify:**
+1. Search `global-promo-config.md` for "Character Portrait-First" — must exist in Section 18
+2. Search `global-promo-config.md` for "2+ scenes" near "standalone portrait" — must exist
+3. Search SKILL.md for "portrait-first" — must exist in hard rules
+4. Search agent.md for "portrait-first" — must exist in hard rules
+
+### Check 21: Narrative Arc Consistency
+**Pattern:** Narrative arc consistency rules in prompt templates
+**Expected:** `script-to-scene-bridge.md` has Section 7C with narrative arc rules. NB2/VEO templates include `NARRATIVE CONTEXT:` block. SKILL.md and agent.md reference it.
+**How to verify:**
+1. Search `script-to-scene-bridge.md` for "Narrative Arc Consistency" — must exist in Section 7C
+2. Search `script-to-scene-bridge.md` for "NARRATIVE CONTEXT:" — must appear in NB2 start frame template AND VEO templates
+3. Search `script-to-scene-bridge.md` for "visual breadcrumb" — must exist in Section 7C
+4. Search SKILL.md for "Narrative arc consistency" — must exist in hard rules
+5. Search agent.md for "Narrative arc" — must exist in hard rules
+
+### Check 22: Domain Deep Research
+**Pattern:** Domain research step in pipeline before scripting
+**Expected:** SKILL.md has Step 1.2c "Domain Deep Research" with WebSearch protocol (5 queries). `global-promo-config.md` has Section 24 with research config. Agent.md references domain research capability. NB2/VEO templates include `DOMAIN CONTEXT:` line. Strategic brief template includes "Domain Knowledge" section.
+**How to verify:**
+1. Search SKILL.md for "Step 1.2c" and "Domain Deep Research" — must exist
+2. Search `global-promo-config.md` for "Section 24" or "Domain Deep Research" — must exist
+3. Search agent.md for "domain deep research" (case-insensitive) — must exist in capabilities and hard rules
+4. Search `script-to-scene-bridge.md` for "DOMAIN CONTEXT:" — must appear in NB2 start frame template AND VEO templates
+5. Search SKILL.md strategic brief template for "Domain Knowledge" — must exist
+
 ## Output Format
 
 ```
 === Promo Engine Validation Report ===
 
-Check 1: VEO Mode Mutual Exclusivity ......... PASS
-Check 2: Audio Mandatory Rule ................ PASS
-Check 3: Dialogue Colon Syntax ............... PASS
-Check 4: Resolution Extend Rule .............. PASS
-Check 5: Reference File Count ................ PASS (22/22)
-Check 6: 7-Beat Arc Completeness ............. PASS (8/8 beats)
-Check 7: Forbidden Words List ................ PASS (8/8 words)
-Check 8: Face Minimum Percentage ............. PASS (30%)
-Check 9: Cast System Consistency ............. PASS (0 legacy refs)
+Check 1:  VEO Mode Mutual Exclusivity ........ PASS
+Check 2:  Audio Mandatory Rule ............... PASS
+Check 3:  Dialogue Colon Syntax .............. PASS
+Check 4:  Resolution Extend Rule ............. PASS
+Check 5:  Reference File Count ............... PASS (23/23)
+Check 6:  7-Beat Arc Completeness ............ PASS (8/8 beats)
+Check 7:  Forbidden Words List ............... PASS (8/8 words)
+Check 8:  Face Minimum Percentage ............ PASS (30%)
+Check 9:  Cast System Consistency ............ PASS (0 legacy refs)
 Check 10: Phase 3.5 Hard Block ............... PASS
 Check 11: Ref Naming Convention .............. PASS (7/7 patterns)
-Check 12: Language Selection Consistency .... PASS
-Check 13: Tone System Consistency ........... PASS
+Check 12: Language Selection Consistency ...... PASS
+Check 13: Tone System Consistency ............ PASS
+Check 14: VEO No Real Names in says: ......... PASS
+Check 15: VEO No Em Dash in Audio ............ PASS
+Check 16: VEO B-Roll Has VO Narrator ......... PASS
+Check 17: VEO Face-Dominant Single I2V ........ PASS
+Check 18: VEO No Face Ref Filenames .......... PASS
+Check 19: Scene Logic Realism Checklist ....... PASS (7/7 points)
+Check 20: Character Portrait-First Rule ....... PASS
+Check 21: Narrative Arc Consistency ........... PASS
+Check 22: Domain Deep Research ................ PASS
 
-Result: 13/13 checks passed
+Result: 22/22 checks passed
 ```
 
 If any check FAILS, show:

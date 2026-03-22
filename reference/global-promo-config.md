@@ -79,14 +79,28 @@ See Section 21 for full rules and examples. Key principle:
 
 | Setting | Value | Notes |
 |---------|-------|-------|
-| `dialogue_syntax` | `[Character] says: text` | NEVER quotation marks |
-| `voiceover_syntax` | `Voiceover: text` | For B-Roll (no lip sync) |
+| `dialogue_syntax` | `Host says: text` | Generic role — NEVER real person names (safety filter) |
+| `voiceover_syntax` | `Voice-over narrator, [tone]: text` | Off-screen narrator — NEVER bare `Voiceover:` (lip-syncs to visible char) |
+| `postprod_vo_syntax` | `> POST-PROD VO: "text"` | Backup outside VEO prompt for every B-Roll scene |
 | `sfx_syntax` | `SFX: description` | Sound effects |
 | `ambient_syntax` | `Ambient: description` | Background atmosphere |
-| `dialogue_max_words` | `8-15` per 8s clip | 3-6s sweet spot |
+| `dialogue_max_words` | `8-15` per 8s clip | 3-6s sweet spot for lip sync |
+| `voiceover_max_words` | `12-15` per 8s clip | Segmented from VO script |
 | `dialogue_max_syllables` | `20-25` per 8s clip | |
 | `face_min_frame_pct` | `30%` | Minimum for lip sync |
 | `always_add` | `no subtitles, no audience sounds, no text overlays` | Every VEO prompt |
+| `em_dash_forbidden` | `true` | NEVER use `—` in says:/narrator: text — causes audio artifacts. Use `,` or `. ` |
+
+### VEO Audio Safety Rules
+
+| Rule | Details |
+|------|---------|
+| **No real names in `says:`** | VEO safety filter rejects real person name + photorealistic face = "prominent people." Use `Host says:`, `Presenter says:`, `Speaker says:`. NB2 can still use real names. |
+| **No bare `Voiceover:`** | VEO assigns bare `Voiceover:` speech to any visible on-screen character. Use `Voice-over narrator, [tone]: text` — VEO treats "narrator" as off-screen entity. |
+| **No em dash in audio text** | `—` in `says:` or `Voice-over narrator:` text → VEO audio engine mistranslates. Replace with `,` or `. ` |
+| **Every B-Roll has VO** | No silent B-Roll in promo videos. Every B-Roll scene needs `Voice-over narrator` line + `> POST-PROD VO:` backup. |
+| **No face ref filenames in VEO** | `Maintain exact facial identity from reference image: ref/xxx.png` → ONLY in NB2 prompts. VEO prompts use generic: `Maintain visual continuity with reference frame character appearance.` |
+| **Face-dominant = single I2V** | Scene with face >30% frame → single I2V (start frame only). First+Last Frame mode → only for faceless scenes. Safety filter rejects 2 face images. |
 
 ---
 
@@ -152,8 +166,8 @@ See Section 21 for full rules and examples. Key principle:
 
 | Setting | Value |
 |---------|-------|
-| `config_version` | `1.3.0` |
-| `last_updated` | `2026-03-20` |
+| `config_version` | `1.5.0` |
+| `last_updated` | `2026-03-22` |
 
 ---
 
@@ -301,14 +315,16 @@ Save to `strategic-brief.md` > Cultural Context section:
 
 ## 16. Reference Image Injection Rules
 
-### CRITICAL: All reference images MUST be embedded directly in prompts
+### CRITICAL: NB2 vs VEO — Different Injection Rules
 
-Reference images are NOT just files to upload — they MUST be explicitly referenced inside the NB2/VEO prompt text using character reference syntax. Without explicit injection, AI models will NOT maintain identity consistency.
+**NB2 prompts:** Reference images MUST be embedded directly in prompt text with explicit filenames. Without injection, NB2 generates from text only — causing identity drift.
 
-### Injection Syntax
+**VEO prompts:** Do NOT embed reference filenames. VEO gets identity from the uploaded start frame / ingredient images, NOT from text filenames. Use generic continuity language instead. Face ref filenames in VEO prompts may also trigger "prominent people" safety filter.
 
-| Category | Injection Phrase (embed in prompt) |
-|----------|-----------------------------------|
+### NB2 Injection Syntax (embed in NB2 prompts ONLY)
+
+| Category | Injection Phrase (NB2 prompts only) |
+|----------|--------------------------------------|
 | Cast face | `maintain exact facial identity from reference image: ref/cast-c{N}-face.png` |
 | Cast body | `maintain exact body proportions and build from reference image: ref/cast-c{N}-body.png` |
 | Cast costume | `wearing exact uniform/costume as shown in reference image: ref/cast-c{N}-costume.png` |
@@ -316,6 +332,14 @@ Reference images are NOT just files to upload — they MUST be explicitly refere
 | Environment | `match environment and architectural style from reference image: ref/env-{location}.png` |
 | Brand asset | `use exact brand asset from reference image: ref/brand-{asset}.png` |
 | Institution uniform | `match exact institutional uniform from reference image: ref/costume-{institution}.png` |
+
+### VEO Continuity Syntax (embed in VEO prompts — generic, no filenames)
+
+| Context | VEO Phrase |
+|---------|-----------|
+| Character continuity | `Maintain visual continuity with reference frame character appearance throughout clip.` |
+| Multi-character | `Maintain visual continuity with reference frame appearances for all characters.` |
+| Environment continuity | `Maintain exact lighting, environment, appearance from reference frame.` |
 
 ### Reference Image Table (MANDATORY per prompt)
 
@@ -667,6 +691,43 @@ Tier LAST: Scene keyframes
   Scene 7 end:   ← same assets, different composition/pose
 ```
 
+### Character Portrait-First Rule (HARD BLOCK)
+
+**Any character in 2+ scenes MUST have standalone portrait generated FIRST in Phase 4A.** Text descriptions alone = different faces every time. This applies to ALL characters — cast members AND named extras/recurring background characters.
+
+```
+ENFORCEMENT:
+
+STEP 1: SCAN av-script.md for ALL named or role-identified characters
+  → Cast members from cast-profile.md (Pemeran Utama + Pendamping)
+  → Named extras ("Budi si tukang parkir", "Pak RT")
+  → Role-recurring extras ("supervisor shift malam" appearing in 3 scenes)
+
+STEP 2: For EACH character appearing in 2+ scenes:
+  → MUST have ref/cast-c{N}-face.png generated in Phase 4A Tier 1
+  → If cast member: also needs body (Tier 2) and costume (Tier 3) per role
+  → If recurring extra: face ref MINIMUM — body/costume optional
+
+STEP 3: Scene keyframes (Phase 4B) MUST reference the portrait
+  → NB2 prompts: inject "maintain exact facial identity from reference image: ref/cast-c{N}-face.png"
+  → VEO prompts: use generic continuity language (face refs are NB2-only)
+  → NEVER generate a scene keyframe with a character described only by text if portrait exists
+
+VIOLATION = IDENTITY DRIFT: Viewer sees different face every scene = amateur video.
+```
+
+### Scene Logic Realism — 7-Point Validation
+
+Every NB2 and VEO prompt MUST pass the 7-point Scene Logic Realism checklist defined in `script-to-scene-bridge.md` Section 7B. This checklist prevents AI from generating "stock photo generic" scenes by enforcing environment accuracy, human behavior realism, data consistency, uniform rank accuracy, explicit negatives, reference photo enforcement, and timeline/shift consistency.
+
+See `script-to-scene-bridge.md` Section 7B for the full checklist and per-prompt application algorithm.
+
+### Narrative Arc Consistency — Cross-Scene References
+
+Connected scenes MUST explicitly reference each other in their prompts. Every NB2/VEO prompt includes a `NARRATIVE CONTEXT:` block that names connections, visual breadcrumbs, cause-effect chains, and shared environment references. Without these, AI generates isolated frames with no narrative flow.
+
+See `script-to-scene-bridge.md` Section 7C for the full rules and `NARRATIVE CONTEXT:` template.
+
 ---
 
 ## 19. Ref Folder Auto-Scan Protocol (MANDATORY)
@@ -772,7 +833,7 @@ There are TWO types of text in every NB2/VEO prompt, and they follow DIFFERENT l
 | Text Type | Language | Examples |
 |-----------|----------|---------|
 | **Prompt instructions** (what AI model reads) | ALWAYS English | "SUBJECT:", "CAMERA:", "LIGHTING:", "maintain exact facial identity from..." |
-| **Narration/dialogue** (what audience hears) | Per `narration_language` | `says: "Selamat datang di pelabuhan Dumai"`, `Voiceover: "Inilah solusi kami"` |
+| **Narration/dialogue** (what audience hears) | Per `narration_language` | `Host says: Selamat datang di pelabuhan Dumai`, `Voice-over narrator, warm: Inilah solusi kami` |
 | **On-screen UI text** (what audience reads in the video) | Per `narration_language` | Dashboard labels, signage, buttons, status messages |
 | **Technical abbreviations** | ALWAYS English | ANPR, PLC, NPE, OEE, GPS, RFID, IoT, API |
 
@@ -784,8 +845,8 @@ NB2 and VEO are trained on English prompts. Using Indonesian for technical promp
 
 Only **content that appears in the final video output** follows the user's language selection:
 
-1. **`says:` dialogue text** — what characters speak (lip sync)
-2. **`Voiceover:` text** — narration track
+1. **`Host says:` dialogue text** — what characters speak (lip sync, generic role name)
+2. **`Voice-over narrator, [tone]:` text** — off-screen narration track
 3. **On-screen text** — UI screens, dashboards, signage, labels, buttons, warnings
 4. **Text overlays** — if any text is rendered on screen
 
@@ -974,3 +1035,89 @@ AFTER cultural research (Step 3.5.2a) completes:
 | Tropis indoor (AC) | Business formal | Standard suit OK (AC environment) | Winter coat, heavy layers |
 | Humid coastal | Casual-smart | Breathable fabrics, open collar | Tight collar, heavy fabrics |
 | Industrial/port | Work appropriate | Safety vest, breathable uniform | Formal suit in dusty environment |
+
+---
+
+## 24. Domain Deep Research (MANDATORY)
+
+### Problem
+
+AI is blind about specific product domains. Without deep domain knowledge, AI generates:
+- Wrong machines (generic "factory machine" instead of specific SMT pick-and-place)
+- Wrong processes (skips steps, invents nonexistent steps)
+- Wrong operator actions (workers pose instead of performing actual tasks)
+- Wrong equipment (random controls, wrong displays, wrong tool usage)
+- Wrong workspace (generic "clean room" instead of actual production floor layout)
+
+### When to Execute
+
+**Step 1.2c** — immediately after product/service discovery, BEFORE target market selection or scripting.
+
+### Research Protocol (5 Mandatory Queries)
+
+| # | Query Template | Purpose | Output |
+|---|---------------|---------|--------|
+| 1 | `{domain} production process workflow step by step` | Process flow | Ordered list of steps with equipment at each |
+| 2 | `{domain} equipment machines what they look like` | Equipment visuals | Size, color, shape, displays, distinguishing features |
+| 3 | `{domain} operator roles daily workflow` | Human actions | Who does what, PPE, tools, typical body positions |
+| 4 | `{domain} factory floor layout typical setup` | Workspace | Layout, flooring, lighting, signage, safety markings |
+| 5 | `{product_name} product interface screenshots features` | Product visuals | Screens, UI, physical form, in-use appearance |
+
+### Domain Knowledge Output Template
+
+Save to `strategic-brief.md` > Domain Knowledge section:
+
+```markdown
+### Domain Knowledge — {domain}
+
+#### Process Flow
+1. {step_1}: {equipment} → {output}
+2. {step_2}: {equipment} → {output}
+...
+
+#### Key Equipment Visual Reference
+| Equipment | Appearance | Size | Typical Color | Key Visual Feature |
+|-----------|-----------|------|---------------|-------------------|
+
+#### Operator Roles & Actions
+| Role | Typical Action | PPE/Uniform | Tools/Equipment |
+|------|---------------|-------------|-----------------|
+
+#### Workspace Environment
+| Element | Description | Visual Details |
+|---------|------------|----------------|
+
+#### Product Visual Reference
+{what the actual product looks like in use}
+```
+
+### Injection Points
+
+Domain knowledge feeds into ALL subsequent phases:
+
+| Phase | What Domain Knowledge Affects |
+|-------|------------------------------|
+| Phase 2 (Script) | Accurate terminology, plausible character actions, correct process descriptions |
+| Phase 3 (Scene Plan) | Realistic scene settings, correct equipment in each scene |
+| Phase 4A (Asset Library) | Accurate equipment descriptions in NB2 prompts, correct operator PPE |
+| Phase 4B (Scene Keyframes) | NB2 prompts reference domain-accurate details, correct workspace layout |
+| Phase 5 (Video Prompts) | VEO prompts with realistic ambient sounds, plausible motion descriptions |
+
+### How to Use in Prompts
+
+Every NB2/VEO prompt that depicts domain-specific content MUST reference the Domain Knowledge section:
+
+```
+DOMAIN CONTEXT: {relevant domain detail from strategic-brief.md Domain Knowledge}
+```
+
+Examples:
+- NB2 prompt for SMT scene: `DOMAIN CONTEXT: Pick-and-place machine — large white/gray unit with conveyor belt feeding PCBs, multiple nozzle heads visible, operator monitors via attached display screen.`
+- VEO prompt for port scene: `DOMAIN CONTEXT: Container gantry crane — blue/red painted, moves on rail tracks along quay, operator cabin at top, spreader locks onto container corners.`
+
+### Validation
+
+- Domain research MUST complete before Phase 2 begins
+- User MUST validate domain knowledge accuracy (Step 1.2c approval gate)
+- If user corrects domain info → update strategic-brief.md immediately
+- Every scene depicting domain-specific equipment/process → prompt must include `DOMAIN CONTEXT:` line

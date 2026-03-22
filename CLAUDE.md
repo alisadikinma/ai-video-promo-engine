@@ -81,6 +81,7 @@ Phase 1: BRAINSTORM          → Output: strategic-brief.md + cast-profile.md
   ├─ Cast builder (1-5 characters, Utama/Pendamping roles)
   ├─ Institution detection + costume confirmation
   ├─ Product discovery + tech doc upload
+  ├─ **Domain Deep Research (5 WebSearch queries — process, equipment, roles, workspace, product)**
   ├─ Target market, awareness level, platform selection
   ├─ Emotional core discovery
   ├─ Storyline input (user freeform / brainstorm / reference) + 7-beat arc mapping
@@ -153,12 +154,14 @@ Phase 5: VIDEO PROMPTS (VEO)   → Output: video-prompts.md
 ### Critical Audio Rules
 
 - Audio is NEVER optional — unspecified = VEO guesses random sounds
-- Presenter scenes: `[Character] says: text` (colon syntax, NEVER quotation marks) — lip sync ON, face >30% frame
-- B-Roll scenes: `Voiceover:` NOT `says:` — no lip sync, music mandatory
+- Presenter scenes: `Host says: text` (generic role, colon syntax) — NEVER real person names (safety filter). Lip sync ON, face >30% frame
+- B-Roll scenes: `Voice-over narrator, [tone]: text` — NEVER bare `Voiceover:` (lip-syncs to visible character). Every B-Roll MUST have VO narration + `> POST-PROD VO:` backup
+- NEVER use em dash `—` in dialogue/voiceover text — VEO audio engine mistranslates. Use `,` or `. `
 - Always add: `no subtitles, no audience sounds, no text overlays`
-- See `image-video-gen/02-veo-production-guide.md` for full audio specs and duration rules
+- VEO prompts: NO face ref filenames (`ref/cast-c{N}-face.png`) — use generic continuity language. Face refs are NB2-only.
+- See `image-video-gen/02-veo-production-guide.md` for full audio specs, safety filter rules, and duration rules
 
-### VEO 3.1 Mode Selection (Mutual Exclusivity)
+### VEO 3.1 Mode Selection (Mutual Exclusivity + Safety Filter)
 
 ```
 Need consistent CHARACTER across shots?
@@ -166,9 +169,13 @@ Need consistent CHARACTER across shots?
 │         Cannot combine with First+Last Frame
 │
 └── NO, need controlled TRANSITION between two states?
-    ├── YES → "First + Last Frame" (Keyframe Control)
-    │         Generate START image (NB2) + END image (NB2)
-    │         VEO interpolates the motion between them
+    ├── YES → Does scene have FACE >30% of frame?
+    │         ├── YES → "Single I2V" (start frame only)
+    │         │         Safety filter rejects 2 face images
+    │         │
+    │         └── NO → "First + Last Frame" (Keyframe Control)
+    │                   Generate START (NB2) + END (NB2)
+    │                   Only for faceless scenes (dashboards, products, environments)
     │
     └── NO, need to CONTINUE an existing clip?
         └── "Scene Extension" (Extend)
@@ -177,6 +184,7 @@ Need consistent CHARACTER across shots?
 ```
 
 **CRITICAL: Ingredients ≠ First+Last Frame. They are MUTUALLY EXCLUSIVE. Pick ONE per generation.**
+**SAFETY: First+Last Frame with 2 photorealistic face images → rejected as "prominent people." Use single I2V for face-dominant scenes.**
 
 ### Key Technical Rules
 
@@ -187,6 +195,66 @@ Need consistent CHARACTER across shots?
 - VEO specs (resolution, duration, extensions, prompt limits) in `image-video-gen/02-veo-production-guide.md`.
 - NB2 parameters (CFG, denoise, thinking mode, identity lock) in `image-video-gen/01-nb2-image-generation.md`.
 - Cinematography defaults per content type in `image-video-gen/04-cinematography-lookup.md`.
+
+### Domain Deep Research (MANDATORY — Step 1.2c)
+
+AI is blind about specific product domains. Without domain knowledge, AI generates wrong machines, wrong processes, wrong operator actions, wrong equipment. Example: for "SMT production line," AI generates random factory scenes instead of actual pick-and-place machines, reflow ovens, and AOI inspection stations.
+
+**Protocol:** After product discovery (Step 1.2), use WebSearch to build domain knowledge:
+
+| # | Query | Purpose |
+|---|-------|---------|
+| 1 | `{domain} production process workflow step by step` | Process flow |
+| 2 | `{domain} equipment machines what they look like` | Equipment visuals |
+| 3 | `{domain} operator roles daily workflow` | Human actions, PPE, tools |
+| 4 | `{domain} factory floor layout typical setup` | Workspace environment |
+| 5 | `{product_name} product interface screenshots features` | Product appearance |
+
+Output saved to `strategic-brief.md` > Domain Knowledge section. Feeds into ALL subsequent phases. Every NB2/VEO prompt depicting domain-specific content includes `DOMAIN CONTEXT:` line.
+
+**HARD RULE:** Domain research MUST complete before Phase 2 (Script). Script without domain knowledge = inaccurate terminology, wrong visuals, implausible actions.
+
+See `global-promo-config.md` Section 24.
+
+### Scene Logic Realism (7-Point)
+
+Every NB2/VEO prompt must pass 7 realism checks to prevent "stock photo generic" output:
+
+1. **Environment Accuracy** — location matches cultural research, architecture/vegetation/signage match real location
+2. **Human Behavior Realism** — workers work, supervisors supervise, no "standing and smiling at camera" in action scenes
+3. **Data/Display Consistency** — dashboard numbers, ANPR readings, metrics consistent across all scenes
+4. **Uniform & Rank Accuracy** — institutional uniforms match rank/role (supervisor ≠ operator uniform, correct epaulettes/stripes)
+5. **Explicit Negatives** — prompt states what should NOT appear ("no outdoor elements" for indoor, "no sunlight" for night)
+6. **Reference Photo Enforcement** — every element with ref/ image uses it, user photos = ground truth
+7. **Timeline & Shift Consistency** — time-of-day/lighting matches across connected scenes, PPE matches shift
+
+Full checklist and per-prompt algorithm in `script-to-scene-bridge.md` Section 7B.
+
+### Character Portrait-First Rule
+
+**Any character in 2+ scenes MUST have standalone face portrait generated FIRST in Phase 4A.** Text descriptions alone = different faces every time. Applies to cast members AND recurring named extras.
+
+- Cast Pemeran Utama: face → body → costume → scene (mandatory chain)
+- Cast Pemeran Pendamping: face → scene (minimum)
+- Recurring extras (2+ scenes): face portrait in Phase 4A FIRST
+- Scene keyframes MUST reference the portrait — NB2 injects `ref/cast-c{N}-face.png`, VEO uses generic continuity
+
+See `global-promo-config.md` Section 18.
+
+### Narrative Arc Consistency
+
+Connected scenes MUST explicitly reference each other. Every NB2/VEO prompt includes a `NARRATIVE CONTEXT:` block:
+
+```
+NARRATIVE CONTEXT:
+  Previous: Scene {N-1} — {what happened}.
+  This scene: {what happens now and WHY}.
+  Next: Scene {N+1} — {what this scene sets up}.
+  Visual breadcrumb: {shared element connecting adjacent scenes}.
+  Emotional arc: {start emotion} → {end emotion}.
+```
+
+Key rules: name the connection, add visual breadcrumbs (shared props/screens/landmarks), state cause-effect chains, share environment references, maintain character state continuity, pin data labels in UI scenes. See `script-to-scene-bridge.md` Section 7C.
 
 ### Cast System (Multi-Character)
 
@@ -307,7 +375,12 @@ All configurable values live in `reference/global-promo-config.md` — single so
 | Wrong target market tone | Check F1 Audience Psychology Matrix for correct psychographic profile |
 | Missing emotional beats | Check 7-Beat Arc compliance — all beats mandatory |
 | Plastic texture in image | Over-denoising — prompt "visible pores", "natural grain", "micro-scratches" |
-| B-Roll voiceover rendered as lip sync | B-Roll should use `Voiceover:` NOT `says:` — no lip sync for B-Roll |
+| B-Roll voiceover rendered as lip sync | Bare `Voiceover:` assigns speech to visible character — use `Voice-over narrator, [tone]: text` (VEO treats narrator as off-screen) |
+| "Prominent people" safety error | Real person name in VEO `says:` + photorealistic face — use `Host says:` / `Presenter says:`, NEVER real names. NB2 can still use real names. |
+| "Prominent people" on First+Last Frame | Two photorealistic face images uploaded to VEO — use single I2V (start frame only) for face-dominant scenes (face >30% frame) |
+| Em dash audio artifact | `—` in says:/narrator: text — VEO audio engine mistranslates em dashes. Replace with `,` or `. ` |
+| B-Roll scene has no narration | Silent B-Roll breaks continuous VO flow — every B-Roll MUST have `Voice-over narrator, [tone]: text` + `> POST-PROD VO:` backup |
+| Face ref filename in VEO prompt | `ref/cast-c{N}-face.png` in VEO prompt is useless and may trigger safety filter — face ref injection is NB2-only. VEO uses `Maintain visual continuity with reference frame character appearance.` |
 | Identity conflict between cast members | Different characters look too similar — use distinct clothing + accessories + positioning per character |
 | Wrong character appears in scene | NB2 prompt missing specific `ref/cast-c{N}-face.png` — each prompt must reference exact cast slot |
 | Costume doesn't match institution | Wrong/generic uniform generated — use `ref/costume-{institution}.png` as reference, describe badge/emblem details |
@@ -331,8 +404,28 @@ All configurable values live in `reference/global-promo-config.md` — single so
 | User doesn't know where to save output | Missing Output filename — every NB2 prompt needs explicit `**Output →** ref/filename.png` line |
 | Costume inappropriate for climate | No climate-aware check — cross-check costume vs location climate after cultural research (Step 3.5.2a) |
 | Scene keyframe describes element from scratch | Asset-first violation — if element has ref in Phase 4A, scene keyframe MUST reference it, not describe from text |
+| Identity conflict between cast members | Different characters look too similar — use distinct clothing + accessories + positioning per character |
+| Wrong character appears in scene | NB2 prompt missing specific `ref/cast-c{N}-face.png` — each prompt must reference exact cast slot |
+| Costume doesn't match institution | Wrong/generic uniform generated — use `ref/costume-{institution}.png` as reference, describe badge/emblem details |
+| Missing ref blocks Phase 4 | ref-manifest.md validation failed — upload ALL required refs to `{project}/ref/` per manifest |
+| Multi-char dialogue overlap | VEO renders garbled speech — lip sync is 1 speaker at a time, use sequential delivery with reaction pauses |
+| Cast member inconsistent across scenes | Weak reference phrase — use EXACT verbatim phrase from cast-profile.md in EVERY NB2 prompt |
+| Wrong language in dialogue | narration_language not applied in Phase 2 — check strategic-brief.md Language field, ensure script uses it |
+| Generic stock-photo environment | Scene Logic Realism check 1 failed — prompt must reference cultural research + ref/env-{location}.png, not generic "modern office" |
+| Workers posing instead of working | Scene Logic Realism check 2 failed — direct plausible actions: "supervisor reviewing clipboard," not "supervisor smiling at camera" |
+| Dashboard numbers inconsistent | Scene Logic Realism check 3 failed — pin specific numbers and names across all scenes showing same data |
+| Supervisor in operator uniform | Scene Logic Realism check 4 failed — uniform details must match institutional rank hierarchy (stripes, helmet color, vest) |
+| AI adds wrong elements to scene | Scene Logic Realism check 5 failed — add explicit negatives: "no outdoor elements," "no sunlight" for indoor/night |
+| Dawn scene followed by midday lighting | Scene Logic Realism check 7 failed — timeline consistency: connected scenes must share same time-of-day lighting |
+| Character face changes between scenes | Character portrait-first rule violated — generate standalone face ref in Phase 4A Tier 1 BEFORE any scene keyframe |
+| Scenes feel disconnected / no flow | Narrative arc consistency missing — add NARRATIVE CONTEXT block: connections, visual breadcrumbs, cause-effect chains |
+| Same dashboard shows different names | Data not pinned across scenes — use exact same text/numbers in every prompt showing the same data display |
+| Wrong machine/equipment in scene | No domain research — Step 1.2c Domain Deep Research must complete before script. WebSearch 5 queries about domain process/equipment/roles |
+| Operator doing wrong action | Domain knowledge missing — check strategic-brief.md Domain Knowledge > Operator Roles table for plausible actions per role |
+| Generic "factory" instead of specific domain | Missing DOMAIN CONTEXT line in prompt — inject specific equipment/process details from Domain Knowledge section |
+| Product UI/interface looks nothing like real thing | No product research — WebSearch "{product_name} product interface screenshots features" in Step 1.2c |
 
 ---
 
-**Version:** 1.5.0
-**Last Updated:** March 2026
+**Version:** 1.6.0
+**Last Updated:** 2026-03-22

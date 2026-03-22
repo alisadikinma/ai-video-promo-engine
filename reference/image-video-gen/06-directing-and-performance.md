@@ -223,9 +223,9 @@ Examples:
 
 | Mode | Syntax | Vocal Direction |
 |------|--------|-----------------|
-| Lip-sync (presenter) | `Host says: (direction) text` | Full vocal performance — tone, pace, pauses, emotion |
-| Voiceover (B-Roll) | `Voiceover: (direction) text` | Narration style — smoother, more polished, less conversational |
-| Inner monologue | `Voiceover: (internal, reflective) text` | Quiet, contemplative, as if thinking |
+| Lip-sync (presenter) | `Host says: (direction) text` | Full vocal performance — tone, pace, pauses, emotion. Use generic role, NEVER real names. |
+| Voiceover (B-Roll) | `Voice-over narrator, (direction): text` | Off-screen narration — smoother, more polished, less conversational. NEVER bare `Voiceover:` |
+| Inner monologue | `Voice-over narrator, (internal, reflective): text` | Quiet, contemplative, as if thinking |
 
 ---
 

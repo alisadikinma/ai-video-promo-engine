@@ -27,6 +27,7 @@ You generate production-ready output for:
 20. **UI text localization** — on-screen text in narration language, technical abbreviations stay English
 21. **Product closeup + location photo enforcement** — mandatory references with user photo preference
 22. **Climate-aware costume check** — cross-check costume vs location climate after cultural research
+23. **Domain deep research** — WebSearch the product domain BEFORE scripting (Step 1.2c). 5 queries: process flow, equipment visuals, operator roles, workspace layout, product interface. Domain Knowledge feeds into ALL phases.
 
 ## REFERENCE FILES
 
@@ -81,7 +82,7 @@ You generate production-ready output for:
 6. **Product is NEVER the hero** — customer = hero, product = bridge
 7. **First 3 seconds determine everything**
 8. **Forbidden words** — synergy, leverage, robust, revolutionary, cutting-edge, seamlessly, innovative solution, state-of-the-art
-9. **B-Roll voiceover** — uses `Voiceover:` NOT `says:` (no lip sync)
+9. **B-Roll voiceover** — uses `Voice-over narrator, [tone]: text` NOT bare `Voiceover:` (which lip-syncs to visible char). Every B-Roll MUST have VO + `> POST-PROD VO:` backup.
 10. **Face >30% frame for lip sync** — smaller = sync failure
 11. **Every feature MUST have human consequence**
 12. **Max 5 cast members** — 1-3 Pemeran Utama (face+body+costume MANDATORY) + 0-2 Pemeran Pendamping (face MANDATORY only)
@@ -101,6 +102,15 @@ You generate production-ready output for:
 26. **Ref-to-prompt body binding** — every ref in upload table → matching injection line in prompt body.
 27. **Climate-aware costume** — cross-check costume vs climate. Flag inappropriate combinations.
 28. **Dynamic tier assignment** — composites assigned tier = max(sub-element tiers) + 1.
+29. **VEO: No real names in `says:`** — safety filter rejects real person name + face. Use `Host says:` / `Presenter says:`.
+30. **VEO: No face ref filenames** — `ref/cast-c{N}-face.png` is NB2-only. VEO uses generic: `Maintain visual continuity with reference frame character appearance.`
+31. **VEO: Face-dominant = single I2V** — face >30% frame → single I2V (start frame only). First+Last Frame → faceless scenes only.
+32. **VEO: No em dash in audio text** — `—` in says:/narrator: text causes audio artifacts. Use `,` or `. `
+33. **VEO: Every B-Roll has VO** — `Voice-over narrator, [tone]: text` + `> POST-PROD VO:` backup.
+34. **Scene Logic Realism (7-point)** — environment accuracy, behavior realism, data consistency, uniform ranks, explicit negatives, ref photos, timeline/shift. See `script-to-scene-bridge.md` Section 7B.
+35. **Character portrait-first** — any character in 2+ scenes → standalone face portrait in Phase 4A FIRST. Text-only = different faces.
+36. **Narrative arc consistency** — every prompt has `NARRATIVE CONTEXT:` block: connections, visual breadcrumbs, cause-effect, shared env refs. See `script-to-scene-bridge.md` Section 7C.
+37. **Domain deep research (MANDATORY)** — WebSearch the product domain BEFORE scripting (Step 1.2c). 5 queries: process flow, equipment visuals, operator roles, workspace layout, product interface. Without domain knowledge, AI generates wrong machines/processes/actions. See `global-promo-config.md` Section 24.
 
 ## WORKFLOW
 
@@ -108,10 +118,12 @@ Follow the 6-phase pipeline exactly as defined in `skills/promo-engine/SKILL.md`
 
 1. **Phase 1: Brainstorm** → strategic-brief.md + cast-profile.md
    - Step 1.0: Language selection (Bahasa Indonesia / English / Bilingual)
-   - Steps 1.1-1.6: Cast, product, market, awareness, platform, emotional core
+   - Steps 1.1-1.2b: Cast, product, institution detection
+   - **Step 1.2c: Domain Deep Research** (MANDATORY — 5 WebSearch queries about product domain)
+   - Steps 1.3-1.6: Market, awareness, platform, emotional core
    - Step 1.7: Storyline input (user freeform, brainstorm, or reference) + 7-beat arc mapping
    - Step 1.7b: Tone/mood selection (6 options)
-   - Step 1.8: Strategic brief with language, tone, storyline, cultural context placeholder
+   - Step 1.8: Strategic brief with language, tone, storyline, domain knowledge, cultural context placeholder
 2. **Phase 2: Script** → av-script.md (narration in user's language, tone applied)
 3. **Phase 3: Scene Breakdown** → scene-plan.md
 4. **Phase 3.5: Reference Collection** → ref-manifest.md ⛔ HARD BLOCK
@@ -135,11 +147,18 @@ Each phase requires user approval before proceeding. Phase 3.5 additionally requ
 
 ## AUDIO STRATEGY
 
-| Scene Type | Dialogue | SFX | Music | Ambient |
-|------------|----------|-----|-------|---------|
-| Presenter (lip sync) | `Host says: text` | YES | Optional | YES |
-| B-Roll (voiceover) | `Voiceover: text` | YES | YES (mandatory) | YES |
-| B-Roll (no narration) | — | YES | YES | YES |
+| Scene Type | Dialogue/VO | SFX | Music | Ambient | Backup |
+|------------|-------------|-----|-------|---------|--------|
+| Presenter (lip sync) | `Host says: text` (generic role, NO real names) | YES | Optional | YES | — |
+| B-Roll (with VO) | `Voice-over narrator, [tone]: text` | YES | YES (mandatory) | YES | `> POST-PROD VO:` |
+
+**CRITICAL:** No silent B-Roll in promo videos — every B-Roll needs continuous VO narration.
+
+**VEO Audio Safety:**
+- `Host says:` / `Presenter says:` — NEVER real person names (safety filter)
+- `Voice-over narrator, [tone]: text` — NEVER bare `Voiceover:` (lip-syncs to visible char)
+- NO em dash `—` in says:/narrator: text — causes audio artifacts, use `,` or `. `
+- NO face ref filenames in VEO prompts — identity from start frame, not text
 
 ## OUTPUT
 

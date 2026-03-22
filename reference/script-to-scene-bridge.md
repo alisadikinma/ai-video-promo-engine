@@ -65,12 +65,20 @@ FOR each scene:
             → Ingredients mode (new ref images)
 
     IF scene shows STATE CHANGE (before→after, open→close):
+        IF face >30% of frame (presenter, talking head, character CU):
+            → Single I2V mode (start frame only)
+            → ⚠️ Safety filter rejects 2 face images in First+Last Frame
+        ELSE (dashboard, product, environment, wide shot):
+            → First+Last Frame mode
+            → Generate START image (NB2) + END image (NB2)
+
+    IF scene is B-ROLL (product/environment, no dominant face):
         → First+Last Frame mode
         → Generate START image (NB2) + END image (NB2)
 
-    IF scene is B-ROLL (no character, product/environment):
-        → First+Last Frame mode
-        → Generate START image (NB2) + END image (NB2)
+    IF scene is B-ROLL WITH visible character face:
+        → Single I2V mode (start frame only)
+        → ⚠️ Safety filter rejects 2 face images in First+Last Frame
 
     IF scene CONTINUES previous scene (same location, same action):
         → Extend mode
@@ -78,6 +86,7 @@ FOR each scene:
         → Max: +7s per hop
 
     NEVER combine Ingredients + First+Last Frame in same generation
+    FACE SAFETY: First+Last Frame → ONLY for faceless scenes (face <30% frame)
 ```
 
 ---
@@ -148,9 +157,12 @@ CAMERA: {shot size} {lens} {aperture}, {angle}.
 LIGHTING: {pattern} {ratio}, {kelvin}K {film stock}.
 ATMOSPHERE: {atmosphere type}.
 CULTURAL CONTEXT: {from strategic-brief.md Cultural Context — local architecture, landmarks, plate codes, ethnicity of background figures}.
+DOMAIN CONTEXT: {from strategic-brief.md Domain Knowledge — accurate equipment description, correct process step, realistic operator action for this scene}.
 TECHNICAL: 16:9 landscape, {resolution}, CFG {cfg}, Denoise {denoise}, Thinking High.
 TONE: {atmosphere keywords from global-promo-config.md Section 13 per video_tone}.
 WARDROBE: {wardrobe from creator profile}.
+NARRATIVE CONTEXT: Previous scene {N-1} showed {summary}. This scene {action + cause}. Visual breadcrumb: {shared element with adjacent scene}.
+EXPLICIT NEGATIVES: No {inappropriate element 1}, no {inappropriate element 2}.
 OUTPUT: 16:9 LANDSCAPE aspect ratio. Width > Height. Do NOT crop or change ratio.
 ```
 
@@ -179,6 +191,8 @@ CULTURAL CONTEXT: {SAME cultural context — verbatim}.
 TECHNICAL: 16:9 landscape, {SAME resolution}, CFG {cfg}, Denoise {denoise}, Thinking High.
 TONE: {SAME tone atmosphere — verbatim}.
 WARDROBE: {SAME wardrobe — verbatim}.
+NARRATIVE CONTEXT: {SAME narrative context — verbatim from start frame}.
+EXPLICIT NEGATIVES: {SAME explicit negatives — verbatim from start frame}.
 OUTPUT: 16:9 LANDSCAPE aspect ratio. Width > Height. Do NOT crop or change ratio.
 ```
 
@@ -293,20 +307,28 @@ VEO Ingredients accepts up to 3 reference images — use 1 per character (max 3 
 
 ### Presenter Scene (Lip Sync) Template
 
+**VEO Mode:** Single I2V (start frame only) — safety filter rejects First+Last Frame with face >30%.
+
 ```
 ~{duration}s, {resolution}, {aspect_ratio}.
 Camera: {camera_movement from 04-cinematography-lookup.md}, {speed}.
 Subject: {micro-movements — subtle eye blinks every 2-3 seconds, gentle breathing motion}.
-Maintain exact facial identity from reference image: ref/cast-c{N}-face.png.
-{If institutional: Wearing exact uniform as shown in reference image: ref/cast-c{N}-costume.png.}
-{Character} says: {narration text from script — max 8-15 words per 8s}.
+Maintain visual continuity with reference frame character appearance throughout clip.
+Host says: {narration text from script — max 8-15 words per 8s, NO em dash, use comma/period instead}.
 Expression shift: {start_emotion} to {end_emotion} over {duration}s.
 SFX: {sound effects from script}.
 Ambient: {background atmosphere + music direction}.
 Tone atmosphere: {from global-promo-config.md Section 13 per video_tone}.
+Domain context: {from strategic-brief.md Domain Knowledge — equipment/process detail relevant to this scene}.
+Narrative context: Continues from scene {N-1} where {summary}. {Visual breadcrumb shared with adjacent scene}.
 {veo_negative_prompt from global-promo-config.md}
-Maintain exact lighting, environment, appearance from reference image.
+Maintain exact lighting, environment, appearance from reference frame.
 ```
+
+**CRITICAL VEO DIALOGUE RULES:**
+- Use `Host says:` / `Presenter says:` / `Speaker says:` — NEVER real person names (safety filter)
+- NO em dash `—` in dialogue text — VEO audio engine mistranslates it, use `,` or `. ` instead
+- Face reference filenames (`ref/cast-c{N}-face.png`) belong ONLY in NB2 prompts, NOT VEO prompts
 
 **Required Reference Images Table (include after EACH VEO prompt):**
 ```markdown
@@ -319,22 +341,33 @@ Maintain exact lighting, environment, appearance from reference image.
 
 ### B-Roll Scene (Voiceover, No Lip Sync) Template
 
+**EVERY B-Roll scene MUST have voiceover narration** — no silent B-Roll in promo videos. VO text comes from av-script.md, segmented per scene (max 12-15 words per 8s clip).
+
 ```
 ~{duration}s, {resolution}, {aspect_ratio}.
 Camera: {camera_movement}, {speed}.
 Subject: {product/environment action from script}.
-{If product visible: Match exact product from reference image: ref/product-{name}.png.}
-{If environment: Match environment from reference image: ref/env-{location}.png.}
-{If brand visible: Use exact brand asset from reference image: ref/brand-{asset}.png.}
+{If characters visible: Maintain visual continuity with reference frame character appearance.}
 {ambient_motion — floating particles, screen content shifting, etc.}
-Voiceover: {narration text from script}.
+Voice-over narrator, {tone from video_tone}: {narration text from script — max 12-15 words per 8s, NO em dash, use comma/period instead}.
 SFX: {sound effects}.
 Ambient: {background music + atmosphere}.
 Tone atmosphere: {from global-promo-config.md Section 13 per video_tone — e.g., "lighthearted, bright" or "tense, dramatic"}.
 Cultural context: {from strategic-brief.md — local ambient sounds, weather atmosphere, architectural backdrop}.
+Domain context: {from strategic-brief.md Domain Knowledge — equipment/process detail relevant to this scene}.
+Narrative context: Continues from scene {N-1} where {summary}. {Visual breadcrumb shared with adjacent scene}.
 {veo_negative_prompt}
-No character lip sync. Voiceover is background narration track only.
 ```
+
+> **POST-PROD VO:** "{same narration text as above}" — fallback if VEO narrator layer fails. Record separately and overlay in post-production.
+
+**CRITICAL B-ROLL AUDIO RULES:**
+- ALWAYS use `Voice-over narrator, {tone}: text` — VEO treats "narrator" as off-screen entity
+- NEVER use bare `Voiceover: text` — VEO assigns speech to any visible on-screen character
+- NEVER use `[Character name] says:` for background narration — triggers lip sync
+- NO em dash `—` in voiceover text — replace with `,` or `. `
+- Face reference filenames (`ref/*.png`) do NOT go in VEO prompts — use generic continuity language
+- Always include `> POST-PROD VO:` backup line outside the prompt block
 
 **Required Reference Images Table (include after EACH VEO prompt):**
 ```markdown
@@ -347,14 +380,27 @@ No character lip sync. Voiceover is background narration track only.
 
 ### Extension Prompt Template
 
+**For lip sync extensions:**
 ```
 Continue from previous clip. {new_action from next script beat}.
 Camera continues {same_movement} at {same_speed}.
 Maintain lighting, environment, character appearance.
-{Character} says: {next_dialogue — max 8-15 words}.
+Host says: {next_dialogue — max 8-15 words, NO em dash, use comma/period}.
 Audio continues: {same_ambient}, {new_sfx if any}.
 {veo_negative_prompt}
 ```
+
+**For B-Roll extensions (voiceover):**
+```
+Continue from previous clip. {new_action from next script beat}.
+Camera continues {same_movement} at {same_speed}.
+Maintain lighting, environment, character appearance.
+Voice-over narrator, {tone}: {next_narration — max 12-15 words, NO em dash}.
+Audio continues: {same_ambient}, {new_sfx if any}.
+{veo_negative_prompt}
+```
+
+> **POST-PROD VO:** "{same narration text}" — fallback for B-Roll extensions.
 
 ### Multi-Character Presenter Scene (Sequential Dialogue)
 
@@ -364,19 +410,20 @@ When 2+ characters have dialogue in the same scene:
 ~{duration}s, {resolution}, {aspect_ratio}.
 Camera: {camera_movement — typically wider shot to fit both characters}, {speed}.
 Character {A} and Character {B} in {setting from scene}.
-Maintain exact facial identity from reference image: ref/cast-c{A}-face.png for Character {A}.
-Maintain exact facial identity from reference image: ref/cast-c{B}-face.png for Character {B}.
-{If institutional: Character {A} wearing exact uniform from ref/cast-c{A}-costume.png.}
-{If institutional: Character {B} wearing exact uniform from ref/cast-c{B}-costume.png.}
-Character {A} says: {dialogue line — max 8-15 words}.
+Maintain visual continuity with reference frame character appearances throughout clip.
+Speaker A says: {dialogue line — max 8-15 words, NO em dash}.
 [0.3-0.5s pause — Character {B} reacts with {micro-expression}]
-Character {B} says: {response — max 8-15 words}.
+Speaker B says: {response — max 8-15 words, NO em dash}.
 Both characters: {shared micro-movements — subtle breathing, natural eye contact shifts}.
 SFX: {sound effects from script}.
 Ambient: {background atmosphere + music direction}.
 {veo_negative_prompt from global-promo-config.md}
-Maintain exact appearance from reference images for ALL characters.
+Maintain visual continuity with reference frame appearances for all characters.
 ```
+
+**Multi-character dialogue rules:**
+- Use `Speaker A says:` / `Speaker B says:` — NEVER real person names
+- NO face ref filenames in VEO prompts — identity comes from start frame / ingredient images
 
 **Required Reference Images Table (include after EACH multi-char VEO prompt):**
 ```markdown
@@ -394,25 +441,27 @@ Maintain exact appearance from reference images for ALL characters.
 - Max 2 dialogue turns per 8s clip (each turn 3-6s)
 - If scene needs more dialogue turns: use Extend or split into multiple clips
 
-### Multi-Character B-Roll Scene (No Dialogue)
+### Multi-Character B-Roll Scene (Voiceover, No Dialogue)
 
 ```
 ~{duration}s, {resolution}, {aspect_ratio}.
 Camera: {camera_movement}, {speed}.
 Character {A} and Character {B} {action from script — e.g., walking through facility, reviewing dashboard}.
-Maintain exact facial identity from reference image: ref/cast-c{A}-face.png for Character {A}.
-Maintain exact facial identity from reference image: ref/cast-c{B}-face.png for Character {B}.
-{If institutional: Character {A} wearing exact uniform from ref/cast-c{A}-costume.png.}
-{If institutional: Character {B} wearing exact uniform from ref/cast-c{B}-costume.png.}
-{If product visible: Match exact product from reference image: ref/product-{name}.png.}
+Maintain visual continuity with reference frame character appearances throughout clip.
 {ambient_motion — characters interact naturally with environment}.
-Voiceover: {narration text from script}.
+Voice-over narrator, {tone}: {narration text from script — max 12-15 words per 8s, NO em dash}.
 SFX: {sound effects}.
 Ambient: {background music + atmosphere}.
 {veo_negative_prompt}
-No character lip sync. Voiceover is background narration track only.
-Maintain appearance consistency for all characters from reference images.
+Maintain visual continuity with reference frame appearances for all characters.
 ```
+
+> **POST-PROD VO:** "{same narration text}" — fallback if VEO narrator layer fails.
+
+**Multi-char B-Roll rules:**
+- `Voice-over narrator, {tone}: text` — NOT `Voiceover:`, NOT `[Name] says:`
+- NO face ref filenames in VEO prompt — identity from start frame / ingredient images
+- Always include POST-PROD VO backup
 
 **Required Reference Images Table:**
 ```markdown
@@ -467,14 +516,17 @@ For each scene, explicitly plan all 3 audio layers:
 | Scene Type | Layer 1: Dialogue | Layer 2: SFX | Layer 3: Ambient |
 |------------|-------------------|--------------|------------------|
 | Presenter (lip sync) | `Host says: {text}` | `SFX: {effect}` | `Ambient: {atmosphere}` |
-| B-Roll (voiceover) | `Voiceover: {text}` | `SFX: {effect}` | `Ambient: {music + atmosphere}` |
-| B-Roll (no narration) | — | `SFX: {effect}` | `Ambient: {music + atmosphere}` |
+| B-Roll (voiceover) | `Voice-over narrator, {tone}: {text}` | `SFX: {effect}` | `Ambient: {music + atmosphere}` |
 | Product demo | `Host says: {text}` or VO | `SFX: UI clicks, tech sounds` | `Ambient: subtle music` |
 | Testimonial | `Speaker says: {text}` | — | `Ambient: soft room tone` |
 
 **Critical Rules:**
 - ALL 3 layers must be specified (or explicitly marked as silent)
 - Unspecified audio = VEO guesses random sounds
+- No silent B-Roll — every B-Roll needs `Voice-over narrator` + `> POST-PROD VO:` backup
+- Use `Voice-over narrator, [tone]: text` NOT bare `Voiceover:` (lip-syncs to visible char)
+- Use `Host says:` / `Presenter says:` — NEVER real person names (safety filter)
+- NO em dash `—` in dialogue/voiceover text — replace with `,` or `. `
 - Pronunciation: spell phonetically for non-English words
 - Always add: `no subtitles, no audience sounds`
 - Dialogue uses colon syntax (NEVER quotation marks)
@@ -485,10 +537,14 @@ For each scene, explicitly plan all 3 audio layers:
 
 Before finalizing each scene's prompts:
 
+### 7A. Technical Checklist
 - [ ] NB2 aspect ratio matches VEO target ratio
 - [ ] VEO mode is correct (Ingredients ≠ First+Last Frame)
+- [ ] Face-dominant scenes use single I2V (NOT First+Last Frame)
 - [ ] Audio all 3 layers specified
-- [ ] Dialogue uses colon syntax (not quotes)
+- [ ] Dialogue: `Host says:` (generic role, NO real names, NO em dash)
+- [ ] Voiceover: `Voice-over narrator, [tone]: text` (NOT bare `Voiceover:`)
+- [ ] Every B-Roll has VO narration + `> POST-PROD VO:` backup
 - [ ] Resolution = 720p if extending, 1080p if final-only
 - [ ] Creator reference phrase verbatim (if presenter scene)
 - [ ] Wardrobe consistent across all clips in scene
@@ -498,15 +554,67 @@ Before finalizing each scene's prompts:
 - [ ] Extension prompt references previous clip context
 - [ ] Transition instruction added to scene-ending clip
 - [ ] All cast members' reference phrases used verbatim (not generic "creator")
-- [ ] Multi-character scenes specify EACH character's identity ref (ref/cast-c{N}-face.png)
+- [ ] Multi-character NB2 scenes specify EACH character's identity ref (ref/cast-c{N}-face.png)
+- [ ] VEO prompts use generic continuity (NO face ref filenames)
 - [ ] Character hierarchy correct (Pemeran Utama prominent, Pendamping supporting)
 - [ ] Costume matches institution ref (if institutional) — ref/cast-c{N}-costume.png
 - [ ] ref-manifest.md validated before generating any prompts (Phase 3.5 gate)
 - [ ] Max 3 characters per frame (4+ use shot/reverse-shot)
 - [ ] VEO dialogue scenes: 1 speaker at a time, sequential delivery
-- [ ] **All reference images explicitly embedded in prompt text** (not just uploaded as files)
-- [ ] **Reference image injection syntax used** (`maintain exact facial identity from reference image: ref/cast-c{N}-face.png`)
+- [ ] **All reference images explicitly embedded in NB2 prompt text** (not just uploaded as files)
+- [ ] **NB2 reference image injection syntax used** (`maintain exact facial identity from reference image: ref/cast-c{N}-face.png`)
 - [ ] **Required Reference Images table included after EACH prompt** (NB2 and VEO)
+
+### 7B. Scene Logic Realism Checklist (7-Point)
+
+Every NB2 and VEO prompt MUST pass this 7-point realism check. AI defaults to "stock photo generic" — these checks prevent it.
+
+| # | Check | What to Verify | Common AI Failure |
+|---|-------|---------------|-------------------|
+| 1 | **Environment Accuracy** | Location matches cultural research (Step 3.5.2a). Architecture, vegetation, sky, road surface, signage all match the real location. If ref/env-{location}.png exists, prompt references it. | Generic "modern city" instead of specific Dumai pelabuhan / Surabaya industrial zone |
+| 2 | **Human Behavior Realism** | People in scene perform plausible actions for context. Workers work, supervisors supervise, operators operate. Body language matches role and situation. No "standing and smiling at camera" in action scenes. | Everyone poses awkwardly. Worker holds tool wrong. Manager does manual labor. |
+| 3 | **Data/Display Consistency** | Dashboard numbers, ANPR readings, tracking data, screen content are internally consistent and plausible. If Scene 5 shows "98.7% accuracy," Scene 12 must not show "95.2%" unless script explains the change. | Random numbers on every screen. Inconsistent metrics across scenes. |
+| 4 | **Uniform & Rank Accuracy** | Institutional uniforms match rank/role. Supervisor ≠ operator uniform. Manager badge ≠ frontline badge. Epaulettes, stripes, helmet colors, safety vest colors match institutional hierarchy. | Everyone wears identical uniform regardless of rank. Captain has no stripes. |
+| 5 | **Explicit Negatives** | Prompt explicitly states what should NOT appear. If indoor scene: "no outdoor elements." If nighttime: "no sunlight." If clean facility: "no rust, no litter, no peeling paint." AI fills gaps with random elements. | AI adds windows to underground rooms. Puts sunshine in night scenes. Makes new facility look old. |
+| 6 | **Reference Photo Enforcement** | Every visual element with a ref/ image uses it. No text-only descriptions for elements that have reference photos. User photos = ground truth, NEVER override. | AI ignores uploaded gate photo and generates random fantasy gate instead. |
+| 7 | **Timeline & Shift Consistency** | Time of day matches across connected scenes. If establishing shot is "dawn," subsequent scenes keep dawn lighting. Shift patterns (pagi/siang/malam) consistent with narrative. Workers wear appropriate PPE for time/shift. | Dawn establishing shot followed by harsh midday lighting in the next scene. Night shift workers in daylight. |
+
+**How to apply per prompt:**
+
+```
+FOR each NB2/VEO prompt:
+    1. Environment: Does location match cultural research? Does it reference ref/env-*?
+    2. Behavior: Are character actions plausible for their role?
+    3. Data: Are any on-screen numbers consistent with other scenes?
+    4. Uniform: Does rank match uniform details? (if institutional)
+    5. Negatives: Add "No {inappropriate element}" for at least 2 potential AI failures.
+    6. Ref photos: Every element with ref/ file → prompt references it (not text-only).
+    7. Timeline: Does time-of-day/lighting match scene before and after?
+```
+
+### 7C. Narrative Arc Consistency Checklist
+
+Connected scenes MUST explicitly reference each other. Without cross-scene connections, AI generates isolated frames with no narrative flow.
+
+**Rule: Every scene prompt must include a `NARRATIVE CONTEXT:` block.**
+
+```
+NARRATIVE CONTEXT:
+  Previous: Scene {N-1} — {1-line summary of what happened}.
+  This scene: {what happens now and WHY — cause from previous scene}.
+  Next: Scene {N+1} — {what this scene sets up}.
+  Visual breadcrumb: {shared element that connects to adjacent scenes — same prop, same screen, same document, same location angle}.
+  Emotional arc: {emotion at start of this scene} → {emotion at end}.
+```
+
+| Rule | Details | Why |
+|------|---------|-----|
+| **Name the connection** | Each scene prompt states how it connects to the previous and next scene. Not just "continues," but WHAT continues and WHY. | Without explicit connection, AI generates scenes as isolated stock footage. |
+| **Visual breadcrumbs** | At least ONE shared visual element between adjacent scenes. Can be: same prop, same screen content, same document, same background landmark, same character holding same object. | Gives the viewer's eye an anchor across cuts. Without it, each scene feels disconnected. |
+| **Cause-effect chains** | If Scene 5 shows a problem, Scene 6 must reference that specific problem (not a generic "problem"). Use exact language: "The alert from Scene 5 triggers the supervisor response in Scene 6." | AI doesn't understand narrative unless you spell it out. |
+| **Shared environment refs** | Connected scenes in the same location MUST use the same `ref/env-{location}.png`. Different camera angles of SAME location, not different generated environments. | Without shared ref, AI generates subtly different versions of "the same place." |
+| **Character state continuity** | If character was sweating in Scene 3 (outdoor, 33°C), they should still show signs of heat in Scene 4 (same location). If character received news in Scene 7, expression in Scene 8 must reflect it. | AI resets character state between scenes unless explicitly told. |
+| **Name labels in UI scenes** | If dashboard shows employee name "Budi" in Scene 5, ANY subsequent dashboard scene must show "Budi" (not random name). Localize ALL on-screen text per `narration_language`. | AI randomizes text content per generation. Pin it down in every prompt. |
 
 ---
 

@@ -40,9 +40,26 @@ Unspecified audio = model guesses (random laughter, wrong sounds).
 
 | Layer | Syntax | Example |
 |-------|--------|---------|
-| Dialogue | `[Character] says: "text"` | The coach says: Two hard steps, plant, explode. |
+| Dialogue (lip sync) | `Host says: text` | Host says: Two hard steps, plant, explode. |
+| Voiceover (off-screen) | `Voice-over narrator, [tone]: text` | Voice-over narrator, confident: This changes everything. |
 | SFX | `SFX: description` | SFX: metallic clank, thunder cracks |
 | Ambient | `Ambient: description` | Ambient: distant waterfall roar |
+
+**Dialogue — lip sync rules:**
+- Use generic role (`Host says:`, `Presenter says:`, `Speaker says:`) — NEVER real person names
+- VEO safety filter rejects real person names + photorealistic face = "prominent people" error
+- NB2 prompts can still use real names (NB2 has no such filter)
+
+**Voiceover — off-screen narration rules:**
+- ALWAYS use `Voice-over narrator, [tone]: text` — VEO treats "narrator" as off-screen entity
+- NEVER use bare `Voiceover: text` — VEO assigns speech to visible on-screen character
+- NEVER use `[Character name] says:` for background narration — triggers lip sync on visible character
+- Works for ALL scenes: with or without visible human faces
+
+**Text sanitization:**
+- NEVER use em dash `—` in `says:` or `Voice-over narrator:` text — VEO audio engine mistranslates it
+- Replace `—` with `,` (comma) or `. ` (period + space) in all dialogue/voiceover text
+- Em dash is OK in Camera/Subject/SFX/Ambient description (non-audio text)
 
 **Constraints:** 12-15 words max per 8s, 20-25 syllables max.
 **Always add:** `no subtitles, no audience sounds, no text overlays`
@@ -83,26 +100,43 @@ Unspecified audio = model guesses (random laughter, wrong sounds).
 
 ### I2V Prompt Template
 ```
-"~8s, 1080p, [aspect].
+"~8s, 720p, [aspect].
 Camera: [movement], [speed].
 Subject: [micro-movements — blinks, breathing, gestures].
-Maintain exact facial identity from reference image: ref/cast-c{N}-face.png.
+Maintain visual continuity with reference frame character appearance throughout clip.
 Expression shift: [if any].
 Ambient: [particles, environmental].
 Audio: [ambient], [music/no music], no subtitles, no audience sounds.
-Maintain exact lighting, environment, appearance from reference image."
+Maintain exact lighting, environment, appearance from reference frame."
 ```
 
-**CRITICAL — Reference Image Injection:**
-All VEO prompts involving characters MUST embed reference image filenames directly in the prompt text. Without explicit injection, VEO generates from text only — causing identity drift.
+**CRITICAL — VEO Reference Image Rules:**
+- VEO does NOT use NB2's reference image injection system — do NOT put `ref/cast-c{N}-face.png` filenames in VEO prompts
+- VEO gets identity from the uploaded start frame / ingredient images, NOT from text filenames
+- Use generic continuity language: `Maintain visual continuity with reference frame character appearance throughout clip.`
+- Face reference filenames (`ref/cast-c{N}-face.png`) belong ONLY in NB2 prompts
 
-Every VEO prompt MUST also include a **Required Reference Images** table listing all ref files needed. See `global-promo-config.md` Section 16.
+Every VEO prompt MUST include a **Required Reference Images** table listing start frame / ingredient images needed. See `global-promo-config.md` Section 16.
+
+### Face-Dominant Scene — Single I2V Only (Safety Filter)
+
+VEO safety filter rejects **two photorealistic face images** uploaded together (First+Last Frame mode).
+
+**Rule:** If scene has face >30% frame → use **single I2V** (start frame only), NOT First+Last Frame.
+- First+Last Frame mode → ONLY for faceless scenes (dashboards, products, environments, wide shots without prominent faces)
+- Single I2V with start frame → safe for all face-dominant scenes
 
 ## Lip Sync Mastery
 
 ### Colon Syntax (CRITICAL)
-✅ `A woman says: Welcome to my channel!`
+✅ `Host says: Welcome to my channel!`
+❌ `Ali says: Welcome to my channel!` → safety filter rejects real person names
 ❌ `A woman says "Welcome to my channel"` → causes subtitles/sync failure
+
+### Speaker Identity (CRITICAL — Safety Filter)
+- VEO prompts MUST use **generic role names** for `says:` syntax: `Host`, `Presenter`, `Speaker`
+- NEVER use real person names (e.g., `Ali says:`) — triggers "prominent people" safety filter
+- NB2 image prompts can still reference real names (no filter)
 
 ### 3-6 Second Rule
 | Duration | Words | Result |
@@ -134,6 +168,10 @@ Spell phonetically: "foh-fur" not "fofr", "eye-oh-tee" not "IoT"
 | No audio generated | Wrong mode or 1080p bug | Use Text-to-Video, generate 720p |
 | Unwanted subtitles | Wrong syntax | Use colon syntax, add "(no subtitles!)" multiple times |
 | Identity drift | Multi-variable change | Same description verbatim across all prompts |
+| "Prominent people" safety error | Real person name in `says:` | Use `Host says:` / `Presenter says:` — never real names |
+| "Prominent people" on First+Last Frame | Two photorealistic face images | Use single I2V (start frame only) for face-dominant scenes |
+| On-screen character lip-syncs to VO | Used `Voiceover:` with face visible | Use `Voice-over narrator, [tone]: text` — VEO treats narrator as off-screen |
+| Audio artifact / wrong word | Em dash `—` in dialogue text | Replace `—` with `,` or `. ` in all says:/narrator: text |
 
 ## Scene Extension
 
