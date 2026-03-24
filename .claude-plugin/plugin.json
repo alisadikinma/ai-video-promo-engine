@@ -22,17 +22,5 @@
     "AI video",
     "video agency",
     "marketing"
-  ],
-  "agents": [
-    {
-      "name": "promo-engine-agent",
-      "description": "Subagent for batch/complex promo production — generates complete video production packages",
-      "file": "agents/promo-engine-agent.md"
-    },
-    {
-      "name": "prompt-reviewer",
-      "description": "Independent validator — reviews NB2/VEO prompt batches for quality, consistency, and rule compliance",
-      "file": "agents/prompt-reviewer-agent.md"
-    }
   ]
 }
