@@ -356,6 +356,7 @@ Every generated NB2 or VEO prompt MUST include a **Required Reference Images** t
 | 2 | `ref/cast-c1-body.png` | {Character 1 name} full body | ⬜ |
 | 3 | `ref/product-{name}.png` | Product hero shot | ⬜ |
 | 4 | `ref/env-{location}.png` | Environment establishing shot | ⬜ |
+| 11 | `ref/scene-{NN-1}-end.png` | Previous scene end frame — grading & continuity anchor | ⬜ (MANDATORY if scene > 1) |
 ```
 
 ### Ref-to-Prompt Body Binding (MANDATORY)
@@ -439,19 +440,19 @@ If a scene shows a gate → the prompt says `match environment from reference im
 
 ### Asset Categories (Extended)
 
-| # | Category | Naming Pattern | Example | Notes |
-|---|----------|---------------|---------|-------|
-| 1 | Cast face | `ref/cast-c{N}-face.png` | `ref/cast-c1-face.png` | Identity anchor |
-| 2 | Cast body | `ref/cast-c{N}-body.png` | `ref/cast-c1-body.png` | Proportions + wardrobe |
-| 3 | Cast costume | `ref/cast-c{N}-costume.png` | `ref/cast-c1-costume.png` | Institutional uniform |
-| 4 | Vehicle | `ref/vehicle-{type}-{name}.png` | `ref/vehicle-truck-hino.png` | NEW: recurring vehicles |
-| 5 | Object | `ref/object-{name}.png` | `ref/object-weighbridge.png` | NEW: recurring objects/equipment |
-| 6 | Product | `ref/product-{name}.png` | `ref/product-cpo.png` | Product closeup |
-| 7 | Product closeup | `ref/product-closeup-{name}.png` | `ref/product-closeup-cangkang.png` | MANDATORY detailed texture |
-| 8 | Environment | `ref/env-{location}.png` | `ref/env-pelabuhan.png` | Location establishing |
-| 9 | Brand logo | `ref/brand-{name}.png` | `ref/brand-pelindo.png` | User-provided ONLY |
-| 10 | UI/Screen | `ref/ui-{name}.png` | `ref/ui-anpr-screen.png` | Composite — depends on sub-elements |
-| 11 | Institutional uniform | `ref/costume-{institution}.png` | `ref/costume-pelindo.png` | Master uniform template |
+| # | Category | Naming Pattern | Example | Typical Dimensions | Notes |
+|---|----------|---------------|---------|-------------------|-------|
+| 1 | Cast face | `ref/cast-c{N}-face.png` | `ref/cast-c1-face.png` | head-and-shoulders crop | Identity anchor |
+| 2 | Cast body | `ref/cast-c{N}-body.png` | `ref/cast-c1-body.png` | full body, ~170cm human | Proportions + wardrobe |
+| 3 | Cast costume | `ref/cast-c{N}-costume.png` | `ref/cast-c1-costume.png` | full body, ~170cm human | Institutional uniform |
+| 4 | Vehicle | `ref/vehicle-{type}-{name}.png` | `ref/vehicle-truck-hino.png` | real-world vehicle dimensions | NEW: recurring vehicles |
+| 5 | Object | `ref/object-{name}.png` | `ref/object-weighbridge.png` | MUST specify exact cm/mm dimensions per item | NEW: recurring objects/equipment |
+| 6 | Product | `ref/product-{name}.png` | `ref/product-cpo.png` | MUST specify exact cm/mm dimensions | Product closeup |
+| 7 | Product closeup | `ref/product-closeup-{name}.png` | `ref/product-closeup-cangkang.png` | macro scale, specify actual size | MANDATORY detailed texture |
+| 8 | Environment | `ref/env-{location}.png` | `ref/env-pelabuhan.png` | wide establishing shot | Location establishing |
+| 9 | Brand logo | `ref/brand-{name}.png` | `ref/brand-pelindo.png` | vector/high-res logo | User-provided ONLY |
+| 10 | UI/Screen | `ref/ui-{name}.png` | `ref/ui-anpr-screen.png` | screen resolution matching target display | Composite — depends on sub-elements |
+| 11 | Institutional uniform | `ref/costume-{institution}.png` | `ref/costume-pelindo.png` | full body, ~170cm human | Master uniform template |
 
 ---
 
@@ -560,6 +561,15 @@ STEP 4: ASSIGN tiers automatically
   Tier N: Composites that contain lower-tier elements
   Tier LAST: Scene keyframes (reference ALL relevant assets)
 ```
+
+**Scene-to-Scene Output Dependencies (NEW):**
+In addition to asset-tier dependencies, sequential scene keyframes form a linear chain:
+- Scene N END frame output → Scene N+1 START frame input
+- This dependency is MANDATORY for all sequential scenes in the timeline
+- Scene N+1's start frame prompt MUST include `ref/scene-{NN-1}-end.png` as first reference
+- Scene N+1's upload table MUST include `ref/scene-{NN-1}-end.png` as row 11
+- Generation order: Scene N MUST complete before Scene N+1 can begin (for sequential pairs)
+- Non-sequential scenes (e.g., montage scenes in Act 0) can be generated in parallel
 
 ### Static Dependency Rules (Always Apply)
 
@@ -716,9 +726,9 @@ STEP 3: Scene keyframes (Phase 4B) MUST reference the portrait
 VIOLATION = IDENTITY DRIFT: Viewer sees different face every scene = amateur video.
 ```
 
-### Scene Logic Realism — 7-Point Validation
+### Scene Logic Realism — 9-Point Validation
 
-Every NB2 and VEO prompt MUST pass the 7-point Scene Logic Realism checklist defined in `script-to-scene-bridge.md` Section 7B. This checklist prevents AI from generating "stock photo generic" scenes by enforcing environment accuracy, human behavior realism, data consistency, uniform rank accuracy, explicit negatives, reference photo enforcement, and timeline/shift consistency.
+Every NB2 and VEO prompt MUST pass the 9-point Scene Logic Realism checklist defined in `script-to-scene-bridge.md` Section 7B. This checklist prevents AI from generating "stock photo generic" scenes by enforcing environment accuracy, human behavior realism, data consistency, uniform rank accuracy, explicit negatives, reference photo enforcement, timeline/shift consistency, prop/object scale accuracy, and domain context population.
 
 See `script-to-scene-bridge.md` Section 7B for the full checklist and per-prompt application algorithm.
 

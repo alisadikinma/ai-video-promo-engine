@@ -1,7 +1,7 @@
 {
   "name": "ai-video-promo-engine",
   "description": "End-to-end AI video promo production engine: brainstorm → script → image prompts (NB2) → video prompts (VEO 3.1). Generates complete 2-3 minute promotional video production packages for any brand.",
-  "version": "1.6.0",
+  "version": "1.7.0",
   "author": {
     "name": "Ali Sadikin",
     "url": "https://github.com/alisadikin"
@@ -22,5 +22,17 @@
     "AI video",
     "video agency",
     "marketing"
+  ],
+  "agents": [
+    {
+      "name": "promo-engine-agent",
+      "description": "Subagent for batch/complex promo production — generates complete video production packages",
+      "file": "agents/promo-engine-agent.md"
+    },
+    {
+      "name": "prompt-reviewer",
+      "description": "Independent validator — reviews NB2/VEO prompt batches for quality, consistency, and rule compliance",
+      "file": "agents/prompt-reviewer-agent.md"
+    }
   ]
 }

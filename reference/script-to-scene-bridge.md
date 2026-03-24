@@ -148,6 +148,7 @@ Maintain exact body proportions from reference image: ref/cast-c{N}-body.png.
 {If object/equipment in scene: Match exact object from reference image: ref/object-{name}.png.}
 SCENE: {environment from script A/V direction}.
 Match environment EXACTLY as shown in reference image: ref/env-{location}.png.
+{If scene index > 1 in timeline: Using reference image ref/scene-{NN-1}-end.png for grading, character position, and environment continuity from previous scene. Upload table MUST include this file.}
 {If product visible: Match exact product texture from reference image: ref/product-closeup-{name}.png.}
 {If product hero shot: Match exact product from reference image: ref/product-{name}.png.}
 {If brand visible: Use exact brand asset from reference image: ref/brand-{asset}.png.}
@@ -184,7 +185,7 @@ Match environment EXACTLY as shown in reference image: ref/env-{location}.png.
 {If brand visible: Use exact brand asset from reference image: ref/brand-{asset}.png.}
 {If UI/screen visible: Match exact screen layout from reference image: ref/ui-{name}.png.}
 EXPRESSION: {evolved emotion — e.g., concern → realization}.
-CAMERA: {SAME lens}, {potentially different shot size or angle}.
+CAMERA: {SAME lens}, {SAME or adjacent shot size — max 1 step change: CU↔MCU, MCU↔MS, MS↔MWS, MWS↔WS}, {SAME angle or max 15° tilt/pan change — VEO interpolation breaks with drastic camera jumps}.
 LIGHTING: {SAME pattern, SAME ratio, SAME kelvin — critical for consistency}.
 ATMOSPHERE: {SAME atmosphere}.
 CULTURAL CONTEXT: {SAME cultural context — verbatim}.
@@ -212,6 +213,7 @@ OUTPUT: 16:9 LANDSCAPE aspect ratio. Width > Height. Do NOT crop or change ratio
 | 8 | ref/vehicle-{type}-{name}.png | Vehicle | ⬜ (if vehicle in scene) |
 | 9 | ref/object-{name}.png | Object/equipment | ⬜ (if object in scene) |
 | 10 | ref/ui-{name}.png | UI/screen | ⬜ (if screen visible) |
+| 11 | ref/scene-{NN-1}-end.png | Previous scene end frame — grading & continuity anchor | ⬜ (MANDATORY if scene > 1 in timeline) |
 ```
 
 **Consistency Checklist (Start ↔ End):**
@@ -221,6 +223,8 @@ OUTPUT: 16:9 LANDSCAPE aspect ratio. Width > Height. Do NOT crop or change ratio
 - [ ] Character wardrobe identical
 - [ ] Same lens focal length
 - [ ] End frame = plausible physical destination from start
+- [ ] Camera angle change between start/end is max 15° (drastic angle change = broken VEO interpolation)
+- [ ] Shot size change between start/end is max 1 step (adjacent sizes only: CU↔MCU, MCU↔MS, MS↔MWS, MWS↔WS)
 - [ ] Central 60% rule maintained
 
 ### For Ingredients Mode
@@ -494,10 +498,34 @@ Maintain visual continuity with reference frame appearances for all characters.
 | Dissolve | `Cross-dissolve preparation, hold final pose` |
 | Match Cut | `End framing matches first frame of next shot` |
 
-3. **"Last Frame Secret"** for visual continuity across cuts:
-   - Export final frame of Scene A
-   - Feed into NB2 as reference for Scene B's start frame
-   - Preserves grading, character position, lighting across the cut
+3. **MANDATORY: Last Frame → Next Scene Anchor.** For EVERY sequential scene pair in the timeline, you MUST:
+   1. Export the END frame output of Scene N as `ref/scene-{NN}-end.png`.
+   2. Inject `ref/scene-{NN}-end.png` as the FIRST reference image in Scene N+1's start frame prompt.
+   3. Include it in Scene N+1's Required Reference Images upload table as row 11.
+   This is NOT optional. Sequential scenes without this continuity anchor will have inconsistent environments, lighting, and character positions.
+
+#### Few-Shot: Dependency Chain
+
+**BAD — no previous scene reference:**
+```
+#### START Frame → ref/scene-15-start.png
+Using reference image ref/cast-c1-face.png for driver face.
+Using reference image ref/vehicle-truck.png for truck.
+
+Photorealistic medium shot at the stockpile area...
+```
+WHY BAD: Scene 15 has no reference to Scene 14 end frame. Environment, lighting, and character position will be inconsistent with the previous scene.
+
+**GOOD — previous scene anchored:**
+```
+#### START Frame → ref/scene-15-start.png
+Using reference image ref/scene-14-end.png for environment continuity, lighting, and character position from previous scene.
+Using reference image ref/cast-c1-face.png for driver face.
+Using reference image ref/vehicle-truck.png for truck.
+
+Photorealistic medium shot — continuation of ref/scene-14-end.png. The SAME stockpile environment...
+```
+WHY GOOD: Scene 14 end frame is the FIRST reference listed, anchoring all visual elements.
 
 ### Within Same Scene (Extension)
 
@@ -564,10 +592,12 @@ Before finalizing each scene's prompts:
 - [ ] **All reference images explicitly embedded in NB2 prompt text** (not just uploaded as files)
 - [ ] **NB2 reference image injection syntax used** (`maintain exact facial identity from reference image: ref/cast-c{N}-face.png`)
 - [ ] **Required Reference Images table included after EACH prompt** (NB2 and VEO)
+- [ ] Scene N+1 start frame references Scene N end frame output (`ref/scene-{NN-1}-end.png`) as grading/continuity anchor
+- [ ] Previous scene output included in Required Reference Images upload table (row 11) for all scenes after Scene 1
 
-### 7B. Scene Logic Realism Checklist (7-Point)
+### 7B. Scene Logic Realism Checklist (9-Point)
 
-Every NB2 and VEO prompt MUST pass this 7-point realism check. AI defaults to "stock photo generic" — these checks prevent it.
+Every NB2 and VEO prompt MUST pass this 9-point realism check. AI defaults to "stock photo generic" — these checks prevent it.
 
 | # | Check | What to Verify | Common AI Failure |
 |---|-------|---------------|-------------------|
@@ -578,6 +608,37 @@ Every NB2 and VEO prompt MUST pass this 7-point realism check. AI defaults to "s
 | 5 | **Explicit Negatives** | Prompt explicitly states what should NOT appear. If indoor scene: "no outdoor elements." If nighttime: "no sunlight." If clean facility: "no rust, no litter, no peeling paint." AI fills gaps with random elements. | AI adds windows to underground rooms. Puts sunshine in night scenes. Makes new facility look old. |
 | 6 | **Reference Photo Enforcement** | Every visual element with a ref/ image uses it. No text-only descriptions for elements that have reference photos. User photos = ground truth, NEVER override. | AI ignores uploaded gate photo and generates random fantasy gate instead. |
 | 7 | **Timeline & Shift Consistency** | Time of day matches across connected scenes. If establishing shot is "dawn," subsequent scenes keep dawn lighting. Shift patterns (pagi/siang/malam) consistent with narrative. Workers wear appropriate PPE for time/shift. | Dawn establishing shot followed by harsh midday lighting in the next scene. Night shift workers in daylight. |
+| 8 | **Prop/Object Scale Accuracy** | All handheld props specified with: (a) exact dimensions in cm/mm, (b) real-world analogy ("like a 7-Eleven receipt"), (c) proportion relative to hand/body ("narrower than a credit card"), (d) explicit negative for wrong sizes ("NOT A4, NOT letter size") |
+
+#### Few-Shot: Prop Scale
+
+**BAD — no size specification:**
+```
+The officer hands the routing slip to the driver through the window.
+```
+WHY BAD: "Routing slip" gives no size information. NB2 will generate it as A4 paper.
+
+**GOOD — full size specification:**
+```
+The officer pinches a tiny thermal receipt slip between thumb and index finger — 5.7cm wide, ~15cm long, like a convenience store cash register receipt or ATM receipt. The slip is narrower than a credit card and LESS THAN the width of the officer's palm. NOT a sheet of paper, NOT A4, NOT letter size.
+```
+WHY GOOD: 4 anchors — exact cm, real-world analogy, hand proportion, explicit negative.
+
+| 9 | **Domain Context Populated** | DOMAIN CONTEXT line contains specific equipment names, process steps, and local details from strategic-brief.md Domain Knowledge section — NOT generic placeholders or template text |
+
+#### Few-Shot: Domain Context
+
+**BAD — generic placeholder:**
+```
+DOMAIN CONTEXT: Industrial port facility with loading equipment.
+```
+WHY BAD: Could be any port in any country. NB2 will generate generic stock-photo environment.
+
+**GOOD — specific from research:**
+```
+DOMAIN CONTEXT: Pelabuhan Pelindo 1 Cabang Dumai, Riau. Gate booth with KPLP officer in dark blue Pelindo uniform. ANPR camera system (Hikvision) auto-reads plate "BM" prefix (Riau plates). Weighbridge: Mettler Toledo 80-ton capacity. Cangkang kelapa sawit = dark brown broken shell fragments 2-5cm, NOT whole palm fruits.
+```
+WHY GOOD: Named brands, local plate prefix, specific equipment, visual description of commodity.
 
 **How to apply per prompt:**
 
@@ -615,6 +676,36 @@ NARRATIVE CONTEXT:
 | **Shared environment refs** | Connected scenes in the same location MUST use the same `ref/env-{location}.png`. Different camera angles of SAME location, not different generated environments. | Without shared ref, AI generates subtly different versions of "the same place." |
 | **Character state continuity** | If character was sweating in Scene 3 (outdoor, 33°C), they should still show signs of heat in Scene 4 (same location). If character received news in Scene 7, expression in Scene 8 must reflect it. | AI resets character state between scenes unless explicitly told. |
 | **Name labels in UI scenes** | If dashboard shows employee name "Budi" in Scene 5, ANY subsequent dashboard scene must show "Budi" (not random name). Localize ALL on-screen text per `narration_language`. | AI randomizes text content per generation. Pin it down in every prompt. |
+
+### 7D. Character Costume Tracking Table
+
+**MANDATORY for every project with 2+ characters.**
+
+Before generating ANY scene keyframe prompt (Phase 4B), build this tracking table from `cast-profile.md`:
+
+| Character | Role | Default Costume (verbatim from cast-profile.md) | Scene(s) with Costume Change | Changed Costume | Script Justification |
+|-----------|------|------------------------------------------------|------------------------------|-----------------|---------------------|
+| {name} | {role} | {EXACT text from cast-profile.md} | — | — | — |
+
+**Rules:**
+1. The "Default Costume" column MUST be copied **verbatim** from `cast-profile.md` — never paraphrase, never abbreviate, never add details not in the profile.
+2. Every NB2/VEO prompt MUST pull the costume description from this table's "Default Costume" column (or "Changed Costume" if applicable for that scene).
+3. A costume change is ONLY allowed if the script explicitly calls for it (e.g., time skip, location change from office to field). The "Script Justification" column MUST be filled.
+4. If the same character appears in 3+ consecutive scenes with the same costume, use the EXACT SAME text string — do not rephrase for variety.
+5. Cross-check: After all prompts are written, grep all costume descriptions for each character. Any variation that is not in the tracking table = rejection.
+
+#### Few-Shot: Costume Consistency
+
+**BAD — paraphrased costume:**
+Scene 15 prompt: "QC Inspector wearing a high-vis vest and safety helmet"
+Scene 17 prompt: "QC Inspector in white lab coat with safety equipment"
+WHY BAD: Same character, different costume text. NB2 generates completely different outfits.
+
+**GOOD — verbatim from tracking table:**
+cast-profile.md says: "high-visibility neon yellow/green safety vest with reflective strips over grey work shirt, safety helmet, work boots"
+Scene 15 prompt: "QC Inspector (high-visibility neon yellow/green safety vest with reflective strips over grey work shirt, safety helmet, work boots)"
+Scene 17 prompt: "QC Inspector (high-visibility neon yellow/green safety vest with reflective strips over grey work shirt, safety helmet, work boots)"
+WHY GOOD: Identical text string in both scenes — copy-pasted from tracking table, zero variation.
 
 ---
 

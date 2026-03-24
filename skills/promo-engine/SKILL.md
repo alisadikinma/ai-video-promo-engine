@@ -121,11 +121,14 @@ Copy `agents/promo-engine-agent.md` to your project's `.claude/agents/` director
 34. **VEO: Face-dominant = single I2V** — Scene with face >30% frame → single I2V (start frame only). First+Last Frame → only for faceless scenes (dashboards, products, environments). Safety filter rejects 2 face images.
 35. **VEO: No em dash in audio text** — NEVER use `—` in `says:` or `Voice-over narrator:` text. VEO audio engine mistranslates em dashes. Replace with `,` or `. `
 36. **VEO: Every B-Roll has VO** — No silent B-Roll. Every B-Roll VEO prompt MUST have `Voice-over narrator, [tone]: text` + `> POST-PROD VO:` fallback line outside the prompt block.
-37. **Scene Logic Realism (7-point)** — Every prompt passes 7 checks: environment accuracy, human behavior realism, data consistency, uniform ranks, explicit negatives, reference photos, timeline/shift consistency. See `script-to-scene-bridge.md` Section 7B.
+37. **Scene Logic Realism (9-point)** — Every prompt passes 9 checks: environment accuracy, human behavior realism, data consistency, uniform ranks, explicit negatives, reference photos, timeline/shift consistency, prop/object scale accuracy, domain context populated. See `script-to-scene-bridge.md` Section 7B.
 38. **Character portrait-first** — Any character in 2+ scenes MUST have standalone face portrait generated FIRST in Phase 4A. Text descriptions alone = different faces every time. Applies to cast AND recurring extras. See `global-promo-config.md` Section 18.
 39. **Narrative arc consistency** — Connected scenes MUST include `NARRATIVE CONTEXT:` block naming connections, visual breadcrumbs, cause-effect chains, shared environment refs. See `script-to-scene-bridge.md` Section 7C.
 40. **Location context first** — Video setting/location MUST be confirmed (Step 1.2c) BEFORE domain research. Domain knowledge is location-specific: RS Indonesia ≠ RS USA ≠ RS Japan.
 41. **Domain deep research (MANDATORY, location-aware)** — AI MUST WebSearch `{domain} in {location}` BEFORE scripting (Step 1.2d). 6 queries: local process flow, local equipment brands, local workforce/PPE, local facility layout, product interface, local regulations/signage. See `global-promo-config.md` Section 24.
+42. **Sequential scene dependency** — Scene N+1 start frame MUST reference Scene N end frame (`ref/scene-{NN-1}-end.png`) as upstream continuity anchor. Upload table MUST include previous scene output. No exceptions for sequential timeline scenes.
+43. **Prop/object scale enforcement** — Every handheld prop or object in NB2/VEO prompts MUST include: (a) exact physical dimensions in cm/mm, (b) real-world size analogy, (c) proportion relative to human hand/body, (d) explicit negative for wrong sizes. "Small" alone is NOT sufficient.
+44. **Camera angle constraint for Frame mode** — START and END frames within one VEO scene MUST have: max 1-step shot size change (CU↔MCU↔MS↔MWS↔WS) and max 15° camera angle change. Drastic camera jumps break VEO interpolation.
 
 ---
 
@@ -133,7 +136,13 @@ Copy `agents/promo-engine-agent.md` to your project's `.claude/agents/` director
 
 ### Phase 1: BRAINSTORM (Output: strategic-brief.md)
 
-**Read first:** `global-promo-config.md`, `creator-profile-system.md`, `F1_Audience_Psychology_Matrix.md`, `F8_Awareness_Level_Routing.md`
+### CONTEXT LOADING — Phase 1
+READ these files ONLY (do NOT read other reference files):
+1. `reference/global-promo-config.md`
+2. `reference/creator-profile-system.md`
+3. `reference/storytelling_script_gen/F1_Audience_Psychology_Matrix.md`
+4. `reference/storytelling_script_gen/F8_Awareness_Level_Routing.md`
+Total: 4 files. Do NOT preload Phase 2-5 references.
 
 #### Step 1.0: Language Selection
 
@@ -590,7 +599,21 @@ C) Start over — mulai brainstorm dari awal
 
 ### Phase 2: SCRIPT GENERATION (Output: av-script.md)
 
-**Read:** `project-instruction.md`, `F2`, `F3`, `F5`, `F6`, `F7`, `F9`, `F10`, `F11` (and `F4` if EV product)
+### CONTEXT LOADING — Phase 2
+READ these files ONLY:
+1. `reference/global-promo-config.md` (Sections 13-15 only: tone, cultural, language)
+2. `reference/storytelling_script_gen/project-instruction.md`
+3. `reference/storytelling_script_gen/F2_Narrative_Arc_and_Video_Typology.md`
+4. `reference/storytelling_script_gen/F3_Cinematic_AV_Production_Rules.md`
+5. `reference/storytelling_script_gen/F5_Hook_Vault.md`
+6. `reference/storytelling_script_gen/F6_CTA_Vault.md`
+7. `reference/storytelling_script_gen/F7_Foreshadow_and_Peak_Engineering.md`
+8. `reference/storytelling_script_gen/F9_Platform_Adaptation_Matrix.md`
+9. `reference/storytelling_script_gen/F10_Modular_Asset_and_AB_Testing.md`
+10. `reference/storytelling_script_gen/F11_Pattern_Interrupt_and_Retention.md`
+11. IF product is EV-related: `reference/storytelling_script_gen/F4_EV_Persona_Matrix.md`
+Total: 10-11 files. This is the heaviest phase — script generation needs most references.
+IMPORTANT: Do NOT load image-video-gen/ files in this phase.
 
 **Language:** Write all narration/dialogue in `narration_language` from strategic-brief.md. NB2/VEO prompt structure stays English.
 **Tone:** Apply `video_tone` from strategic-brief.md — reference `global-promo-config.md` Section 13 (Tone Impact Matrix) for word choice, pacing, hook style, and audio direction adjustments.
@@ -652,7 +675,12 @@ C) Regenerate — buat ulang dengan pendekatan berbeda
 
 ### Phase 3: SCENE BREAKDOWN (Output: scene-plan.md)
 
-**Read:** `script-to-scene-bridge.md`, `03-workflow-pipeline.md`, `00-index.md`
+### CONTEXT LOADING — Phase 3
+READ these files ONLY:
+1. `reference/global-promo-config.md` (Sections 6-10 only: output, resolution, VEO modes)
+2. `reference/script-to-scene-bridge.md` (Sections 1-2 only: scene mapping, VEO mode selection)
+3. `reference/image-video-gen/03-workflow-pipeline.md`
+Total: 3 files. Do NOT load NB2 or storytelling files.
 
 #### Step 3.1: Auto-Calculate Scene Decomposition
 
@@ -687,7 +715,12 @@ D) Adjust durations — ubah durasi scene
 
 ### Phase 3.5: REFERENCE IMAGE COLLECTION (Output: ref-manifest.md)
 
-**Read:** `creator-profile-system.md` (cast refs), `global-promo-config.md` (Section 11: naming, Section 12: institution)
+### CONTEXT LOADING — Phase 3.5
+READ these files ONLY:
+1. `reference/global-promo-config.md` (Sections 11-12 only: ref naming, categories)
+2. `reference/creator-profile-system.md` (cast ref requirements only)
+Plus: READ `{output_folder}/cast-profile.md` and `{output_folder}/scene-plan.md` as data inputs.
+Total: 2 reference files + 2 output files. Do NOT load storytelling, NB2, or VEO files.
 
 **HARD BLOCK: Cannot proceed to Phase 4 until ALL required references are uploaded and validated.**
 
@@ -930,11 +963,28 @@ B) Mau review manifest lagi
 
 ### Phase 4A: ASSET LIBRARY — NB2 (Output: nb2-reference-prompts.md)
 
-**Read:** `01-nb2-image-generation.md`, `04-cinematography-lookup.md`, `05-creator-and-holidays.md`, `06-directing-and-performance.md`, `creator-profile-system.md`, `global-promo-config.md` (Sections 17-23)
+### CONTEXT LOADING — Phase 4A
+READ these files ONLY:
+1. `reference/global-promo-config.md` (Sections 17-23: asset categories, dependency graph, NB2 defaults)
+2. `reference/image-video-gen/01-nb2-image-generation.md`
+3. `reference/script-to-scene-bridge.md` (Section 7B ONLY: 9-point realism checklist)
+Plus: READ `{output_folder}/cast-profile.md`, `{output_folder}/scene-plan.md`, `{output_folder}/strategic-brief.md` (Domain Knowledge section only).
+Total: 3 reference files + 3 output files. Do NOT load storytelling, VEO, or cinematography files.
 
 > **CRITICAL: Assets FIRST, scenes SECOND.** This phase generates individual reusable building blocks (atoms). Phase 4B composes scene keyframes (molecules) FROM these assets. See `global-promo-config.md` Section 17.
 
 #### Step 4A.0: Auto-Scan ref/ Folder
+
+**PRE-CHECK — Domain Research Gate:**
+CHECK `strategic-brief.md` > Domain Knowledge section.
+- IF empty or contains only template placeholders → **HARD BLOCK**: "Domain research not completed. Run Step 1.2d before generating prompts."
+- IF populated → extract key domain terms (equipment names, process steps, local brands) for injection into every prompt's DOMAIN CONTEXT line.
+
+**PRE-CHECK — Phase 3.5 Asset Dedup:**
+SCAN `ref/` folder for assets already generated in Phase 3.5.
+- IDENTIFY existing assets by filename pattern.
+- SKIP re-generation for assets that already exist and meet quality standards.
+- Only generate NEW assets (recurring elements from Step 4A.1 not yet in ref/) or UPGRADE assets (Phase 3.5 used generic prompts, Phase 4A can improve with dependency-aware refs).
 
 Before generating anything:
 
@@ -1022,7 +1072,18 @@ C) Add more assets
 
 ### Phase 4B: SCENE KEYFRAMES — NB2 (Output: image-prompts.md)
 
-**Read:** `script-to-scene-bridge.md` (Section 3), `04-cinematography-lookup.md`
+### CONTEXT LOADING — Phase 4B (per batch)
+READ these files ONLY:
+1. `reference/global-promo-config.md` (Sections 16-20: upload table, asset categories, NB2 defaults, aspect ratio)
+2. `reference/image-video-gen/01-nb2-image-generation.md`
+3. `reference/script-to-scene-bridge.md` (Sections 3-7 only: templates, transitions, checklists)
+4. `reference/image-video-gen/04-cinematography-lookup.md`
+Plus PER-BATCH context (NOT full files):
+- `{output_folder}/cast-profile.md`: ONLY entries for characters appearing in this batch's scenes
+- `{output_folder}/scene-plan.md`: ONLY entries for this batch's scenes
+- `{output_folder}/strategic-brief.md`: Domain Knowledge section only
+- Previous batch's last scene END frame filename (for dependency chain)
+Total: 4 reference files + filtered output data. NEVER load storytelling or VEO files.
 
 > **CRITICAL: Scene keyframes are MOLECULES composed FROM Phase 4A ATOMS.**
 > NEVER describe a visual element from text alone if an asset exists in ref/.
@@ -1033,41 +1094,81 @@ C) Add more assets
 Load all assets from ref/ (Phase 4A output + user photos + user-provided files).
 Build scene-to-asset mapping from scene-plan.md.
 
-#### Step 4B.2: Generate Scene Keyframe Prompts
+#### Step 4B.2: Batch-by-ACT Generation
 
-For each scene in scene-plan.md:
+**BATCH EXECUTION — max 5 scenes per batch.**
 
-**If Frame mode:**
-- Generate START frame prompt (per `script-to-scene-bridge.md` Section 3)
-- Generate END frame prompt (maintain consistency checklist)
-- **Every visual element MUST reference its asset file** — no text-only descriptions
-
-**If Ingredients mode:**
-- Generate 1-3 character reference prompts
-- Front, three-quarter, profile angles
-
-**Apply:**
-- Cinematography lookup (emotion → lighting/lens/film stock)
-- Apply creator reference phrase **per character** from `cast-profile.md` (verbatim)
-- For multi-character scenes, use Cast Interaction Templates from `creator-profile-system.md` Section 8
-- NB2 technical parameters (CFG 5-7, denoise 0.35-0.45)
-- **Aspect ratio triple enforcement** (first line, TECHNICAL, last line)
-- Central 60% rule
-- **`Output →` filename** per prompt (ref/scene-{NN}-start.png, ref/scene-{NN}-end.png)
-- **Ref-to-prompt body binding** — every ref in upload table MUST have matching line in prompt
-- **UI text localization** — on-screen text in narration language
-
-#### Step 4B.3: Scene Keyframes Approval
+Group scenes by ACT from scene-plan.md. Each ACT = 1 batch. If an ACT has >5 scenes, split into sub-batches of max 5.
 
 ```
-AskUserQuestion:
-"Scene keyframe prompts untuk semua scene sudah sesuai?"
+FOR each batch (ACT or sub-batch):
 
-Options:
-A) Approve all — lanjut ke video prompts
-B) Revise specific scenes — sebutkan nomor scene
-C) Adjust cinematography — ubah mood/lighting
+  1. CONTEXT RELOAD (fresh per batch):
+     → Re-read Phase 4B CONTEXT LOADING files
+     → Load ONLY this batch's cast entries + scene entries
+     → Load previous batch's LAST scene END frame filename as dependency anchor
+
+  2. GENERATE prompts for this batch's scenes:
+     FOR each scene in this batch:
+
+       **If Frame mode:**
+       - Generate START frame prompt (per `script-to-scene-bridge.md` Section 3)
+       - Generate END frame prompt (maintain consistency checklist)
+       - **Every visual element MUST reference its asset file** — no text-only descriptions
+
+       **If Ingredients mode:**
+       - Generate 1-3 character reference prompts
+       - Front, three-quarter, profile angles
+
+       **Apply:**
+       - Cinematography lookup (emotion → lighting/lens/film stock)
+       - Apply creator reference phrase **per character** from `cast-profile.md` (verbatim)
+       - For multi-character scenes, use Cast Interaction Templates from `creator-profile-system.md` Section 8
+       - NB2 technical parameters (CFG 5-7, denoise 0.35-0.45)
+       - **Aspect ratio triple enforcement** (first line, TECHNICAL, last line)
+       - Central 60% rule
+       - **`Output →` filename** per prompt (ref/scene-{NN}-start.png, ref/scene-{NN}-end.png)
+       - **Ref-to-prompt body binding** — every ref in upload table MUST have matching line in prompt
+       - **UI text localization** — on-screen text in narration language
+       - **Scale/dimension specification** — every visible prop and object MUST have real-world dimensions in the prompt (cm/mm + visual analogy + proportion to hand + negative for wrong size)
+       - **Wardrobe verbatim consistency** — pull EXACT costume text from cast-profile.md or Character Costume Tracking Table (Section 7D of script-to-scene-bridge.md). NEVER paraphrase. If character appears in 3+ scenes, the costume text string MUST be identical across all prompts.
+       - **Previous scene continuity injection** — for scenes 2+ in timeline, inject `ref/scene-{NN-1}-end.png` as first reference image and include in upload table
+
+     END FOR
+
+  3. VALIDATE — spawn prompt-reviewer agent:
+     → Agent tool: subagent_type="ai-video-promo-engine:prompt-reviewer"
+     → Pass: this batch's generated prompts + cast-profile.md + scene-plan.md
+     → Agent returns: PASS / FAIL with per-prompt feedback
+
+  4. IF validator returns FAIL:
+     → Read validator feedback (specific prompts + specific issues)
+     → Re-generate ONLY the failing prompts (not entire batch)
+     → Re-validate (max 2 retry cycles per batch)
+
+  5. APPROVE — AskUserQuestion:
+     "Batch {N} ({ACT name}, Scenes {X}-{Y}) ready for review."
+     A) Approve batch — proceed to next batch
+     B) Revise specific scenes — list scene numbers
+     C) Regenerate entire batch — start fresh
+
+  6. APPEND approved batch to {output_folder}/image-prompts.md
+
+END FOR
 ```
+
+Write the Generation Checklist and Dependency Chain table AFTER all batches complete.
+
+#### Step 4B.3: Final Review
+
+After ALL batches are generated and approved:
+1. Read the complete `{output_folder}/image-prompts.md`
+2. Verify cross-batch dependency chain integrity (Scene N→N+1 references correct across batch boundaries)
+3. Present summary:
+   - Total batches: {N}
+   - Total scenes: {M}
+   - Validator pass rate: {X}% first-pass, {Y}% after retry
+4. AskUserQuestion: final approval or revision
 
 **Save output:** `{output_folder}/image-prompts.md`
 
@@ -1075,7 +1176,18 @@ C) Adjust cinematography — ubah mood/lighting
 
 ### Phase 5: VIDEO PROMPTS — VEO 3.1 (Output: video-prompts.md)
 
-**Read:** `02-veo-production-guide.md`, `project-instruction.md` (image-video-gen), `04-cinematography-lookup.md`
+### CONTEXT LOADING — Phase 5 (per batch)
+READ these files ONLY:
+1. `reference/global-promo-config.md` (Sections 6-10, 13: output, resolution, VEO modes, tone)
+2. `reference/image-video-gen/02-veo-production-guide.md`
+3. `reference/image-video-gen/03-workflow-pipeline.md`
+4. `reference/image-video-gen/04-cinematography-lookup.md`
+Plus PER-BATCH context:
+- `{output_folder}/cast-profile.md`: ONLY entries for characters in this batch
+- `{output_folder}/scene-plan.md`: ONLY entries for this batch's scenes
+- `{output_folder}/av-script.md`: ONLY the AV rows for this batch's scenes
+- `{output_folder}/image-prompts.md`: ONLY the prompts for this batch's scenes (as NB2→VEO reference)
+Total: 4 reference files + filtered output data. NEVER load storytelling or NB2-specific files.
 
 #### Step 5.1: Generate VEO Prompts per Scene
 
@@ -1172,6 +1284,8 @@ Present final summary:
 - [ ] User photos used as ground truth (not overridden by AI generation)
 - [ ] Climate-aware costume check completed
 - [ ] Brand logos are user-provided (not AI-generated)
+- [ ] Domain Knowledge section in strategic-brief.md populated with real research (not template placeholders)
+- [ ] Phase 3.5 assets audited — no duplicate generation
 
 ### Scene Keyframe Quality Gate (Phase 4B)
 - [ ] NB2 aspect ratio triple enforcement (first line, TECHNICAL, last line)
@@ -1184,6 +1298,11 @@ Present final summary:
 - [ ] Output filename specified per prompt (`ref/scene-{NN}-start.png`)
 - [ ] Every ref in upload table has matching injection line in prompt body
 - [ ] UI text localized per narration_language (except technical abbreviations)
+- [ ] DOMAIN CONTEXT line in every prompt contains specific local equipment/process details (not generic)
+- [ ] Every prop/object has explicit scale specification (dimensions + analogy + negative)
+- [ ] Previous scene end frame referenced in upload table and prompt body (for scenes 2+)
+- [ ] Camera angle between start/end max 15° change, shot size max 1 step
+- [ ] Aspect ratio specified in ALL prompts (NB2: triple enforcement; VEO: first + last line)
 
 ### Video Prompt Quality Gate (Phase 5)
 - [ ] VEO mode correct per scene (no Ingredients + Frame mix)
@@ -1202,9 +1321,11 @@ Present final summary:
 - [ ] Total duration within target range
 
 ### Cross-Cutting Quality Gate (All Phases 4-5)
-- [ ] **Scene Logic Realism 7-point** — each prompt passes: environment accuracy, behavior realism, data consistency, uniform ranks, explicit negatives, ref photos, timeline/shift
+- [ ] **Scene Logic Realism 9-point** — each prompt passes: environment accuracy, behavior realism, data consistency, uniform ranks, explicit negatives, ref photos, timeline/shift, prop/object scale accuracy, domain context populated
 - [ ] **Character portrait-first** — every character in 2+ scenes has standalone face ref in Phase 4A
 - [ ] **Narrative arc consistency** — every prompt has `NARRATIVE CONTEXT:` block with connections, breadcrumbs, cause-effect
 - [ ] **Visual breadcrumbs** — at least 1 shared visual element between adjacent scenes
 - [ ] **Data pinning** — dashboard names/numbers consistent across all scenes showing same data
 - [ ] **Timeline consistency** — time-of-day/lighting matches across connected scenes
+- [ ] **Wardrobe tracking** — Character Costume Tracking Table built, each character's costume text verbatim identical across all scenes (unless script-directed change with justification)
+- [ ] **Sequential dependency chain** — every scene N+1 references scene N end frame output in both upload table and prompt body

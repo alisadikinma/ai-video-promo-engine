@@ -55,6 +55,32 @@ Need to show a CHARACTER consistently across shots?
 - [ ] SAME color palette / grading style
 - [ ] Character wardrobe identical between frames
 - [ ] Camera lens consistent (same focal length)
+- [ ] Camera angle change between start/end is max 15° (drastic angle change = broken VEO interpolation)
+- [ ] Shot size change between start/end is max 1 step (CU↔MCU only, CU→WS = rejection — reshoot as multi-scene)
+
+#### Few-Shot: Camera Angle Constraint
+
+**BAD — drastic camera jump (will break VEO interpolation):**
+```
+START: Camera: 85mm f/1.8, eye-level, close-up of officer's face at desk
+END:   Camera: 24mm f/8, overhead bird's-eye, wide shot of entire port facility
+```
+WHY BAD: CU→WS = 3-step jump. Eye-level→overhead = 90°+ angle change. VEO will produce distorted faces, warped environment, ghosting artifacts.
+
+**GOOD — smooth transition (VEO interpolates cleanly):**
+```
+START: Camera: 50mm f/2.8, eye-level, MCU of officer sitting at desk with monitor
+END:   Camera: 50mm f/2.8, eye-level, MS of officer standing up, desk and monitor visible
+```
+WHY GOOD: MCU→MS = 1 step. Same lens. Same angle. Subject moves (stands up) but camera stays grounded. VEO smoothly interpolates the motion.
+
+**ALSO GOOD — slight angle shift:**
+```
+START: Camera: 35mm f/4, eye-level, MS of two men at truck rear
+END:   Camera: 35mm f/4, slight low angle (10°), MS of same two men, one holds shells
+```
+WHY GOOD: Same shot size. Only 10° angle change. Same lens. VEO handles this smoothly.
+
 - [ ] End frame represents plausible physical destination from start
 
 ### For Ingredients Mode

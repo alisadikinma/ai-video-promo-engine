@@ -107,8 +107,12 @@ Maintain visual continuity with reference frame character appearance throughout 
 Expression shift: [if any].
 Ambient: [particles, environmental].
 Audio: [ambient], [music/no music], no subtitles, no audience sounds.
-Maintain exact lighting, environment, appearance from reference frame."
+Maintain exact lighting, environment, appearance from reference frame.
+[aspect] output."
 ```
+
+**Camera Constraint for First+Last Frame mode:**
+Start and end frames must share similar camera angle (max 15° deviation) and adjacent shot size (max 1-step change: CU↔MCU↔MS↔MWS↔WS). Drastic camera changes (e.g., eye-level CU to overhead WS) cause VEO interpolation artifacts — distorted faces, warped environments, ghosting.
 
 **CRITICAL — VEO Reference Image Rules:**
 - VEO does NOT use NB2's reference image injection system — do NOT put `ref/cast-c{N}-face.png` filenames in VEO prompts
@@ -172,6 +176,7 @@ Spell phonetically: "foh-fur" not "fofr", "eye-oh-tee" not "IoT"
 | "Prominent people" on First+Last Frame | Two photorealistic face images | Use single I2V (start frame only) for face-dominant scenes |
 | On-screen character lip-syncs to VO | Used `Voiceover:` with face visible | Use `Voice-over narrator, [tone]: text` — VEO treats narrator as off-screen |
 | Audio artifact / wrong word | Em dash `—` in dialogue text | Replace `—` with `,` or `. ` in all says:/narrator: text |
+| VEO interpolation distorted/broken | Camera angle or shot size too drastic between start/end frames | Reshoot: max 1-step shot size change, max 15° angle change between frames |
 
 ## Scene Extension
 

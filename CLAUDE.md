@@ -224,9 +224,9 @@ Output saved to `strategic-brief.md` > Domain Knowledge section with **Local Dif
 
 See `global-promo-config.md` Section 24.
 
-### Scene Logic Realism (7-Point)
+### Scene Logic Realism (9-Point)
 
-Every NB2/VEO prompt must pass 7 realism checks to prevent "stock photo generic" output:
+Every NB2/VEO prompt must pass 9 realism checks to prevent "stock photo generic" output:
 
 1. **Environment Accuracy** — location matches cultural research, architecture/vegetation/signage match real location
 2. **Human Behavior Realism** — workers work, supervisors supervise, no "standing and smiling at camera" in action scenes
@@ -435,5 +435,5 @@ All configurable values live in `reference/global-promo-config.md` — single so
 
 ---
 
-**Version:** 1.6.0
-**Last Updated:** 2026-03-22
+**Version:** 1.7.0
+**Last Updated:** 2026-03-24
