@@ -25,6 +25,7 @@ Claude Code plugin that generates complete promotional video production packages
 | `skills/promo-validate/SKILL.md` | Cross-file consistency checker |
 | `skills/promo-add-platform/SKILL.md` | Scaffold new video platform support |
 | `agents/promo-engine-agent.md` | Subagent for batch/complex promo work (6-phase pipeline) |
+| `agents/prompt-reviewer-agent.md` | Independent validator — reviews NB2/VEO prompt batches for quality |
 | `reference/` | 23 reference docs read on-demand by skill/agent |
 | `README.md` | Repo README |
 | `LICENSE` | MIT license |
@@ -123,6 +124,8 @@ Phase 4A: ASSET LIBRARY (NB2)   → Output: nb2-reference-prompts.md
   └─ [USER APPROVAL GATE]
 
 Phase 4B: SCENE KEYFRAMES (NB2)  → Output: image-prompts.md
+  ├─ **BATCH BY ACT (max 5 scenes/batch)**
+  ├─ Per-batch: generate → validate (prompt-reviewer agent) → approve
   ├─ Start frame + End frame per scene (Frame mode)
   ├─ Ingredient images (Ingredients mode)
   ├─ EVERY visual element references Phase 4A asset (no text-only descriptions)
@@ -133,6 +136,8 @@ Phase 4B: SCENE KEYFRAMES (NB2)  → Output: image-prompts.md
   └─ [USER APPROVAL GATE]
 
 Phase 5: VIDEO PROMPTS (VEO)   → Output: video-prompts.md
+  ├─ **BATCH BY ACT (max 5 scenes/batch)**
+  ├─ Per-batch: generate → validate (prompt-reviewer agent) → approve
   ├─ Per-scene VEO 3.1 prompts
   ├─ Extension prompts (same-scene continuity)
   ├─ Audio specs (dialogue + SFX + ambient)
@@ -196,6 +201,33 @@ Need consistent CHARACTER across shots?
 - VEO specs (resolution, duration, extensions, prompt limits) in `image-video-gen/02-veo-production-guide.md`.
 - NB2 parameters (CFG, denoise, thinking mode, identity lock) in `image-video-gen/01-nb2-image-generation.md`.
 - Cinematography defaults per content type in `image-video-gen/04-cinematography-lookup.md`.
+
+### Smart Context Loading
+
+Each phase loads ONLY the reference files it needs — NOT all 23. This prevents context window overflow.
+
+| Phase | Files Loaded | Max |
+|-------|-------------|-----|
+| Phase 1 | global-promo-config, creator-profile-system, F1, F8 | 4 |
+| Phase 2 | global-promo-config, project-instruction, F2-F11 (excl F4 unless EV) | 10-11 |
+| Phase 3 | global-promo-config, script-to-scene-bridge, 03-workflow | 3 |
+| Phase 3.5 | global-promo-config, creator-profile-system | 2 |
+| Phase 4A | global-promo-config, 01-nb2, script-to-scene-bridge (7B only) | 3 |
+| Phase 4B | global-promo-config, 01-nb2, script-to-scene-bridge, 04-cinematography | 4 per batch |
+| Phase 5 | global-promo-config, 02-veo, 03-workflow, 04-cinematography | 4 per batch |
+
+Phase 4B and 5 also load per-batch filtered data from output files (cast entries + scene entries for current batch only).
+
+### Prompt Reviewer Agent (Independent Validator)
+
+After each batch in Phase 4B/5, a separate `prompt-reviewer` agent validates the output:
+- **Fresh context** — no generation instructions, no storytelling files
+- **Reads only:** batch prompts + cast-profile.md + scene-plan.md (ground truth)
+- **Checks:** dependency chain, costume consistency, prop scale, camera angle, aspect ratio, 9-point realism, upload table completeness
+- **Returns:** PASS/FAIL with per-prompt line-level feedback
+- **On FAIL:** generator re-generates only failing prompts (max 2 retries)
+
+This eliminates self-check bias — the validator has never seen the generation rules, so it cannot "explain away" violations.
 
 ### Location & Domain Deep Research (MANDATORY — Steps 1.2c + 1.2d)
 
@@ -435,5 +467,5 @@ All configurable values live in `reference/global-promo-config.md` — single so
 
 ---
 
-**Version:** 1.7.0
+**Version:** 1.8.0
 **Last Updated:** 2026-03-24

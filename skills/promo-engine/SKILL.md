@@ -1189,35 +1189,68 @@ Plus PER-BATCH context:
 - `{output_folder}/image-prompts.md`: ONLY the prompts for this batch's scenes (as NB2→VEO reference)
 Total: 4 reference files + filtered output data. NEVER load storytelling or NB2-specific files.
 
-#### Step 5.1: Generate VEO Prompts per Scene
+#### Step 5.1: Batch-by-ACT VEO Generation
 
-For each scene in scene-plan.md:
+**BATCH EXECUTION — max 5 scenes per batch.**
 
-**Presenter scenes (lip sync):**
-- Use presenter template from `script-to-scene-bridge.md` Section 4
-- VEO mode: Single I2V (start frame only) — NOT First+Last Frame (safety filter)
-- Dialogue: `Host says: {text}` — NEVER real person names (safety filter)
-- NO em dash `—` in dialogue — replace with `,` or `. `
-- NO face ref filenames in VEO prompt — use generic continuity language
-- Face >30% frame
-- All 3 audio layers specified
+Same ACT grouping as Phase 4B.
 
-**B-Roll scenes (voiceover):**
-- Use B-Roll template from `script-to-scene-bridge.md` Section 4
-- Voiceover: `Voice-over narrator, {tone}: {text}` — NOT bare `Voiceover:` (lip-syncs to visible char)
-- NO em dash `—` in voiceover text
-- EVERY B-Roll MUST have voiceover narration (no silent B-Roll)
-- Add `> POST-PROD VO:` backup line outside prompt block for every B-Roll
-- SFX + music + ambient all specified
+```
+FOR each batch (ACT or sub-batch):
 
-**Extension scenes:**
-- Use extension template
-- Reference previous clip context
-- 720p locked, same camera speed
+  1. CONTEXT RELOAD (fresh per batch):
+     → Re-read Phase 5 CONTEXT LOADING files
+     → Load ONLY this batch's scene entries + cast entries + AV script rows
+     → Load this batch's NB2 keyframes from image-prompts.md (as NB2→VEO reference)
 
-**Transitions:**
-- Add transition end instruction per `script-to-scene-bridge.md` Section 5
-- Apply "Last Frame Secret" for cross-scene continuity
+  2. GENERATE VEO prompts for this batch's scenes:
+     FOR each scene in this batch:
+
+       **Presenter scenes (lip sync):**
+       - Use presenter template from `script-to-scene-bridge.md` Section 4
+       - VEO mode: Single I2V (start frame only) — NOT First+Last Frame (safety filter)
+       - Dialogue: `Host says: {text}` — NEVER real person names (safety filter)
+       - NO em dash `—` in dialogue — replace with `,` or `. `
+       - NO face ref filenames in VEO prompt — use generic continuity language
+       - Face >30% frame
+       - All 3 audio layers specified
+
+       **B-Roll scenes (voiceover):**
+       - Use B-Roll template from `script-to-scene-bridge.md` Section 4
+       - Voiceover: `Voice-over narrator, {tone}: {text}` — NOT bare `Voiceover:` (lip-syncs to visible char)
+       - NO em dash `—` in voiceover text
+       - EVERY B-Roll MUST have voiceover narration (no silent B-Roll)
+       - Add `> POST-PROD VO:` backup line outside prompt block for every B-Roll
+       - SFX + music + ambient all specified
+
+       **Extension scenes:**
+       - Use extension template
+       - Reference previous clip context
+       - 720p locked, same camera speed
+
+       **Transitions:**
+       - Add transition end instruction per `script-to-scene-bridge.md` Section 5
+       - Apply "Last Frame Secret" for cross-scene continuity
+
+     END FOR
+
+  3. VALIDATE — spawn prompt-reviewer agent:
+     → Agent tool: subagent_type="ai-video-promo-engine:prompt-reviewer"
+     → Pass: this batch's VEO prompts + scene-plan.md + image-prompts.md (this batch only)
+     → Agent returns: PASS / FAIL with per-prompt feedback
+
+  4. IF FAIL → re-generate failing prompts only (max 2 retries)
+
+  5. APPROVE — AskUserQuestion:
+     "Batch {N} ({ACT name}, Scenes {X}-{Y}) VEO prompts ready for review."
+     A) Approve batch — proceed to next batch
+     B) Revise specific scenes — list scene numbers
+     C) Regenerate entire batch — start fresh
+
+  6. APPEND to {output_folder}/video-prompts.md
+
+END FOR
+```
 
 #### Step 5.2: Output Mode
 
@@ -1226,27 +1259,25 @@ Check `global-promo-config.md` `output_mode`:
 **--full mode:** Complete production plan per `script-to-scene-bridge.md` Section 8
 **--quick mode:** Copy-paste ready prompts only (NB2 + VEO per scene)
 
-#### Step 5.3: Final Approval
+#### Step 5.3: Final Review
 
-```
-AskUserQuestion:
-"Production package sudah complete! Review final output?"
-
-Options:
-A) Approve — save semua output files
-B) Revise video prompts — sebutkan scene yang perlu diubah
-C) Revise audio specs — ubah dialogue/SFX/music
-D) Back to scene plan — ubah pembagian scene
-```
+After ALL batches are generated and approved:
+1. Read the complete `{output_folder}/video-prompts.md`
+2. Verify cross-batch continuity (transition instructions link correctly across batch boundaries)
+3. Verify NB2→VEO consistency (each VEO prompt references correct NB2 keyframe)
+4. Present summary:
+   - Total batches: {N}
+   - Total scenes: {M}
+   - Total VEO clips: {P} (generations + extensions)
+   - Total estimated duration: {X}s
+   - Validator pass rate: {Y}% first-pass, {Z}% after retry
+5. AskUserQuestion: final approval or revision
 
 **Save output:** `{output_folder}/video-prompts.md`
 
-#### Step 5.4: Summary
+#### Step 5.4: Production Summary
 
-Present final summary:
-- Total scenes: {N}
-- Total VEO clips: {M} (generations + extensions)
-- Total estimated duration: {X}s
+Present final production package summary:
 - Output files saved to: `{output_folder}/`
 - Files: strategic-brief.md, cast-profile.md, av-script.md, scene-plan.md, ref-manifest.md, image-prompts.md, video-prompts.md
 
