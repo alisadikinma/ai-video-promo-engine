@@ -78,7 +78,7 @@ Track up to **5 characters + 14 objects** per workflow.
 All reference images MUST be explicitly embedded in the prompt text, not just uploaded as files. The prompt must tell the model to look at and match the reference:
 
 ```
-maintain exact facial identity from reference image: ref/cast-c1-face.png
+maintain exact facial identity from reference image: cast-c1-face.png
 ```
 
 Without this injection, the model generates from text description only — causing identity drift. This is especially critical for faces where even slight deviation is immediately noticeable.

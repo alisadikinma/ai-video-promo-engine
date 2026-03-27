@@ -1,14 +1,14 @@
 ---
 name: promo-validate
 description: >
-  Cross-file consistency checker for AI Video Promo Engine references (22 checks).
+  Cross-file consistency checker for AI Video Promo Engine references (23 checks).
   Run after editing any reference file, before commits, or after adding new knowledge.
   Triggers on: validate, consistency check, reference check, cek referensi, cek konsistensi.
 ---
 
 # Validate References
 
-Run 22 automated consistency checks across all operational files. Reports PASS/FAIL per check with exact file:line.
+Run 23 automated consistency checks across all operational files. Reports PASS/FAIL per check with exact file:line.
 
 ## Scope
 
@@ -197,6 +197,17 @@ Run 22 automated consistency checks across all operational files. Reports PASS/F
 6. Search `script-to-scene-bridge.md` for "DOMAIN CONTEXT:" — must appear in NB2/VEO templates
 7. Search SKILL.md strategic brief template for "Domain Knowledge" — must exist
 
+### Check 23: NB2 Identity Lock Filename-Only Syntax
+**Pattern:** NB2 identity lock lines or reference image mentions in prompt body templates using `ref/` folder prefix
+**Expected:** All NB2 prompt body text (identity lock syntax, reference image injection lines, prompt templates/examples) uses bare filenames only — NO `ref/` or `keyframes/` folder prefix. The `ref/` prefix is valid ONLY in: `**Output →** ref/` lines (filesystem paths), upload table paths, directory structure docs, and ref naming convention docs. Inside NB2 prompt body text, `ref/filename.png` fails because NB2 matches by uploaded filename, not path.
+**How to verify:**
+1. Search `script-to-scene-bridge.md` Section 3 NB2 templates for `Maintain exact facial identity from reference image: ref/` — should return 0 matches (must use bare filename)
+2. Search `script-to-scene-bridge.md` Section 3 NB2 templates for `Using reference image ref/` — should return 0 matches
+3. Search SKILL.md Phase 4B prompt instructions for `inject \`ref/` — should return 0 matches (continuity injection must use bare filename in prompt body)
+4. Search agent.md hard rules for `Maintain exact facial identity from reference image: ref/` — should return 0 matches
+5. Verify SKILL.md has hard rule 45 stating "NB2 identity lock: filename only (NO folder prefix like ref/ or keyframes/)"
+6. Verify SKILL.md Scene Keyframe Quality Gate has check for filename-only identity lock
+
 ## Output Format
 
 ```
@@ -224,8 +235,9 @@ Check 19: Scene Logic Realism Checklist ....... PASS (7/7 points)
 Check 20: Character Portrait-First Rule ....... PASS
 Check 21: Narrative Arc Consistency ........... PASS
 Check 22: Domain Deep Research ................ PASS
+Check 23: NB2 Identity Lock Filename-Only ..... PASS
 
-Result: 22/22 checks passed
+Result: 23/23 checks passed
 ```
 
 If any check FAILS, show:

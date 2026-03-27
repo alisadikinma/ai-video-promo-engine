@@ -321,7 +321,7 @@ For EACH prompt in the batch, run ALL checks below. Report PASS or FAIL per chec
 
 ### A. Dependency Chain (NB2 only)
 - [ ] Scene 2+ has `ref/scene-{NN-1}-end.png` in upload table
-- [ ] Scene 2+ has `Using reference image ref/scene-{NN-1}-end.png` in prompt body
+- [ ] Scene 2+ has `Using reference image scene-{NN-1}-end.png` in prompt body
 - [ ] First scene in batch references last scene of previous batch (cross-batch continuity)
 
 ### B. Character Costume Consistency
@@ -438,8 +438,8 @@ Return a structured report:
 **BAD — no previous scene reference:**
 ```
 #### START Frame → ref/scene-15-start.png
-Using reference image ref/cast-c1-face.png for driver face.
-Using reference image ref/vehicle-truck.png for truck.
+Using reference image cast-c1-face.png for driver face.
+Using reference image vehicle-truck.png for truck.
 
 Photorealistic medium shot at the stockpile area...
 ```
@@ -448,11 +448,11 @@ WHY BAD: Scene 15 has no reference to Scene 14 end frame. Environment, lighting,
 **GOOD — previous scene anchored:**
 ```
 #### START Frame → ref/scene-15-start.png
-Using reference image ref/scene-14-end.png for environment continuity, lighting, and character position from previous scene.
-Using reference image ref/cast-c1-face.png for driver face.
-Using reference image ref/vehicle-truck.png for truck.
+Using reference image scene-14-end.png for environment continuity, lighting, and character position from previous scene.
+Using reference image cast-c1-face.png for driver face.
+Using reference image vehicle-truck.png for truck.
 
-Photorealistic medium shot — continuation of ref/scene-14-end.png. The SAME stockpile environment...
+Photorealistic medium shot — continuation of scene-14-end.png. The SAME stockpile environment...
 ```
 WHY GOOD: Scene 14 end frame is the FIRST reference listed, anchoring all visual elements.
 ```

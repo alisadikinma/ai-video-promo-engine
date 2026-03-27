@@ -29,7 +29,7 @@ platform: claude-projects
 
 ### Standard Reference Phrase (Copy Verbatim)
 ```
-Using facial identity from reference image: ref/cast-c{N}-face.png.
+Using facial identity from reference image: cast-c{N}-face.png.
 (where {N} = Ali Sadikin's assigned cast slot number from cast-profile.md)
 Maintain consistent: Indonesian male, late 30s, bald, round face, warm skin
 undertone with natural texture, dark brown eyes, rectangular gunmetal
@@ -95,7 +95,7 @@ LIGHTING: Rembrandt/Split 4:1-6:1, mixed warm face/cool topic, strong rim.
 COLOR: Vision3 500T, HIGH SATURATION teal-orange, minimal grain.
 TEXT ZONES: Reserve [position] for title overlay.
 TECHNICAL: 9:16 vertical, min 1280×720, no artifacts.
-FACE REF: ref/cast-c{N}-face.png. [WARDROBE as specified].
+FACE REF: cast-c{N}-face.png. [WARDROBE as specified].
 ```
 
 ## Holiday Design Reference

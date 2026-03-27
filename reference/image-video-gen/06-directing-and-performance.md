@@ -341,7 +341,7 @@ These rules ensure the Continuity Supervisor mindset feeds into the asset-first 
 
 2. **Logo = ALWAYS user file.** Brand logos, app icons, institutional emblems are NEVER AI-generated. If `ref/brand-{name}.png` exists, inject it. If not, hard-block until user provides it.
 
-3. **Character = ALWAYS cast ref.** No matter how minor the appearance (background, reflection, photo on screen), if the character has a cast slot → inject `ref/cast-c{N}-face.png`.
+3. **Character = ALWAYS cast ref.** No matter how minor the appearance (background, reflection, photo on screen), if the character has a cast slot → inject `cast-c{N}-face.png`.
 
 4. **Location = ALWAYS env ref.** If the location has a ref photo, EVERY scene at that location must reference it. The gate doesn't change between Scene 3 and Scene 11.
 

@@ -164,7 +164,8 @@ Phase 5: VIDEO PROMPTS (VEO)   → Output: video-prompts.md
 - B-Roll scenes: `Voice-over narrator, [tone]: text` — NEVER bare `Voiceover:` (lip-syncs to visible character). Every B-Roll MUST have VO narration + `> POST-PROD VO:` backup
 - NEVER use em dash `—` in dialogue/voiceover text — VEO audio engine mistranslates. Use `,` or `. `
 - Always add: `no subtitles, no audience sounds, no text overlays`
-- VEO prompts: NO face ref filenames (`ref/cast-c{N}-face.png`) — use generic continuity language. Face refs are NB2-only.
+- VEO prompts: NO face ref filenames (`cast-c{N}-face.png`) — use generic continuity language. Face refs are NB2-only.
+- NB2 prompt body text: use filename only (e.g., `cast-c1-face.png`), NEVER add `ref/` folder prefix — NB2 matches by uploaded filename, not path.
 - See `image-video-gen/02-veo-production-guide.md` for full audio specs, safety filter rules, and duration rules
 
 ### VEO 3.1 Mode Selection (Mutual Exclusivity + Safety Filter)
@@ -200,6 +201,7 @@ Need consistent CHARACTER across shots?
 - Scene count auto-calculated from script beats. Scene → VEO mode mapping in `script-to-scene-bridge.md`.
 - VEO specs (resolution, duration, extensions, prompt limits) in `image-video-gen/02-veo-production-guide.md`.
 - NB2 parameters (CFG, denoise, thinking mode, identity lock) in `image-video-gen/01-nb2-image-generation.md`.
+- **NB2 Identity Lock Syntax:** `Maintain exact facial identity from reference image: filename.png` — use bare filename only (NO `ref/` or `keyframes/` prefix). NB2 matches uploaded files by filename; `ref/cast-c1-face.png` fails to match the uploaded `cast-c1-face.png`. Max 3 identity locks per scene.
 - Cinematography defaults per content type in `image-video-gen/04-cinematography-lookup.md`.
 
 ### Smart Context Loading
@@ -277,7 +279,7 @@ Full checklist and per-prompt algorithm in `script-to-scene-bridge.md` Section 7
 - Cast Pemeran Utama: face → body → costume → scene (mandatory chain)
 - Cast Pemeran Pendamping: face → scene (minimum)
 - Recurring extras (2+ scenes): face portrait in Phase 4A FIRST
-- Scene keyframes MUST reference the portrait — NB2 injects `ref/cast-c{N}-face.png`, VEO uses generic continuity
+- Scene keyframes MUST reference the portrait — NB2 injects `cast-c{N}-face.png` (filename only, NO `ref/` prefix in prompt body), VEO uses generic continuity
 
 See `global-promo-config.md` Section 18.
 
@@ -420,10 +422,10 @@ All configurable values live in `reference/global-promo-config.md` — single so
 | "Prominent people" on First+Last Frame | Two photorealistic face images uploaded to VEO — use single I2V (start frame only) for face-dominant scenes (face >30% frame) |
 | Em dash audio artifact | `—` in says:/narrator: text — VEO audio engine mistranslates em dashes. Replace with `,` or `. ` |
 | B-Roll scene has no narration | Silent B-Roll breaks continuous VO flow — every B-Roll MUST have `Voice-over narrator, [tone]: text` + `> POST-PROD VO:` backup |
-| Face ref filename in VEO prompt | `ref/cast-c{N}-face.png` in VEO prompt is useless and may trigger safety filter — face ref injection is NB2-only. VEO uses `Maintain visual continuity with reference frame character appearance.` |
+| Face ref filename in VEO prompt | `cast-c{N}-face.png` in VEO prompt is useless and may trigger safety filter — face ref injection is NB2-only. VEO uses `Maintain visual continuity with reference frame character appearance.` |
 | Identity conflict between cast members | Different characters look too similar — use distinct clothing + accessories + positioning per character |
-| Wrong character appears in scene | NB2 prompt missing specific `ref/cast-c{N}-face.png` — each prompt must reference exact cast slot |
-| Costume doesn't match institution | Wrong/generic uniform generated — use `ref/costume-{institution}.png` as reference, describe badge/emblem details |
+| Wrong character appears in scene | NB2 prompt missing specific `cast-c{N}-face.png` identity lock — each prompt must reference exact cast slot (filename only, NO `ref/` prefix) |
+| Costume doesn't match institution | Wrong/generic uniform generated — use `ref/costume-{institution}.png` as upload reference, describe badge/emblem details |
 | Missing ref blocks Phase 4 | ref-manifest.md validation failed — upload ALL required refs to `{project}/ref/` per manifest |
 | Multi-char dialogue overlap | VEO renders garbled speech — lip sync is 1 speaker at a time, use sequential delivery with reaction pauses |
 | Cast member inconsistent across scenes | Weak reference phrase — use EXACT verbatim phrase from cast-profile.md in EVERY NB2 prompt |
@@ -445,8 +447,8 @@ All configurable values live in `reference/global-promo-config.md` — single so
 | Costume inappropriate for climate | No climate-aware check — cross-check costume vs location climate after cultural research (Step 3.5.2a) |
 | Scene keyframe describes element from scratch | Asset-first violation — if element has ref in Phase 4A, scene keyframe MUST reference it, not describe from text |
 | Identity conflict between cast members | Different characters look too similar — use distinct clothing + accessories + positioning per character |
-| Wrong character appears in scene | NB2 prompt missing specific `ref/cast-c{N}-face.png` — each prompt must reference exact cast slot |
-| Costume doesn't match institution | Wrong/generic uniform generated — use `ref/costume-{institution}.png` as reference, describe badge/emblem details |
+| Wrong character appears in scene | NB2 prompt missing specific `cast-c{N}-face.png` identity lock — each prompt must reference exact cast slot (filename only, NO `ref/` prefix) |
+| Costume doesn't match institution | Wrong/generic uniform generated — use `ref/costume-{institution}.png` as upload reference, describe badge/emblem details |
 | Missing ref blocks Phase 4 | ref-manifest.md validation failed — upload ALL required refs to `{project}/ref/` per manifest |
 | Multi-char dialogue overlap | VEO renders garbled speech — lip sync is 1 speaker at a time, use sequential delivery with reaction pauses |
 | Cast member inconsistent across scenes | Weak reference phrase — use EXACT verbatim phrase from cast-profile.md in EVERY NB2 prompt |
@@ -464,6 +466,7 @@ All configurable values live in `reference/global-promo-config.md` — single so
 | Operator doing wrong action | Domain knowledge missing — check strategic-brief.md Domain Knowledge > Operator Roles table for plausible actions per role |
 | Generic "factory" instead of specific domain | Missing DOMAIN CONTEXT line in prompt — inject specific equipment/process details from Domain Knowledge section |
 | Product UI/interface looks nothing like real thing | No product research — WebSearch "{product_name} product interface screenshots features" in Step 1.2c |
+| NB2 identity lock fails / face not matched | Prompt body text uses `ref/cast-c1-face.png` instead of bare `cast-c1-face.png` — NB2 matches by uploaded filename, `ref/` prefix causes lookup failure. Remove ALL folder prefixes from identity lock lines and reference image mentions in prompt body |
 
 ---
 

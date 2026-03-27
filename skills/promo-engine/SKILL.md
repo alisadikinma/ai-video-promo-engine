@@ -117,7 +117,7 @@ Copy `agents/promo-engine-agent.md` to your project's `.claude/agents/` director
 30. **Climate-aware costume** — cross-check cast costume vs location climate after cultural research. Flag inappropriate combinations. See `global-promo-config.md` Section 23.
 31. **Dynamic tier assignment** — composite assets (UI screens showing truck+face) auto-assigned to tier = max(sub-element tiers) + 1. Never generate composite before its sub-elements. See `global-promo-config.md` Section 18.
 32. **VEO: No real names in `says:`** — VEO safety filter rejects real person name + photorealistic face. Use `Host says:` / `Presenter says:` / `Speaker says:`. NB2 can still use real names.
-33. **VEO: No face ref filenames** — `Maintain exact facial identity from reference image: ref/xxx.png` is NB2-only. VEO prompts use generic: `Maintain visual continuity with reference frame character appearance.`
+33. **VEO: No face ref filenames** — `Maintain exact facial identity from reference image: xxx.png` is NB2-only. VEO prompts use generic: `Maintain visual continuity with reference frame character appearance.`
 34. **VEO: Face-dominant = single I2V** — Scene with face >30% frame → single I2V (start frame only). First+Last Frame → only for faceless scenes (dashboards, products, environments). Safety filter rejects 2 face images.
 35. **VEO: No em dash in audio text** — NEVER use `—` in `says:` or `Voice-over narrator:` text. VEO audio engine mistranslates em dashes. Replace with `,` or `. `
 36. **VEO: Every B-Roll has VO** — No silent B-Roll. Every B-Roll VEO prompt MUST have `Voice-over narrator, [tone]: text` + `> POST-PROD VO:` fallback line outside the prompt block.
@@ -129,6 +129,7 @@ Copy `agents/promo-engine-agent.md` to your project's `.claude/agents/` director
 42. **Sequential scene dependency** — Scene N+1 start frame MUST reference Scene N end frame (`ref/scene-{NN-1}-end.png`) as upstream continuity anchor. Upload table MUST include previous scene output. No exceptions for sequential timeline scenes.
 43. **Prop/object scale enforcement** — Every handheld prop or object in NB2/VEO prompts MUST include: (a) exact physical dimensions in cm/mm, (b) real-world size analogy, (c) proportion relative to human hand/body, (d) explicit negative for wrong sizes. "Small" alone is NOT sufficient.
 44. **Camera angle constraint for Frame mode** — START and END frames within one VEO scene MUST have: max 1-step shot size change (CU↔MCU↔MS↔MWS↔WS) and max 15° camera angle change. Drastic camera jumps break VEO interpolation.
+45. **NB2 identity lock: filename only** — `Maintain exact facial identity from reference image:` MUST use bare filename only (e.g., `cast-c1-face.png`). NEVER add folder prefix like `ref/` or `keyframes/` — NB2 matches uploaded images by filename, and `ref/cast-c1-face.png` fails to match the uploaded `cast-c1-face.png`. Same rule applies to all reference image mentions inside NB2 prompt body text.
 
 ---
 
@@ -1132,7 +1133,7 @@ FOR each batch (ACT or sub-batch):
        - **UI text localization** — on-screen text in narration language
        - **Scale/dimension specification** — every visible prop and object MUST have real-world dimensions in the prompt (cm/mm + visual analogy + proportion to hand + negative for wrong size)
        - **Wardrobe verbatim consistency** — pull EXACT costume text from cast-profile.md or Character Costume Tracking Table (Section 7D of script-to-scene-bridge.md). NEVER paraphrase. If character appears in 3+ scenes, the costume text string MUST be identical across all prompts.
-       - **Previous scene continuity injection** — for scenes 2+ in timeline, inject `ref/scene-{NN-1}-end.png` as first reference image and include in upload table
+       - **Previous scene continuity injection** — for scenes 2+ in timeline, inject `scene-{NN-1}-end.png` as first reference image in prompt body text (filename only, NO `ref/` prefix) and include in upload table
 
      END FOR
 
@@ -1334,6 +1335,7 @@ Present final production package summary:
 - [ ] Previous scene end frame referenced in upload table and prompt body (for scenes 2+)
 - [ ] Camera angle between start/end max 15° change, shot size max 1 step
 - [ ] Aspect ratio specified in ALL prompts (NB2: triple enforcement; VEO: first + last line)
+- [ ] NB2 identity lock uses filename only — NO `ref/` or other folder prefix in `Maintain exact facial identity from reference image:` lines or any reference image mention inside prompt body text
 
 ### Video Prompt Quality Gate (Phase 5)
 - [ ] VEO mode correct per scene (no Ingredients + Frame mix)

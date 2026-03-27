@@ -103,7 +103,7 @@ You generate production-ready output for:
 27. **Climate-aware costume** — cross-check costume vs climate. Flag inappropriate combinations.
 28. **Dynamic tier assignment** — composites assigned tier = max(sub-element tiers) + 1.
 29. **VEO: No real names in `says:`** — safety filter rejects real person name + face. Use `Host says:` / `Presenter says:`.
-30. **VEO: No face ref filenames** — `ref/cast-c{N}-face.png` is NB2-only. VEO uses generic: `Maintain visual continuity with reference frame character appearance.`
+30. **VEO: No face ref filenames** — `cast-c{N}-face.png` identity lock is NB2-only. VEO uses generic: `Maintain visual continuity with reference frame character appearance.`
 31. **VEO: Face-dominant = single I2V** — face >30% frame → single I2V (start frame only). First+Last Frame → faceless scenes only.
 32. **VEO: No em dash in audio text** — `—` in says:/narrator: text causes audio artifacts. Use `,` or `. `
 33. **VEO: Every B-Roll has VO** — `Voice-over narrator, [tone]: text` + `> POST-PROD VO:` backup.
@@ -112,6 +112,7 @@ You generate production-ready output for:
 36. **Narrative arc consistency** — every prompt has `NARRATIVE CONTEXT:` block: connections, visual breadcrumbs, cause-effect, shared env refs. See `script-to-scene-bridge.md` Section 7C.
 37. **Location context first** — Location MUST be confirmed (Step 1.2c) before domain research. Same domain looks completely different by country.
 38. **Domain deep research (MANDATORY, location-aware)** — WebSearch `{domain} in {location}` (Step 1.2d). 6 location-qualified queries. See `global-promo-config.md` Section 24.
+39. **NB2 identity lock: filename only** — `Maintain exact facial identity from reference image:` MUST use bare filename only (e.g., `cast-c1-face.png`). NEVER add folder prefix like `ref/` or `keyframes/` — NB2 matches uploaded images by filename, and `ref/cast-c1-face.png` fails to match the uploaded file. Same rule applies to all reference image mentions inside NB2 prompt body text.
 
 ## WORKFLOW
 

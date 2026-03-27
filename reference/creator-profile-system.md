@@ -194,7 +194,7 @@ Activated via `--preset ali` flag or interactive selection during Step 4.
 ### Standard Reference Phrase (Copy Verbatim)
 
 ```
-Using facial identity from reference image: ref/cast-c{N}-face.png.
+Using facial identity from reference image: cast-c{N}-face.png.
 Maintain consistent: Indonesian male, late 30s, bald, round face, warm skin
 undertone with natural texture, dark brown eyes, rectangular gunmetal
 semi-rimless glasses, clean-shaven, confident approachable presence.
@@ -257,7 +257,7 @@ When cast builder completes, generate this structure and save to `{project}/cast
 - **Costume:** {costume description, institutional uniform details, or "generic professional attire"}
 
 ### Reference Phrase (copy verbatim for ALL NB2 prompts with this character)
-Using facial identity from reference image: ref/cast-c1-face.png.
+Using facial identity from reference image: cast-c1-face.png.
 Maintain consistent: {ethnicity} {gender}, {age_range}, {key_features}.
 
 ### Reference Files
@@ -284,7 +284,7 @@ Maintain consistent: {ethnicity} {gender}, {age_range}, {key_features}.
 - **Costume:** {costume description}
 
 ### Reference Phrase (copy verbatim for ALL NB2 prompts with this character)
-Using facial identity from reference image: ref/cast-c2-face.png.
+Using facial identity from reference image: cast-c2-face.png.
 Maintain consistent: {ethnicity} {gender}, {age_range}, {key_features}.
 
 ### Reference Files
@@ -311,7 +311,7 @@ Maintain consistent: {ethnicity} {gender}, {age_range}, {key_features}.
 - **Costume:** {costume description or "generic — follows scene wardrobe"}
 
 ### Reference Phrase (copy verbatim for ALL NB2 prompts with this character)
-Using facial identity from reference image: ref/cast-c3-face.png.
+Using facial identity from reference image: cast-c3-face.png.
 Maintain consistent: {ethnicity} {gender}, {age_range}, {key_features}.
 
 ### Reference Files
@@ -474,9 +474,9 @@ Full keyword table is maintained in `global-promo-config.md` Section 12. Key ins
 When generating NB2 or VEO prompts for a character with institutional costume:
 
 ```
-Maintain exact facial identity from reference image: ref/cast-c{N}-face.png.
+Maintain exact facial identity from reference image: cast-c{N}-face.png.
 Wearing official {institution_name} uniform as shown in reference image:
-ref/cast-c{N}-costume.png. Maintain exact badge placement, color scheme,
+cast-c{N}-costume.png. Maintain exact badge placement, color scheme,
 emblem detail, and rank insignia. Fabric texture: {uniform fabric — e.g.,
 "pressed cotton twill", "polyester blend with matte finish"}.
 ```
@@ -508,19 +508,19 @@ Templates for multi-character scenes in NB2 image prompts and VEO video prompts.
 
 ```
 SUBJECT: Character {A} ({name_A}, {role_A}) and Character {B} ({name_B}, {role_B}).
-Maintain exact facial identity from reference image: ref/cast-c{A}-face.png for Character {A}.
-Maintain exact facial identity from reference image: ref/cast-c{B}-face.png for Character {B}.
-Maintain exact body proportions from reference image: ref/cast-c{A}-body.png for Character {A}.
-Maintain exact body proportions from reference image: ref/cast-c{B}-body.png for Character {B}.
+Maintain exact facial identity from reference image: cast-c{A}-face.png for Character {A}.
+Maintain exact facial identity from reference image: cast-c{B}-face.png for Character {B}.
+Maintain exact body proportions from reference image: cast-c{A}-body.png for Character {A}.
+Maintain exact body proportions from reference image: cast-c{B}-body.png for Character {B}.
 Character {A}: {ethnicity_A} {gender_A}, {age_A}, {key_features_A}... wearing {costume_A}.
-{If institutional: Character {A} wearing exact uniform from ref/cast-c{A}-costume.png.}
+{If institutional: Character {A} wearing exact uniform from cast-c{A}-costume.png.}
 Character {B}: {ethnicity_B} {gender_B}, {age_B}, {key_features_B}... wearing {costume_B}.
-{If institutional: Character {B} wearing exact uniform from ref/cast-c{B}-costume.png.}
+{If institutional: Character {B} wearing exact uniform from cast-c{B}-costume.png.}
 INTERACTION: {action between characters — e.g., "shaking hands", "looking at laptop together", "Character A presenting to Character B"}.
 POSITIONING: Pemeran Utama ({name_of_utama}) more prominent — closer to camera, better lit, occupying frame center-left (rule of thirds).
 SCENE: {environment description}.
-Match environment from reference image: ref/env-{location}.png.
-{If product visible: Match exact product from reference image: ref/product-{name}.png.}
+Match environment from reference image: env-{location}.png.
+{If product visible: Match exact product from reference image: product-{name}.png.}
 CAMERA: {shot size — MS or MWS to fit both characters} {lens — 35mm or 50mm} {aperture}.
 LIGHTING: {pattern} {ratio}, {kelvin}K.
 TECHNICAL: {aspect_ratio}, {resolution}, central 60% safe zone for critical action.
@@ -544,21 +544,21 @@ TECHNICAL: {aspect_ratio}, {resolution}, central 60% safe zone for critical acti
 
 ```
 GROUP: Characters {A}, {B}, {C} in {setting}.
-Maintain exact facial identity from reference image: ref/cast-c{A}-face.png for Character {A}.
-Maintain exact facial identity from reference image: ref/cast-c{B}-face.png for Character {B}.
-Maintain exact facial identity from reference image: ref/cast-c{C}-face.png for Character {C}.
-Maintain exact body proportions from ref/cast-c{A}-body.png, ref/cast-c{B}-body.png, ref/cast-c{C}-body.png.
+Maintain exact facial identity from reference image: cast-c{A}-face.png for Character {A}.
+Maintain exact facial identity from reference image: cast-c{B}-face.png for Character {B}.
+Maintain exact facial identity from reference image: cast-c{C}-face.png for Character {C}.
+Maintain exact body proportions from cast-c{A}-body.png, cast-c{B}-body.png, cast-c{C}-body.png.
 Character {A}: {full description}... wearing {costume_A}.
-{If institutional: Character {A} wearing exact uniform from ref/cast-c{A}-costume.png.}
+{If institutional: Character {A} wearing exact uniform from cast-c{A}-costume.png.}
 Character {B}: {full description}... wearing {costume_B}.
-{If institutional: Character {B} wearing exact uniform from ref/cast-c{B}-costume.png.}
+{If institutional: Character {B} wearing exact uniform from cast-c{B}-costume.png.}
 Character {C}: {full description}... wearing {costume_C}.
-{If institutional: Character {C} wearing exact uniform from ref/cast-c{C}-costume.png.}
+{If institutional: Character {C} wearing exact uniform from cast-c{C}-costume.png.}
 COMPOSITION: Pemeran Utama center/foreground. Pemeran Pendamping flanking or background.
 Triangular composition — tallest character slightly back, others angled toward camera.
 INTERACTION: {group dynamic from script — e.g., "team discussing around whiteboard", "group walking through facility"}.
-SCENE: Match environment from reference image: ref/env-{location}.png.
-{If product visible: Match exact product from reference image: ref/product-{name}.png.}
+SCENE: Match environment from reference image: env-{location}.png.
+{If product visible: Match exact product from reference image: product-{name}.png.}
 CAMERA: {wider shot — MS to MWS} {lens — 35mm} {aperture} to fit all characters.
 LIGHTING: {pattern} {ratio}, {kelvin}K — ensure all faces adequately lit.
 TECHNICAL: {aspect_ratio}, {resolution}. Central 60% safe zone.
@@ -589,10 +589,10 @@ If 4+ cast needed in a sequence, use shot/reverse-shot or group-then-individual 
 ~{duration}s, {resolution}, {aspect_ratio}.
 Camera: {shot size — MCU to MS, accommodate both speakers}, {lens}, {movement — subtle or static}.
 
-Maintain exact facial identity from reference image: ref/cast-c{A}-face.png for Character {A}.
-Maintain exact facial identity from reference image: ref/cast-c{B}-face.png for Character {B}.
-{If institutional: Character {A} wearing exact uniform from ref/cast-c{A}-costume.png.}
-{If institutional: Character {B} wearing exact uniform from ref/cast-c{B}-costume.png.}
+Maintain exact facial identity from reference image: cast-c{A}-face.png for Character {A}.
+Maintain exact facial identity from reference image: cast-c{B}-face.png for Character {B}.
+{If institutional: Character {A} wearing exact uniform from cast-c{A}-costume.png.}
+{If institutional: Character {B} wearing exact uniform from cast-c{B}-costume.png.}
 
 Character {A} says: {line — max 15 words, natural spoken rhythm}.
 [0.5s pause — reaction shot of Character {B}, visible micro-expression]
@@ -627,10 +627,10 @@ For longer exchanges, split into separate 8s clips with consistent camera angle.
 ~{duration}s, {resolution}, {aspect_ratio}.
 Camera: {wider shot — MS to MWS}, {lens — 35mm}, {movement — slow dolly or static}.
 
-Maintain exact facial identity from reference image: ref/cast-c{A}-face.png for Character {A}.
-Maintain exact facial identity from reference image: ref/cast-c{B}-face.png for Character {B}.
-Maintain exact facial identity from reference image: ref/cast-c{C}-face.png for Character {C}.
-{If institutional: Characters wearing exact uniforms from respective ref/cast-c{N}-costume.png.}
+Maintain exact facial identity from reference image: cast-c{A}-face.png for Character {A}.
+Maintain exact facial identity from reference image: cast-c{B}-face.png for Character {B}.
+Maintain exact facial identity from reference image: cast-c{C}-face.png for Character {C}.
+{If institutional: Characters wearing exact uniforms from respective cast-c{N}-costume.png.}
 
 Group of {N} people in {setting}.
 Character {A} ({name_A}): {position in frame, action}.
@@ -684,15 +684,15 @@ For scenes with only 1 character (most common for presenter segments):
 
 ```
 SUBJECT: {name} ({role}).
-Maintain exact facial identity from reference image: ref/cast-c{N}-face.png.
-Maintain exact body proportions from reference image: ref/cast-c{N}-body.png.
+Maintain exact facial identity from reference image: cast-c{N}-face.png.
+Maintain exact body proportions from reference image: cast-c{N}-body.png.
 {ethnicity} {gender}, {age_range}, {key_features}... wearing {costume}.
-{If institutional: Wearing exact uniform as shown in reference image: ref/cast-c{N}-costume.png.}
+{If institutional: Wearing exact uniform as shown in reference image: cast-c{N}-costume.png.}
 ACTION: {what character is doing in this scene}.
 EXPRESSION: {emotional state — confident, curious, concerned, excited}.
 SCENE: {environment description}.
-{If environment ref: Match environment from reference image: ref/env-{location}.png.}
-{If product visible: Match exact product from reference image: ref/product-{name}.png.}
+{If environment ref: Match environment from reference image: env-{location}.png.}
+{If product visible: Match exact product from reference image: product-{name}.png.}
 CAMERA: {shot size} {lens} {aperture}.
 LIGHTING: {pattern} {ratio}, {kelvin}K.
 TECHNICAL: {aspect_ratio}, {resolution}.

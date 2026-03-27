@@ -99,7 +99,7 @@ See Section 21 for full rules and examples. Key principle:
 | **No bare `Voiceover:`** | VEO assigns bare `Voiceover:` speech to any visible on-screen character. Use `Voice-over narrator, [tone]: text` — VEO treats "narrator" as off-screen entity. |
 | **No em dash in audio text** | `—` in `says:` or `Voice-over narrator:` text → VEO audio engine mistranslates. Replace with `,` or `. ` |
 | **Every B-Roll has VO** | No silent B-Roll in promo videos. Every B-Roll scene needs `Voice-over narrator` line + `> POST-PROD VO:` backup. |
-| **No face ref filenames in VEO** | `Maintain exact facial identity from reference image: ref/xxx.png` → ONLY in NB2 prompts. VEO prompts use generic: `Maintain visual continuity with reference frame character appearance.` |
+| **No face ref filenames in VEO** | `Maintain exact facial identity from reference image: xxx.png` → ONLY in NB2 prompts. VEO prompts use generic: `Maintain visual continuity with reference frame character appearance.` |
 | **Face-dominant = single I2V** | Scene with face >30% frame → single I2V (start frame only). First+Last Frame mode → only for faceless scenes. Safety filter rejects 2 face images. |
 
 ---
@@ -325,13 +325,13 @@ Save to `strategic-brief.md` > Cultural Context section:
 
 | Category | Injection Phrase (NB2 prompts only) |
 |----------|--------------------------------------|
-| Cast face | `maintain exact facial identity from reference image: ref/cast-c{N}-face.png` |
-| Cast body | `maintain exact body proportions and build from reference image: ref/cast-c{N}-body.png` |
-| Cast costume | `wearing exact uniform/costume as shown in reference image: ref/cast-c{N}-costume.png` |
-| Product | `match exact product appearance from reference image: ref/product-{name}.png` |
-| Environment | `match environment and architectural style from reference image: ref/env-{location}.png` |
-| Brand asset | `use exact brand asset from reference image: ref/brand-{asset}.png` |
-| Institution uniform | `match exact institutional uniform from reference image: ref/costume-{institution}.png` |
+| Cast face | `maintain exact facial identity from reference image: cast-c{N}-face.png` |
+| Cast body | `maintain exact body proportions and build from reference image: cast-c{N}-body.png` |
+| Cast costume | `wearing exact uniform/costume as shown in reference image: cast-c{N}-costume.png` |
+| Product | `match exact product appearance from reference image: product-{name}.png` |
+| Environment | `match environment and architectural style from reference image: env-{location}.png` |
+| Brand asset | `use exact brand asset from reference image: brand-{asset}.png` |
+| Institution uniform | `match exact institutional uniform from reference image: costume-{institution}.png` |
 
 ### VEO Continuity Syntax (embed in VEO prompts — generic, no filenames)
 
@@ -366,17 +366,17 @@ Every ref in the upload table MUST have a corresponding injection line in the pr
 ```
 RULE: For EACH row in the Required Reference Images table:
   → There MUST be a matching line in the prompt text:
-    "Using reference image ref/xxx.png for [specific purpose]"
+    "Using reference image xxx.png for [specific purpose]"
 
   EXAMPLES:
     Upload table has: ref/cast-c1-face.png
-    Prompt body MUST have: "maintain exact facial identity from reference image: ref/cast-c1-face.png"
+    Prompt body MUST have: "maintain exact facial identity from reference image: cast-c1-face.png"
 
     Upload table has: ref/env-gate-pelabuhan.png
-    Prompt body MUST have: "match environment EXACTLY as shown in reference image: ref/env-gate-pelabuhan.png"
+    Prompt body MUST have: "match environment EXACTLY as shown in reference image: env-gate-pelabuhan.png"
 
     Upload table has: ref/vehicle-truck-hino.png
-    Prompt body MUST have: "match exact vehicle appearance from reference image: ref/vehicle-truck-hino.png"
+    Prompt body MUST have: "match exact vehicle appearance from reference image: vehicle-truck-hino.png"
 ```
 
 ### Output Filename (MANDATORY per prompt)
@@ -434,9 +434,9 @@ Phase 4B: SCENE KEYFRAMES (molecules)   → image-prompts.md
 
 > **Scene keyframes NEVER describe visual elements from text alone — always reference an asset file.**
 
-If a scene shows a truck → the prompt says `match exact truck appearance from reference image: ref/vehicle-truck-{name}.png`
-If a scene shows a driver → the prompt says `maintain exact facial identity from reference image: ref/cast-c{N}-face.png`
-If a scene shows a gate → the prompt says `match environment from reference image: ref/env-{location}.png`
+If a scene shows a truck → the prompt says `match exact truck appearance from reference image: vehicle-truck-{name}.png`
+If a scene shows a driver → the prompt says `maintain exact facial identity from reference image: cast-c{N}-face.png`
+If a scene shows a gate → the prompt says `match environment from reference image: env-{location}.png`
 
 ### Asset Categories (Extended)
 
@@ -576,7 +576,7 @@ In addition to asset-tier dependencies, sequential scene keyframes form a linear
 | Asset Being Generated | MUST Inject These Upstream Refs |
 |--------------------|---------------------------------|
 | Cast face | None (foundational) |
-| Cast body | Face ref: `maintain exact facial identity from reference image: ref/cast-c{N}-face.png` |
+| Cast body | Face ref: `maintain exact facial identity from reference image: cast-c{N}-face.png` |
 | Cast costume | Face ref + body ref |
 | Vehicle | None (foundational — unless variant of base vehicle) |
 | Object | None (unless composite containing other assets) |
@@ -648,7 +648,7 @@ VALIDATION CHECKLIST (per tier):
   → For each ref listed in "Required Reference Images" table of a prompt:
     SEARCH prompt body for injection phrase containing that ref filename
     If ref is listed but NOT injected in body → FIX prompt body
-  → Injection phrase pattern: "from reference image: ref/{filename}"
+  → Injection phrase pattern: "from reference image: {filename}"
 
 □ LOGO/BRAND VERIFICATION: Brand assets are user-provided, not AI-generated
   → If ref/brand-*.png exists → verify it appears in ALL prompts showing brand
@@ -659,7 +659,7 @@ VALIDATION CHECKLIST (per tier):
     that already have a standalone asset
   → If found: replace text description with ref injection
   → Example: "red Hino dump truck" in scene prompt → WRONG if ref/vehicle-truck-hino.png exists
-    → Replace with: "match exact truck from reference image: ref/vehicle-truck-hino.png"
+    → Replace with: "match exact truck from reference image: vehicle-truck-hino.png"
 ```
 
 - If any ref fails quality check → regenerate THAT ref only (don't cascade)
@@ -719,7 +719,7 @@ STEP 2: For EACH character appearing in 2+ scenes:
   → If recurring extra: face ref MINIMUM — body/costume optional
 
 STEP 3: Scene keyframes (Phase 4B) MUST reference the portrait
-  → NB2 prompts: inject "maintain exact facial identity from reference image: ref/cast-c{N}-face.png"
+  → NB2 prompts: inject "maintain exact facial identity from reference image: cast-c{N}-face.png"
   → VEO prompts: use generic continuity language (face refs are NB2-only)
   → NEVER generate a scene keyframe with a character described only by text if portrait exists
 
@@ -758,7 +758,7 @@ STEP 2: MAP visual elements to existing refs
     IF match found:
       → MUST include in prompt body as character reference
       → MUST include in Required Reference Images table
-      → Prompt text: "Using reference image ref/xxx.png for [specific purpose]"
+      → Prompt text: "Using reference image xxx.png for [specific purpose]"
     IF no match found:
       → FLAG to user: "Apakah ada foto untuk {element}? Jika ada, save ke ref/{suggested-name}.png"
 
@@ -771,10 +771,10 @@ STEP 3: AUTO-DETECT brand/institution assets
 
 STEP 4: NEVER hallucinate what you can reference
   IF ref/env-gate-pelabuhan.png exists:
-    → Prompt MUST say "match environment EXACTLY as shown in ref/env-gate-pelabuhan.png"
+    → Prompt MUST say "match environment EXACTLY as shown in env-gate-pelabuhan.png"
     → Do NOT describe gate from imagination (wrong barriers, wrong style, wrong era)
   IF ref/product-closeup-cangkang.png exists:
-    → Prompt MUST say "match exact product texture and appearance from ref/product-closeup-cangkang.png"
+    → Prompt MUST say "match exact product texture and appearance from product-closeup-cangkang.png"
     → Do NOT describe cangkang from text (AI will hallucinate wrong texture — e.g., sawit buah utuh instead of pecahan cangkang)
 ```
 
@@ -899,7 +899,7 @@ EXAMPLES:
 [PROMPT TEXT — ENGLISH (AI model reads this)]
 IMPORTANT: Generate in LANDSCAPE 16:9 aspect ratio. Do NOT generate portrait or square.
 SUBJECT: Port operator standing next to ANPR monitoring screen.
-Maintain exact facial identity from reference image: ref/cast-c1-face.png.
+Maintain exact facial identity from reference image: cast-c1-face.png.
 CAMERA: Medium shot, 50mm f/4, eye-level.
 LIGHTING: Clean office lighting, 4500K neutral.
 
@@ -945,7 +945,7 @@ STEP 1: Ask user
   B) Tidak ada, generate pakai NB2
 
 STEP 2: If user uploads → use as PRIMARY reference for ALL product prompts
-  → "match EXACTLY as shown in ref/product-closeup-{name}.png — texture, color, size, shape"
+  → "match EXACTLY as shown in product-closeup-{name}.png — texture, color, size, shape"
 
 STEP 3: If AI-generated → generate with EXTREME specificity
   → Include detailed texture description: "broken/cracked pieces, not whole fruit"
@@ -978,7 +978,7 @@ STEP 2: For each location, ask user
   B) Tidak ada foto → generate pakai NB2 (cultural context will be injected)
 
 STEP 3: If user photo → use as ground truth
-  → "match environment EXACTLY as shown in ref/env-{location}.png"
+  → "match environment EXACTLY as shown in env-{location}.png"
   → Do NOT add/remove architectural elements that don't exist in the photo
 
 STEP 4: If AI-generated → inject cultural research HEAVILY
