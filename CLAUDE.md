@@ -165,7 +165,7 @@ Phase 5: VIDEO PROMPTS (VEO)   → Output: video-prompts.md
 - NEVER use em dash `—` in dialogue/voiceover text — VEO audio engine mistranslates. Use `,` or `. `
 - Always add: `no subtitles, no audience sounds, no text overlays`
 - VEO prompts: NO face ref filenames (`cast-c{N}-face.png`) — use generic continuity language. Face refs are NB2-only.
-- NB2 prompt body text: use filename only (e.g., `cast-c1-face.png`), NEVER add `ref/` folder prefix — NB2 matches by uploaded filename, not path.
+- NB2 prompt body text: use filename only (e.g., `cast-c1-face.png`), NEVER add `ref/` folder prefix — NB2 matches by uploaded filename, not path. All filenames MUST be inline with the element they describe (no header blocks, no standalone lines, each filename MAX 1x per prompt).
 - See `image-video-gen/02-veo-production-guide.md` for full audio specs, safety filter rules, and duration rules
 
 ### VEO 3.1 Mode Selection (Mutual Exclusivity + Safety Filter)
@@ -202,6 +202,7 @@ Need consistent CHARACTER across shots?
 - VEO specs (resolution, duration, extensions, prompt limits) in `image-video-gen/02-veo-production-guide.md`.
 - NB2 parameters (CFG, denoise, thinking mode, identity lock) in `image-video-gen/01-nb2-image-generation.md`.
 - **NB2 Identity Lock Syntax:** `Maintain exact facial identity from reference image: filename.png` — use bare filename only (NO `ref/` or `keyframes/` prefix). NB2 matches uploaded files by filename; `ref/cast-c1-face.png` fails to match the uploaded `cast-c1-face.png`. Max 3 identity locks per scene.
+- **Inline-Only Reference Pattern:** All NB2 reference image filenames MUST appear inline with the element they describe, NOT in header blocks. Each filename MAX 1x per prompt. Three categories: (1) identity lock inline with character: `[Name] (Maintain exact facial identity from reference image: cast-c1-face.png) in uniform...`, (2) object/env ref inline: `...the monitor — EXACTLY matching ui-anpr-screen.png: interface...`, (3) scene continuity inline: `...continuation from scene-{NN-1}-end.png — maintaining position...`. BANNED: header blocks (`Using reference image xxx.png for [purpose]`), standalone identity lock lines, duplicate filenames.
 - Cinematography defaults per content type in `image-video-gen/04-cinematography-lookup.md`.
 
 ### Smart Context Loading
@@ -279,7 +280,7 @@ Full checklist and per-prompt algorithm in `script-to-scene-bridge.md` Section 7
 - Cast Pemeran Utama: face → body → costume → scene (mandatory chain)
 - Cast Pemeran Pendamping: face → scene (minimum)
 - Recurring extras (2+ scenes): face portrait in Phase 4A FIRST
-- Scene keyframes MUST reference the portrait — NB2 injects `cast-c{N}-face.png` (filename only, NO `ref/` prefix in prompt body), VEO uses generic continuity
+- Scene keyframes MUST reference the portrait inline — NB2 injects `cast-c{N}-face.png` inline with character description (e.g., `[Name] (Maintain exact facial identity from reference image: cast-c{N}-face.png) — description...`), filename only (NO `ref/` prefix), VEO uses generic continuity
 
 See `global-promo-config.md` Section 18.
 
@@ -467,8 +468,10 @@ All configurable values live in `reference/global-promo-config.md` — single so
 | Generic "factory" instead of specific domain | Missing DOMAIN CONTEXT line in prompt — inject specific equipment/process details from Domain Knowledge section |
 | Product UI/interface looks nothing like real thing | No product research — WebSearch "{product_name} product interface screenshots features" in Step 1.2c |
 | NB2 identity lock fails / face not matched | Prompt body text uses `ref/cast-c1-face.png` instead of bare `cast-c1-face.png` — NB2 matches by uploaded filename, `ref/` prefix causes lookup failure. Remove ALL folder prefixes from identity lock lines and reference image mentions in prompt body |
+| Ref image uploaded but model ignores identity | Reference filename in header block at top of prompt, not inline with character — model reads past header blocks. Move filename inline: `[Name] (Maintain exact facial identity from reference image: cast-c1-face.png) — description...` |
+| Same ref file mentioned multiple times | Duplicate filename dilutes reference signal. Each filename MAX 1x per prompt — place inline with the primary element it describes |
 
 ---
 
-**Version:** 1.8.0
-**Last Updated:** 2026-03-24
+**Version:** 1.8.1
+**Last Updated:** 2026-03-28

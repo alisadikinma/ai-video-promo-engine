@@ -139,20 +139,16 @@ Generate TWO NB2 images per scene:
 **Start Frame Template:**
 ```
 IMPORTANT: Generate in LANDSCAPE 16:9 aspect ratio. Do NOT generate portrait or square.
-SUBJECT: {character/product description from script}.
-{Creator reference phrase from creator-profile.md}
-Maintain exact facial identity from reference image: cast-c{N}-face.png.
-Maintain exact body proportions from reference image: cast-c{N}-body.png.
-{If institutional: Wearing exact uniform as shown in reference image: cast-c{N}-costume.png.}
-{If vehicle in scene: Match exact vehicle from reference image: vehicle-{type}-{name}.png.}
-{If object/equipment in scene: Match exact object from reference image: object-{name}.png.}
-SCENE: {environment from script A/V direction}.
-Match environment EXACTLY as shown in reference image: env-{location}.png.
-{If scene index > 1 in timeline: Using reference image scene-{NN-1}-end.png for grading, character position, and environment continuity from previous scene. Upload table MUST include this file.}
-{If product visible: Match exact product texture from reference image: product-closeup-{name}.png.}
-{If product hero shot: Match exact product from reference image: product-{name}.png.}
-{If brand visible: Use exact brand asset from reference image: brand-{asset}.png.}
-{If UI/screen visible: Match exact screen layout from reference image: ui-{name}.png.}
+{If scene index > 1 in timeline: Continuation from scene-{NN-1}-end.png — maintaining character position, lighting, and environment from previous scene.}
+SUBJECT: {character name} (Maintain exact facial identity from reference image: cast-c{N}-face.png) — {ethnicity} {gender}, {age_range}, {key_features}, body proportions matching cast-c{N}-body.png. {If institutional: Wearing official {institution} uniform EXACTLY as shown in cast-c{N}-costume.png — badge placement, color scheme, emblem detail.} {Creator reference phrase from creator-profile.md}.
+{character/product description from script}.
+{If vehicle in scene: The {vehicle} — EXACTLY matching vehicle-{type}-{name}.png — {vehicle action/position}.}
+{If object/equipment in scene: The {equipment} — EXACTLY matching object-{name}.png — {equipment context}.}
+SCENE: {environment from script A/V direction}, environment layout EXACTLY as shown in env-{location}.png.
+{If product visible: Product texture EXACTLY matching product-closeup-{name}.png.}
+{If product hero shot: Product EXACTLY matching product-{name}.png.}
+{If brand visible: Brand asset EXACTLY matching brand-{asset}.png.}
+{If UI/screen visible: Screen layout EXACTLY matching ui-{name}.png.}
 EXPRESSION: {emotion from beat — see 04-cinematography-lookup.md}.
 CAMERA: {shot size} {lens} {aperture}, {angle}.
 LIGHTING: {pattern} {ratio}, {kelvin}K {film stock}.
@@ -172,18 +168,13 @@ OUTPUT: 16:9 LANDSCAPE aspect ratio. Width > Height. Do NOT crop or change ratio
 **End Frame Template:**
 ```
 IMPORTANT: Generate in LANDSCAPE 16:9 aspect ratio. Do NOT generate portrait or square.
-SUBJECT: {SAME character, NEW pose/position reflecting end-of-scene state}.
-{SAME creator reference phrase — verbatim}
-Maintain exact facial identity from reference image: cast-c{N}-face.png.
-Maintain exact body proportions from reference image: cast-c{N}-body.png.
-{If institutional: Wearing exact uniform as shown in reference image: cast-c{N}-costume.png.}
-{If vehicle in scene: Match exact vehicle from reference image: vehicle-{type}-{name}.png.}
-{If object/equipment in scene: Match exact object from reference image: object-{name}.png.}
-SCENE: {SAME environment — verbatim}.
-Match environment EXACTLY as shown in reference image: env-{location}.png.
-{If product visible: Match exact product texture from reference image: product-closeup-{name}.png.}
-{If brand visible: Use exact brand asset from reference image: brand-{asset}.png.}
-{If UI/screen visible: Match exact screen layout from reference image: ui-{name}.png.}
+SUBJECT: {SAME character name} (Maintain exact facial identity from reference image: cast-c{N}-face.png) — {SAME description}, body proportions matching cast-c{N}-body.png. {If institutional: Wearing official {institution} uniform EXACTLY as shown in cast-c{N}-costume.png.} NEW pose/position reflecting end-of-scene state.
+{If vehicle in scene: The {vehicle} — EXACTLY matching vehicle-{type}-{name}.png — {end-state position}.}
+{If object/equipment in scene: The {equipment} — EXACTLY matching object-{name}.png — {end-state context}.}
+SCENE: {SAME environment — verbatim}, environment layout EXACTLY as shown in env-{location}.png.
+{If product visible: Product texture EXACTLY matching product-closeup-{name}.png.}
+{If brand visible: Brand asset EXACTLY matching brand-{asset}.png.}
+{If UI/screen visible: Screen layout EXACTLY matching ui-{name}.png.}
 EXPRESSION: {evolved emotion — e.g., concern → realization}.
 CAMERA: {SAME lens}, {SAME or adjacent shot size — max 1 step change: CU↔MCU, MCU↔MS, MS↔MWS, MWS↔WS}, {SAME angle or max 15° tilt/pan change — VEO interpolation breaks with drastic camera jumps}.
 LIGHTING: {SAME pattern, SAME ratio, SAME kelvin — critical for consistency}.
@@ -233,9 +224,7 @@ Generate 1-3 reference images:
 
 **Character Reference Template:**
 ```
-SUBJECT: {character full description — SAME text verbatim across ALL refs}.
-{Creator reference phrase from creator-profile.md}
-Maintain exact facial identity from reference image: cast-c{N}-face.png.
+SUBJECT: {character name} (Maintain exact facial identity from reference image: cast-c{N}-face.png) — {character full description — SAME text verbatim across ALL refs}. {Creator reference phrase from creator-profile.md}.
 ANGLE: {front / three-quarter / profile} — generate all 3 for best consistency.
 LIGHTING: Neutral diffused (clean identity data — NOT dramatic).
 BACKGROUND: Clean, simple (studio white or neutral).
@@ -258,16 +247,11 @@ When 2+ characters from cast-profile.md appear in the same scene:
 
 **Multi-Character Frame Template (First+Last Frame mode):**
 ```
-SUBJECT: Character {A} ({name}, {role}) and Character {B} ({name}, {role}) in {interaction from script}.
-Using facial identity from cast-c{A}-face.png for Character {A}.
-Using facial identity from cast-c{B}-face.png for Character {B}.
-Character {A}: {full description from cast-profile.md, verbatim reference phrase}.
-Character {B}: {full description from cast-profile.md, verbatim reference phrase}.
-WARDROBE {A}: {costume/wardrobe from cast-profile.md or institutional uniform from cast-c{A}-costume.png}.
-WARDROBE {B}: {costume/wardrobe from cast-profile.md or institutional uniform from cast-c{B}-costume.png}.
+SUBJECT: Character {A} — {name_A} (Maintain exact facial identity from reference image: cast-c{A}-face.png), body proportions matching cast-c{A}-body.png — {full description from cast-profile.md}. {If institutional: Wearing official uniform EXACTLY as shown in cast-c{A}-costume.png.} {Else: WARDROBE: {costume from cast-profile.md}.}
+AND Character {B} — {name_B} (Maintain exact facial identity from reference image: cast-c{B}-face.png), body proportions matching cast-c{B}-body.png — {full description from cast-profile.md}. {If institutional: Wearing official uniform EXACTLY as shown in cast-c{B}-costume.png.} {Else: WARDROBE: {costume from cast-profile.md}.}
 INTERACTION: {specific action between characters from script A/V direction}.
 POSITIONING: Pemeran Utama more prominent (closer to camera, better lit, larger in frame). Pendamping in supporting position.
-SCENE: {environment from env-{location}.png}.
+SCENE: {environment description}, environment layout EXACTLY as shown in env-{location}.png.
 CAMERA: {shot size wide enough to fit both characters} {lens} {aperture}, {angle}.
 LIGHTING: {pattern} {ratio}, {kelvin}K {film stock}.
 ATMOSPHERE: {atmosphere type}.
@@ -277,16 +261,15 @@ TECHNICAL: {aspect_ratio}, {resolution}, high thinking mode.
 **Multi-Character Ingredients Template:**
 ```
 CHARACTER {A} REFERENCE:
-SUBJECT: {Character A full description — verbatim from cast-profile.md}.
-Using facial identity from cast-c{A}-face.png.
-WARDROBE: {costume from cast-profile.md}.
+SUBJECT: {Character A name} (Maintain exact facial identity from reference image: cast-c{A}-face.png) — {full description verbatim from cast-profile.md}. WARDROBE: {costume from cast-profile.md}.
 ANGLE: {front / three-quarter / profile}.
 LIGHTING: Neutral diffused (clean identity data).
 BACKGROUND: Clean studio white.
 TECHNICAL: {aspect_ratio}, 4K, high thinking mode.
 
 CHARACTER {B} REFERENCE:
-(same structure, different character)
+SUBJECT: {Character B name} (Maintain exact facial identity from reference image: cast-c{B}-face.png) — {full description verbatim from cast-profile.md}. WARDROBE: {costume from cast-profile.md}.
+(same structure, different character data)
 
 NOTE: Generate separate reference images per character for Ingredients mode.
 VEO Ingredients accepts up to 3 reference images — use 1 per character (max 3 chars per generation).
@@ -304,6 +287,33 @@ VEO Ingredients accepts up to 3 reference images — use 1 per character (max 3 
 - [ ] Character hierarchy correct (Utama prominent, Pendamping supporting)
 - [ ] Costume matches cast-profile.md (institutional if applicable)
 - [ ] Spatial relationship between characters is physically plausible
+
+### Multi-POV Environment Scenes (2+ env-* refs of same location)
+
+When a scene's upload table includes 2+ `env-*` references showing the **SAME physical location from DIFFERENT camera angles** (e.g., entry/exit/side/interior/exterior views of one facility):
+
+**MANDATORY: Insert SPATIAL CONTEXT block** immediately after the opening line of the prompt, BEFORE any per-element descriptions:
+
+```
+SPATIAL CONTEXT — The following {N} environment references show the SAME
+{facility name} from {N} DIFFERENT camera angles. Use each ONLY for the
+specific zone it depicts, then COMPOSE into one coherent {shot type} shot:
+- {env-ref-angle1.png} = {ANGLE} view → use for: {specific elements this ref provides}
+- {env-ref-angle2.png} = {ANGLE} view → use for: {specific elements this ref provides}
+CAMERA for this scene: {camera position/angle description} — compositing
+spatial information from all {N} views into this single perspective.
+```
+
+**Why this matters:**
+NB2 receives all uploaded refs simultaneously. Without a spatial map, it cannot reconcile images taken from conflicting viewpoints. The SPATIAL CONTEXT block tells the model: "these are different windows into the same 3D space — here's how they fit together from YOUR camera angle."
+
+**Checklist addition for multi-POV scenes:**
+- [ ] SPATIAL CONTEXT block present after opening line
+- [ ] Each env-* ref mapped to specific zone/elements it provides
+- [ ] Camera position for THIS scene explicitly stated relative to ref angles
+- [ ] PRIMARY layout ref identified (usually the widest/most comprehensive view)
+- [ ] Per-element `EXACTLY matching` references still appear inline (standard rule)
+- [ ] Upload table Purpose column includes POV label (e.g., "entry view", "side view")
 
 ---
 
@@ -506,7 +516,7 @@ Maintain visual continuity with reference frame appearances for all characters.
 
 #### Few-Shot: Dependency Chain
 
-**BAD — no previous scene reference:**
+**BAD — header block refs, no previous scene reference:**
 ```
 #### START Frame → ref/scene-15-start.png
 Using reference image cast-c1-face.png for driver face.
@@ -514,18 +524,14 @@ Using reference image vehicle-truck.png for truck.
 
 Photorealistic medium shot at the stockpile area...
 ```
-WHY BAD: Scene 15 has no reference to Scene 14 end frame. Environment, lighting, and character position will be inconsistent with the previous scene.
+WHY BAD: (1) Scene 15 has no reference to Scene 14 end frame — environment, lighting, and character position will be inconsistent. (2) Reference filenames are in a header block ABOVE the description, not inline with the elements they describe — NB2 receives filenames but doesn't know WHERE each one goes.
 
-**GOOD — previous scene anchored:**
+**GOOD — inline refs, previous scene anchored:**
 ```
 #### START Frame → ref/scene-15-start.png
-Using reference image scene-14-end.png for environment continuity, lighting, and character position from previous scene.
-Using reference image cast-c1-face.png for driver face.
-Using reference image vehicle-truck.png for truck.
-
-Photorealistic medium shot — continuation of scene-14-end.png. The SAME stockpile environment...
+Photorealistic medium shot — continuation from scene-14-end.png — maintaining character position, lighting, and environment from previous scene. The SAME stockpile environment. The driver (Maintain exact facial identity from reference image: cast-c1-face.png) stands beside the truck — EXACTLY matching vehicle-truck.png — at the weighbridge...
 ```
-WHY GOOD: Scene 14 end frame is the FIRST reference listed, anchoring all visual elements.
+WHY GOOD: (1) Scene 14 end frame anchors continuity inline. (2) Every ref filename appears INSIDE the scene description, next to the element it applies to. (3) No header block — NB2 knows exactly which ref goes with which element.
 
 ### Within Same Scene (Extension)
 
@@ -589,8 +595,8 @@ Before finalizing each scene's prompts:
 - [ ] ref-manifest.md validated before generating any prompts (Phase 3.5 gate)
 - [ ] Max 3 characters per frame (4+ use shot/reverse-shot)
 - [ ] VEO dialogue scenes: 1 speaker at a time, sequential delivery
-- [ ] **All reference images explicitly embedded in NB2 prompt text** (not just uploaded as files)
-- [ ] **NB2 reference image injection syntax used** (`maintain exact facial identity from reference image: cast-c{N}-face.png`)
+- [ ] **All reference images INLINE in NB2 prompt text** — each filename appears next to the element it describes, NOT in a separate header block above the prompt
+- [ ] **NB2 reference image injection syntax used INLINE** — identity lock inside SUBJECT line (`{Name} (Maintain exact facial identity from reference image: cast-c{N}-face.png) — {description}`), environment/vehicle/object refs inline with their elements (`EXACTLY matching {filename}.png`)
 - [ ] **Required Reference Images table included after EACH prompt** (NB2 and VEO)
 - [ ] Scene N+1 start frame references Scene N end frame output (`ref/scene-{NN-1}-end.png`) as grading/continuity anchor
 - [ ] Previous scene output included in Required Reference Images upload table (row 11) for all scenes after Scene 1
@@ -990,8 +996,7 @@ OUTPUT: 16:9 LANDSCAPE aspect ratio. Width > Height. Do NOT crop or change ratio
 
 ```
 IMPORTANT: Generate in LANDSCAPE 16:9 aspect ratio. Do NOT generate portrait or square.
-SUBJECT: {ethnicity} {gender}, {age_range}, {key_features from cast-profile.md}.
-Maintain exact facial identity from reference image: cast-c{N}-face.png.
+SUBJECT: {ethnicity} {gender}, {age_range} (Maintain exact facial identity from reference image: cast-c{N}-face.png) — {key_features from cast-profile.md}.
 Full body standing pose, feet visible, arms relaxed at sides.
 WARDROBE: {wardrobe from cast-profile.md — e.g., "navy blazer, white open-collar shirt"}.
 EXPRESSION: Neutral, confident posture.
@@ -1018,9 +1023,7 @@ OUTPUT: 16:9 LANDSCAPE aspect ratio. Width > Height. Do NOT crop or change ratio
 
 ```
 IMPORTANT: Generate in LANDSCAPE 16:9 aspect ratio. Do NOT generate portrait or square.
-SUBJECT: Official {institution} uniform worn by {ethnicity} {gender}, {age_range}.
-Maintain exact facial identity from reference image: cast-c{N}-face.png.
-Maintain exact body proportions and build from reference image: cast-c{N}-body.png.
+SUBJECT: {ethnicity} {gender}, {age_range} (Maintain exact facial identity from reference image: cast-c{N}-face.png), body proportions matching cast-c{N}-body.png — wearing official {institution} uniform.
 Front view, full uniform visible from collar to shoes.
 DETAILS: {uniform_color}, {emblem/badge description — position, colors, text if known}.
 {Rank insignia if applicable}. {Hat/headwear if applicable}.
@@ -1174,9 +1177,9 @@ For UI screens, dashboards, CCTV displays, etc. that contain other visual elemen
 IMPORTANT: Generate in LANDSCAPE 16:9 aspect ratio. Do NOT generate portrait or square.
 SUBJECT: {Screen/display type} showing operational interface.
 SCREEN CONTENT:
-  {Element 1}: Using reference image {sub-element-1}.png for {purpose in screen}.
-  {Element 2}: Using reference image {sub-element-2}.png for {purpose in screen}.
-  {If brand visible}: Use exact brand asset from reference image: brand-{name}.png.
+  {Element 1}: {purpose in screen}, EXACTLY matching {sub-element-1}.png.
+  {Element 2}: {purpose in screen}, EXACTLY matching {sub-element-2}.png.
+  {If brand visible}: Brand logo EXACTLY matching brand-{name}.png.
 UI TEXT ({language from ui_text_language config}):
   {Label 1}: "{translated text}"
   {Label 2}: "{translated text}"

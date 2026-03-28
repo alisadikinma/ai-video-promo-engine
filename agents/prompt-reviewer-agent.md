@@ -22,7 +22,7 @@ For EACH prompt in the batch, run ALL checks below. Report PASS or FAIL per chec
 
 ### A. Dependency Chain (NB2 only)
 - [ ] Scene 2+ has `ref/scene-{NN-1}-end.png` in upload table
-- [ ] Scene 2+ has `Using reference image ref/scene-{NN-1}-end.png` in prompt body
+- [ ] Scene 2+ has `scene-{NN-1}-end.png` inline with continuity statement in prompt body (e.g., `continuation from scene-{NN-1}-end.png — maintaining character position...`) — NO `ref/` prefix in prompt body, NO header block pattern
 - [ ] First scene in batch references last scene of previous batch (cross-batch continuity)
 
 ### B. Character Costume Consistency
@@ -70,8 +70,21 @@ For EACH prompt in the batch, run ALL checks below. Report PASS or FAIL per chec
 
 ### H. Upload Table Completeness
 - [ ] Every ref image in prompt body has matching row in upload table
-- [ ] Every row in upload table has matching injection line in prompt body
+- [ ] Every row in upload table has matching INLINE mention in prompt body (placed with element, not header block)
 - [ ] Upload table has row for previous scene output (scenes 2+)
+
+### I. Inline-Only Reference Pattern (NB2 only)
+- [ ] No `Using reference image xxx.png for [purpose]` header blocks — all refs must be inline with the element they describe
+- [ ] No standalone identity lock lines — `Maintain exact facial identity from reference image:` must be inline with character description (e.g., `[Name] (Maintain exact facial identity from reference image: cast-c1-face.png) — description...`)
+- [ ] No duplicate filenames within same prompt — each filename appears MAX 1x
+- [ ] Identity lock uses bare filename only — NO `ref/` or folder prefix in prompt body text
+
+### J. Multi-POV Environment Spatial Context (NB2 only)
+- [ ] If upload table has 2+ `env-*` refs of the SAME location from different angles → prompt MUST have `SPATIAL CONTEXT` block after opening line
+- [ ] SPATIAL CONTEXT block maps each env-* ref to specific zone/elements it provides
+- [ ] SPATIAL CONTEXT block specifies camera position for THIS scene relative to reference angles
+- [ ] PRIMARY layout ref identified (widest/most comprehensive view listed first)
+- [ ] Upload table Purpose column includes POV label (e.g., "entry view", "side view", "EXIT side detail")
 
 ## Output Format
 
@@ -85,9 +98,9 @@ Return a structured report:
 
 ### Per-Scene Results
 
-| Scene | Check A | Check B | Check C | Check D | Check E | Check F | Check G | Check H | Verdict |
-|-------|---------|---------|---------|---------|---------|---------|---------|---------|---------|
-| {NN}  | pass/fail   | pass/fail   | pass/fail   | pass/fail   | pass/fail   | pass/fail   | pass/fail   | pass/fail   | PASS/FAIL |
+| Scene | Check A | Check B | Check C | Check D | Check E | Check F | Check G | Check H | Check I | Verdict |
+|-------|---------|---------|---------|---------|---------|---------|---------|---------|---------|---------|
+| {NN}  | pass/fail   | pass/fail   | pass/fail   | pass/fail   | pass/fail   | pass/fail   | pass/fail   | pass/fail   | pass/fail   | PASS/FAIL |
 
 ### Issues Found (FAIL items only)
 

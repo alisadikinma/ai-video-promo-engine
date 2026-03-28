@@ -191,16 +191,18 @@ Activated via `--preset ali` flag or interactive selection during Step 4.
 | Build | Medium | — |
 | Presence | Confident, approachable, authoritative | — |
 
-### Standard Reference Phrase (Copy Verbatim)
+### Standard Reference Phrase (Copy Verbatim — Inline with Character Description)
 
 ```
-Using facial identity from reference image: cast-c{N}-face.png.
-Maintain consistent: Indonesian male, late 30s, bald, round face, warm skin
-undertone with natural texture, dark brown eyes, rectangular gunmetal
-semi-rimless glasses, clean-shaven, confident approachable presence.
+Ali Sadikin (Maintain exact facial identity from reference image: cast-c{N}-face.png) —
+Indonesian male, late 30s, bald, round face, warm skin undertone with natural
+texture, dark brown eyes, rectangular gunmetal semi-rimless glasses, clean-shaven,
+confident approachable presence.
 ```
 
 Where `{N}` = Ali Sadikin's assigned cast slot number from Step 4.
+
+**Usage:** This phrase goes INLINE inside the SUBJECT line of every NB2 prompt where Ali Sadikin appears. Do NOT place it as a standalone header line above the prompt body.
 
 ### Wardrobe Defaults
 
@@ -256,9 +258,11 @@ When cast builder completes, generate this structure and save to `{project}/cast
 - **Role Description:** {role_desc}
 - **Costume:** {costume description, institutional uniform details, or "generic professional attire"}
 
-### Reference Phrase (copy verbatim for ALL NB2 prompts with this character)
-Using facial identity from reference image: cast-c1-face.png.
-Maintain consistent: {ethnicity} {gender}, {age_range}, {key_features}.
+### Reference Phrase (copy verbatim INLINE with SUBJECT line in ALL NB2 prompts with this character)
+{Name} (Maintain exact facial identity from reference image: cast-c1-face.png) —
+{ethnicity} {gender}, {age_range}, {key_features}.
+
+**Usage:** This phrase goes INSIDE the SUBJECT/character description, NOT as a standalone header line.
 
 ### Reference Files
 - `ref/cast-c1-face.png` — Face photo (front view, clear, well-lit) — MANDATORY
@@ -283,9 +287,11 @@ Maintain consistent: {ethnicity} {gender}, {age_range}, {key_features}.
 - **Role Description:** {role_desc}
 - **Costume:** {costume description}
 
-### Reference Phrase (copy verbatim for ALL NB2 prompts with this character)
-Using facial identity from reference image: cast-c2-face.png.
-Maintain consistent: {ethnicity} {gender}, {age_range}, {key_features}.
+### Reference Phrase (copy verbatim INLINE with SUBJECT line in ALL NB2 prompts with this character)
+{Name} (Maintain exact facial identity from reference image: cast-c2-face.png) —
+{ethnicity} {gender}, {age_range}, {key_features}.
+
+**Usage:** This phrase goes INSIDE the SUBJECT/character description, NOT as a standalone header line.
 
 ### Reference Files
 - `ref/cast-c2-face.png` — Face photo (front view) — MANDATORY
@@ -310,9 +316,11 @@ Maintain consistent: {ethnicity} {gender}, {age_range}, {key_features}.
 - **Role Description:** {role_desc}
 - **Costume:** {costume description or "generic — follows scene wardrobe"}
 
-### Reference Phrase (copy verbatim for ALL NB2 prompts with this character)
-Using facial identity from reference image: cast-c3-face.png.
-Maintain consistent: {ethnicity} {gender}, {age_range}, {key_features}.
+### Reference Phrase (copy verbatim INLINE with SUBJECT line in ALL NB2 prompts with this character)
+{Name} (Maintain exact facial identity from reference image: cast-c3-face.png) —
+{ethnicity} {gender}, {age_range}, {key_features}.
+
+**Usage:** This phrase goes INSIDE the SUBJECT/character description, NOT as a standalone header line.
 
 ### Reference Files
 - `ref/cast-c3-face.png` — Face photo (front view) — MANDATORY
@@ -325,7 +333,7 @@ Maintain consistent: {ethnicity} {gender}, {age_range}, {key_features}.
 - Pemeran Utama sections include full wardrobe defaults + lighting notes
 - Pemeran Pendamping sections are minimal (face ref mandatory, rest optional)
 - Scene list in Cast Summary is filled after Phase 3 (Scene Breakdown)
-- All Reference Phrase blocks must be copy-paste ready for NB2 prompt injection
+- All Reference Phrase blocks must be copy-paste ready for INLINE injection into NB2 SUBJECT lines (not as standalone header lines)
 
 ---
 
@@ -474,14 +482,15 @@ Full keyword table is maintained in `global-promo-config.md` Section 12. Key ins
 When generating NB2 or VEO prompts for a character with institutional costume:
 
 ```
-Maintain exact facial identity from reference image: cast-c{N}-face.png.
-Wearing official {institution_name} uniform as shown in reference image:
-cast-c{N}-costume.png. Maintain exact badge placement, color scheme,
-emblem detail, and rank insignia. Fabric texture: {uniform fabric — e.g.,
-"pressed cotton twill", "polyester blend with matte finish"}.
+{Character Name} (Maintain exact facial identity from reference image: cast-c{N}-face.png) —
+wearing official {institution_name} uniform EXACTLY as shown in cast-c{N}-costume.png,
+maintaining exact badge placement, color scheme, emblem detail, and rank insignia.
+Fabric texture: {uniform fabric — e.g., "pressed cotton twill", "polyester blend with matte finish"}.
 ```
 
-**CRITICAL:** ALL reference images (face, body, costume, product, environment) must be explicitly embedded in the prompt text using character reference syntax. The model must be told to look at and match each reference file. See `global-promo-config.md` Section 16 for injection syntax per category.
+**Usage:** This phrase goes INLINE inside the SUBJECT/character description of the NB2 prompt body. Do NOT place identity lock or costume ref as standalone header lines above the prompt.
+
+**CRITICAL:** ALL reference images (face, body, costume, product, environment) must be embedded INLINE in the prompt text, next to the element they describe. No separate header block. No standalone identity lock lines above the prompt body. Each filename appears MAX 1x per prompt. See `global-promo-config.md` Section 16 for injection syntax per category.
 
 **Every prompt must include a Required Reference Images table** so the user never misses uploading a file. See `global-promo-config.md` Section 16 for table format.
 
@@ -507,20 +516,12 @@ Templates for multi-character scenes in NB2 image prompts and VEO video prompts.
 ### 2-Character Scene (NB2 Image Prompt)
 
 ```
-SUBJECT: Character {A} ({name_A}, {role_A}) and Character {B} ({name_B}, {role_B}).
-Maintain exact facial identity from reference image: cast-c{A}-face.png for Character {A}.
-Maintain exact facial identity from reference image: cast-c{B}-face.png for Character {B}.
-Maintain exact body proportions from reference image: cast-c{A}-body.png for Character {A}.
-Maintain exact body proportions from reference image: cast-c{B}-body.png for Character {B}.
-Character {A}: {ethnicity_A} {gender_A}, {age_A}, {key_features_A}... wearing {costume_A}.
-{If institutional: Character {A} wearing exact uniform from cast-c{A}-costume.png.}
-Character {B}: {ethnicity_B} {gender_B}, {age_B}, {key_features_B}... wearing {costume_B}.
-{If institutional: Character {B} wearing exact uniform from cast-c{B}-costume.png.}
+SUBJECT: Character {A} — {name_A} (Maintain exact facial identity from reference image: cast-c{A}-face.png), body proportions matching cast-c{A}-body.png — {ethnicity_A} {gender_A}, {age_A}, {key_features_A}... wearing {costume_A}. {If institutional: Uniform EXACTLY as shown in cast-c{A}-costume.png.}
+AND Character {B} — {name_B} (Maintain exact facial identity from reference image: cast-c{B}-face.png), body proportions matching cast-c{B}-body.png — {ethnicity_B} {gender_B}, {age_B}, {key_features_B}... wearing {costume_B}. {If institutional: Uniform EXACTLY as shown in cast-c{B}-costume.png.}
 INTERACTION: {action between characters — e.g., "shaking hands", "looking at laptop together", "Character A presenting to Character B"}.
 POSITIONING: Pemeran Utama ({name_of_utama}) more prominent — closer to camera, better lit, occupying frame center-left (rule of thirds).
-SCENE: {environment description}.
-Match environment from reference image: env-{location}.png.
-{If product visible: Match exact product from reference image: product-{name}.png.}
+SCENE: {environment description}, environment layout EXACTLY as shown in env-{location}.png.
+{If product visible: Product EXACTLY matching product-{name}.png.}
 CAMERA: {shot size — MS or MWS to fit both characters} {lens — 35mm or 50mm} {aperture}.
 LIGHTING: {pattern} {ratio}, {kelvin}K.
 TECHNICAL: {aspect_ratio}, {resolution}, central 60% safe zone for critical action.
@@ -543,22 +544,15 @@ TECHNICAL: {aspect_ratio}, {resolution}, central 60% safe zone for critical acti
 ### 3+ Character Scene (NB2 Image Prompt)
 
 ```
-GROUP: Characters {A}, {B}, {C} in {setting}.
-Maintain exact facial identity from reference image: cast-c{A}-face.png for Character {A}.
-Maintain exact facial identity from reference image: cast-c{B}-face.png for Character {B}.
-Maintain exact facial identity from reference image: cast-c{C}-face.png for Character {C}.
-Maintain exact body proportions from cast-c{A}-body.png, cast-c{B}-body.png, cast-c{C}-body.png.
-Character {A}: {full description}... wearing {costume_A}.
-{If institutional: Character {A} wearing exact uniform from cast-c{A}-costume.png.}
-Character {B}: {full description}... wearing {costume_B}.
-{If institutional: Character {B} wearing exact uniform from cast-c{B}-costume.png.}
-Character {C}: {full description}... wearing {costume_C}.
-{If institutional: Character {C} wearing exact uniform from cast-c{C}-costume.png.}
+GROUP in {setting}:
+Character {A} — {name_A} (Maintain exact facial identity from reference image: cast-c{A}-face.png), body proportions matching cast-c{A}-body.png — {full description}... wearing {costume_A}. {If institutional: Uniform EXACTLY as shown in cast-c{A}-costume.png.}
+Character {B} — {name_B} (Maintain exact facial identity from reference image: cast-c{B}-face.png), body proportions matching cast-c{B}-body.png — {full description}... wearing {costume_B}. {If institutional: Uniform EXACTLY as shown in cast-c{B}-costume.png.}
+Character {C} — {name_C} (Maintain exact facial identity from reference image: cast-c{C}-face.png), body proportions matching cast-c{C}-body.png — {full description}... wearing {costume_C}. {If institutional: Uniform EXACTLY as shown in cast-c{C}-costume.png.}
 COMPOSITION: Pemeran Utama center/foreground. Pemeran Pendamping flanking or background.
 Triangular composition — tallest character slightly back, others angled toward camera.
 INTERACTION: {group dynamic from script — e.g., "team discussing around whiteboard", "group walking through facility"}.
-SCENE: Match environment from reference image: env-{location}.png.
-{If product visible: Match exact product from reference image: product-{name}.png.}
+SCENE: {environment description}, environment layout EXACTLY as shown in env-{location}.png.
+{If product visible: Product EXACTLY matching product-{name}.png.}
 CAMERA: {wider shot — MS to MWS} {lens — 35mm} {aperture} to fit all characters.
 LIGHTING: {pattern} {ratio}, {kelvin}K — ensure all faces adequately lit.
 TECHNICAL: {aspect_ratio}, {resolution}. Central 60% safe zone.
@@ -589,14 +583,11 @@ If 4+ cast needed in a sequence, use shot/reverse-shot or group-then-individual 
 ~{duration}s, {resolution}, {aspect_ratio}.
 Camera: {shot size — MCU to MS, accommodate both speakers}, {lens}, {movement — subtle or static}.
 
-Maintain exact facial identity from reference image: cast-c{A}-face.png for Character {A}.
-Maintain exact facial identity from reference image: cast-c{B}-face.png for Character {B}.
-{If institutional: Character {A} wearing exact uniform from cast-c{A}-costume.png.}
-{If institutional: Character {B} wearing exact uniform from cast-c{B}-costume.png.}
+Character {A} — {name_A}, appearance matching cast-c{A}-face.png{If institutional: , wearing uniform as shown in cast-c{A}-costume.png} — and Character {B} — {name_B}, appearance matching cast-c{B}-face.png{If institutional: , wearing uniform as shown in cast-c{B}-costume.png}.
 
-Character {A} says: {line — max 15 words, natural spoken rhythm}.
+Speaker A says: {line — max 15 words, natural spoken rhythm}.
 [0.5s pause — reaction shot of Character {B}, visible micro-expression]
-Character {B} says: {response — max 15 words}.
+Speaker B says: {response — max 15 words}.
 
 Character {A} during {B}'s line: {micro-reaction — nodding, slight smile, furrowed brow}.
 Character {B} during {A}'s line: {listening pose — attentive gaze, slight lean forward}.
@@ -605,7 +596,7 @@ SFX: {effects — e.g., "soft keyboard clicks", "ambient office hum"}.
 Ambient: {atmosphere — e.g., "modern office, diffused daylight, gentle air conditioning hum"}.
 No subtitles, no text overlays, no watermarks, no audience sounds.
 
-Maintain exact appearance from reference images for both characters.
+Maintain exact appearance from reference images for both characters throughout clip.
 NOTE: VEO lip sync = 1 speaker at a time. Sequential delivery, NOT simultaneous.
 For longer exchanges, split into separate 8s clips with consistent camera angle.
 ```
@@ -627,24 +618,19 @@ For longer exchanges, split into separate 8s clips with consistent camera angle.
 ~{duration}s, {resolution}, {aspect_ratio}.
 Camera: {wider shot — MS to MWS}, {lens — 35mm}, {movement — slow dolly or static}.
 
-Maintain exact facial identity from reference image: cast-c{A}-face.png for Character {A}.
-Maintain exact facial identity from reference image: cast-c{B}-face.png for Character {B}.
-Maintain exact facial identity from reference image: cast-c{C}-face.png for Character {C}.
-{If institutional: Characters wearing exact uniforms from respective cast-c{N}-costume.png.}
+Group of {N} people in {setting}:
+Character {A} — {name_A}, appearance matching cast-c{A}-face.png{If institutional: , wearing uniform as shown in cast-c{A}-costume.png}: {position in frame, action}.
+Character {B} — {name_B}, appearance matching cast-c{B}-face.png{If institutional: , wearing uniform as shown in cast-c{B}-costume.png}: {position in frame, action}.
+Character {C} — {name_C}, appearance matching cast-c{C}-face.png{If institutional: , wearing uniform as shown in cast-c{C}-costume.png}: {position in frame, action}.
 
-Group of {N} people in {setting}.
-Character {A} ({name_A}): {position in frame, action}.
-Character {B} ({name_B}): {position in frame, action}.
-Character {C} ({name_C}): {position in frame, action}.
-
-{Primary speaker} says: {line — max 15 words}.
+Speaker says: {line — max 15 words}.
 Other characters: {group reaction — nodding, looking at speaker, taking notes}.
 
 SFX: {effects}.
 Ambient: {atmosphere}.
 No subtitles, no text overlays, no watermarks, no audience sounds.
 
-Maintain exact appearance from reference images for all characters.
+Maintain exact appearance from reference images for all characters throughout clip.
 NOTE: Only 1 character speaks at a time. Group reactions are non-verbal.
 If multiple characters need to speak, use sequential 8s clips.
 ```
@@ -683,16 +669,11 @@ Use "Last Frame Secret": export final frame of Scene X → feed into NB2 as colo
 For scenes with only 1 character (most common for presenter segments):
 
 ```
-SUBJECT: {name} ({role}).
-Maintain exact facial identity from reference image: cast-c{N}-face.png.
-Maintain exact body proportions from reference image: cast-c{N}-body.png.
-{ethnicity} {gender}, {age_range}, {key_features}... wearing {costume}.
-{If institutional: Wearing exact uniform as shown in reference image: cast-c{N}-costume.png.}
+SUBJECT: {name} (Maintain exact facial identity from reference image: cast-c{N}-face.png) — {ethnicity} {gender}, {age_range}, {key_features}, body proportions matching cast-c{N}-body.png... wearing {costume}. {If institutional: Uniform EXACTLY as shown in cast-c{N}-costume.png.}
 ACTION: {what character is doing in this scene}.
 EXPRESSION: {emotional state — confident, curious, concerned, excited}.
-SCENE: {environment description}.
-{If environment ref: Match environment from reference image: env-{location}.png.}
-{If product visible: Match exact product from reference image: product-{name}.png.}
+SCENE: {environment description}{If environment ref: , environment layout EXACTLY as shown in env-{location}.png}.
+{If product visible: Product EXACTLY matching product-{name}.png.}
 CAMERA: {shot size} {lens} {aperture}.
 LIGHTING: {pattern} {ratio}, {kelvin}K.
 TECHNICAL: {aspect_ratio}, {resolution}.

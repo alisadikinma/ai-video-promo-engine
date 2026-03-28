@@ -1,14 +1,14 @@
 ---
 name: promo-validate
 description: >
-  Cross-file consistency checker for AI Video Promo Engine references (23 checks).
+  Cross-file consistency checker for AI Video Promo Engine references (24 checks).
   Run after editing any reference file, before commits, or after adding new knowledge.
   Triggers on: validate, consistency check, reference check, cek referensi, cek konsistensi.
 ---
 
 # Validate References
 
-Run 23 automated consistency checks across all operational files. Reports PASS/FAIL per check with exact file:line.
+Run 24 automated consistency checks across all operational files. Reports PASS/FAIL per check with exact file:line.
 
 ## Scope
 
@@ -208,6 +208,18 @@ Run 23 automated consistency checks across all operational files. Reports PASS/F
 5. Verify SKILL.md has hard rule 45 stating "NB2 identity lock: filename only (NO folder prefix like ref/ or keyframes/)"
 6. Verify SKILL.md Scene Keyframe Quality Gate has check for filename-only identity lock
 
+### Check 24: Inline-Only Reference Pattern
+**Pattern:** NB2 prompt templates or examples using header block pattern for reference images instead of inline-only pattern
+**Expected:** All NB2 prompt templates and examples use inline-only reference pattern — filenames appear inline with the element they describe (identity lock inline with character, object ref inline with element, continuity ref inline with continuity statement). No header blocks like `Using reference image xxx.png for [purpose]` at top of prompts. No standalone identity lock lines separated from character description. No duplicate filenames within same prompt. SKILL.md has hard rule 46 for inline-only pattern.
+**How to verify:**
+1. Search `script-to-scene-bridge.md` Section 3 NB2 templates for `Using reference image` as standalone header lines — should return 0 matches in templates (only valid in legacy few-shot "BAD" examples)
+2. Search `global-promo-config.md` Section 16 for "header block" — should exist in BANNED patterns list
+3. Search `global-promo-config.md` Section 16 for "Inline-Only" or "inline-only" — should exist as section title or rule
+4. Verify SKILL.md has hard rule 46 stating "Inline-only reference pattern"
+5. Verify SKILL.md Scene Keyframe Quality Gate has checks for: no header blocks, no standalone identity lock lines, no duplicate filenames
+6. Verify agent.md hard rules include inline-only reference pattern
+7. Verify `prompt-reviewer-agent.md` has checklist item for inline-only pattern verification
+
 ## Output Format
 
 ```
@@ -236,8 +248,9 @@ Check 20: Character Portrait-First Rule ....... PASS
 Check 21: Narrative Arc Consistency ........... PASS
 Check 22: Domain Deep Research ................ PASS
 Check 23: NB2 Identity Lock Filename-Only ..... PASS
+Check 24: Inline-Only Reference Pattern ....... PASS
 
-Result: 23/23 checks passed
+Result: 24/24 checks passed
 ```
 
 If any check FAILS, show:

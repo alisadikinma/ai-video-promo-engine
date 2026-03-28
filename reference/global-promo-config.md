@@ -166,8 +166,8 @@ See Section 21 for full rules and examples. Key principle:
 
 | Setting | Value |
 |---------|-------|
-| `config_version` | `1.5.0` |
-| `last_updated` | `2026-03-22` |
+| `config_version` | `1.5.1` |
+| `last_updated` | `2026-03-28` |
 
 ---
 
@@ -321,17 +321,43 @@ Save to `strategic-brief.md` > Cultural Context section:
 
 **VEO prompts:** Do NOT embed reference filenames. VEO gets identity from the uploaded start frame / ingredient images, NOT from text filenames. Use generic continuity language instead. Face ref filenames in VEO prompts may also trigger "prominent people" safety filter.
 
-### NB2 Injection Syntax (embed in NB2 prompts ONLY)
+### NB2 Inline-Only Reference Pattern (embed in NB2 prompts ONLY)
 
-| Category | Injection Phrase (NB2 prompts only) |
-|----------|--------------------------------------|
-| Cast face | `maintain exact facial identity from reference image: cast-c{N}-face.png` |
-| Cast body | `maintain exact body proportions and build from reference image: cast-c{N}-body.png` |
-| Cast costume | `wearing exact uniform/costume as shown in reference image: cast-c{N}-costume.png` |
-| Product | `match exact product appearance from reference image: product-{name}.png` |
-| Environment | `match environment and architectural style from reference image: env-{location}.png` |
-| Brand asset | `use exact brand asset from reference image: brand-{asset}.png` |
-| Institution uniform | `match exact institutional uniform from reference image: costume-{institution}.png` |
+**CRITICAL: All reference filenames MUST appear INLINE with the element they describe, NOT in a separate header block. Each filename appears EXACTLY ONCE per prompt. No header blocks. No standalone identity lock lines. Inline-only.**
+
+There are 3 categories of inline reference injection:
+
+**1. Identity lock — inline with character description:**
+```
+[Character Name] (Maintain exact facial identity from reference image: cast-c{N}-face.png) in blue uniform...
+```
+
+**2. Object/environment ref — inline with element:**
+```
+...the monitor — EXACTLY matching ui-anpr-screen.png: ANPR interface showing...
+...environment layout EXACTLY as shown in env-{location}.png.
+```
+
+**3. Scene continuity — inline with continuity statement:**
+```
+...continuation from scene-{NN-1}-end.png — maintaining character position, lighting...
+```
+
+| Category | Inline Injection Syntax (NB2 prompts only) |
+|----------|----------------------------------------------|
+| Cast face | `{Character Name} (Maintain exact facial identity from reference image: cast-c{N}-face.png) — {description}...` |
+| Cast body | `...body proportions matching cast-c{N}-body.png. {description continues}...` |
+| Cast costume | `...wearing official {institution} uniform EXACTLY as shown in cast-c{N}-costume.png — badge placement...` |
+| Product | `...product texture EXACTLY matching product-{name}.png — {description}...` |
+| Environment | `...environment layout EXACTLY as shown in env-{location}.png.` |
+| Brand asset | `...brand asset EXACTLY matching brand-{asset}.png.` |
+| Institution uniform | `...uniform EXACTLY matching costume-{institution}.png — {details}...` |
+| Scene continuity | `...continuation from scene-{NN-1}-end.png — maintaining character position...` |
+
+**BANNED patterns:**
+- Header blocks like `Using reference image xxx.png for [purpose]` listed at top of prompt before scene description
+- Standalone identity lock lines separated from character description (e.g., a bare `Maintain exact facial identity from reference image: xxx.png` line on its own)
+- Duplicate filename mentions (same file appearing 2+ times in one prompt)
 
 ### VEO Continuity Syntax (embed in VEO prompts — generic, no filenames)
 
@@ -359,25 +385,77 @@ Every generated NB2 or VEO prompt MUST include a **Required Reference Images** t
 | 11 | `ref/scene-{NN-1}-end.png` | Previous scene end frame — grading & continuity anchor | ⬜ (MANDATORY if scene > 1) |
 ```
 
-### Ref-to-Prompt Body Binding (MANDATORY)
+### Ref-to-Prompt Body Binding (MANDATORY — Inline-Only)
 
-Every ref in the upload table MUST have a corresponding injection line in the prompt body text. Having a ref in the upload table but NOT in the prompt body = the model won't use it.
+Every ref in the upload table MUST have a corresponding **inline** mention in the prompt body text — placed directly with the element it describes, NOT as a header block. Having a ref in the upload table but NOT inline in the prompt body = the model won't use it. Each filename appears MAX 1x per prompt.
 
 ```
 RULE: For EACH row in the Required Reference Images table:
-  → There MUST be a matching line in the prompt text:
-    "Using reference image xxx.png for [specific purpose]"
+  → There MUST be a matching INLINE reference in the prompt text,
+    placed directly with the element it describes.
+  → BANNED: Header blocks like "Using reference image xxx.png for [purpose]"
+  → BANNED: Standalone identity lock lines separated from character description
+  → BANNED: Same filename appearing 2+ times in one prompt
 
   EXAMPLES:
     Upload table has: ref/cast-c1-face.png
-    Prompt body MUST have: "maintain exact facial identity from reference image: cast-c1-face.png"
+    Prompt body MUST have (inline with character):
+      "Ahmad (Maintain exact facial identity from reference image: cast-c1-face.png) — Malay male, 40s..."
 
     Upload table has: ref/env-gate-pelabuhan.png
-    Prompt body MUST have: "match environment EXACTLY as shown in reference image: env-gate-pelabuhan.png"
+    Prompt body MUST have (inline with environment):
+      "...environment layout EXACTLY as shown in env-gate-pelabuhan.png."
 
     Upload table has: ref/vehicle-truck-hino.png
-    Prompt body MUST have: "match exact vehicle appearance from reference image: vehicle-truck-hino.png"
+    Prompt body MUST have (inline with vehicle):
+      "...the Hino dump truck — EXACTLY matching vehicle-truck-hino.png — approaching the gate..."
+
+    Upload table has: ref/scene-14-end.png
+    Prompt body MUST have (inline with continuity):
+      "...continuation from scene-14-end.png — maintaining character position, lighting, and environment..."
 ```
+
+### Multi-POV Environment References (MANDATORY when 2+ env-* refs of same location)
+
+When a scene shows a complex facility/location and the upload table includes 2+ `env-*` references that depict the **SAME physical location from DIFFERENT camera angles** (e.g., entry view, exit view, side view, interior, exterior), the prompt MUST include a **SPATIAL CONTEXT** block immediately after the opening line.
+
+**Why:** NB2 receives all uploaded reference images simultaneously. Without explicit spatial guidance, it may: (a) treat multi-POV refs as separate locations, (b) attempt to literally reproduce all angles in one image (impossible), or (c) ignore some refs because it can't reconcile conflicting viewpoints.
+
+**Format:**
+
+```
+SPATIAL CONTEXT — The following {N} environment references show the SAME
+{facility name} from {N} DIFFERENT camera angles. Use each ONLY for the
+specific zone it depicts, then COMPOSE into one coherent {shot type} shot:
+- {env-location-angle1.png} = {ANGLE} view → use for: {specific elements}
+- {env-location-angle2.png} = {ANGLE} view → use for: {specific elements}
+- {env-location-angle3.png} = {ANGLE} view → use for: {specific elements}
+CAMERA for this scene: {position/angle} — NOT matching any single reference
+angle exactly, but compositing spatial information from all {N} views.
+```
+
+**Example (3 POVs of weighbridge station):**
+
+```
+SPATIAL CONTEXT — The following 3 environment references show the SAME
+weighbridge station from 3 DIFFERENT camera angles. Use each ONLY for the
+specific zone it depicts, then COMPOSE into one coherent medium-wide shot:
+- env-weighbridge-station-entry.png = FRONT/ENTRY view → use for: overall
+  platform layout, canopy structure, bollard positions, entry barrier
+- env-weighbridge-station-side.png = SIDE view → use for: pos petugas booth
+  exterior detail, CCTV placement, service window height, booth-to-platform
+  spatial relationship
+- env-weighbridge-station-exit.png = EXIT view → use for: exit barrier gate,
+  traffic light pole, LED weight display, ANPR camera positions
+CAMERA for this scene: 3/4 angle from entry-side — showing platform with
+truck, pos booth on the side, and exit barrier beyond the truck's front.
+```
+
+**Rules:**
+- Each `env-*` filename still appears EXACTLY 1x inline with the element it depicts (per standard inline-only rule)
+- The SPATIAL CONTEXT block is an ADDITIONAL requirement — it provides the AI with a mental map BEFORE the detailed per-element descriptions
+- Upload table Purpose column SHOULD include the POV label (e.g., "entry view", "side view", "exit view")
+- PRIMARY layout ref listed first; DETAIL refs follow in spatial order (near→far or left→right)
 
 ### Output Filename (MANDATORY per prompt)
 
@@ -401,6 +479,8 @@ Every generated NB2 prompt MUST include an explicit `**Output →**` line so the
 - The reference image table per prompt prevents users from missing uploads
 - Character reference concept = the model actively looks at and matches the ref image
 - Without output filename, users don't know where to save → naming chaos → broken references
+- **Inline-only pattern** prevents the model from "reading past" reference blocks at the top of a prompt — when filenames are inline with their elements, the model binds the reference directly to the visual element it describes
+- **No duplicate filenames** — mentioning a file 2+ times dilutes the reference signal and can cause hallucinated blending
 
 ---
 
@@ -756,9 +836,10 @@ STEP 2: MAP visual elements to existing refs
   FOR each visual element in the prompt being generated:
     SEARCH ref/ for matching file
     IF match found:
-      → MUST include in prompt body as character reference
+      → MUST include INLINE in prompt body with the element it describes
       → MUST include in Required Reference Images table
-      → Prompt text: "Using reference image xxx.png for [specific purpose]"
+      → Inline syntax: place filename directly with the element (identity lock, object match, or continuity statement)
+      → BANNED: Header block "Using reference image xxx.png for [purpose]" — use inline-only pattern
     IF no match found:
       → FLAG to user: "Apakah ada foto untuk {element}? Jika ada, save ke ref/{suggested-name}.png"
 
@@ -898,8 +979,7 @@ EXAMPLES:
 ```
 [PROMPT TEXT — ENGLISH (AI model reads this)]
 IMPORTANT: Generate in LANDSCAPE 16:9 aspect ratio. Do NOT generate portrait or square.
-SUBJECT: Port operator standing next to ANPR monitoring screen.
-Maintain exact facial identity from reference image: cast-c1-face.png.
+SUBJECT: Port operator (Maintain exact facial identity from reference image: cast-c1-face.png) — Malay male, 40s, standing next to ANPR monitoring screen — EXACTLY matching ui-anpr-screen.png: operational interface with real-time data.
 CAMERA: Medium shot, 50mm f/4, eye-level.
 LIGHTING: Clean office lighting, 4500K neutral.
 

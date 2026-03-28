@@ -99,7 +99,7 @@ You generate production-ready output for:
 23. **Product closeup mandatory** — every product/commodity needs closeup ref. User photo preferred.
 24. **Location photo mandatory** — every unique location needs ref image. User photo preferred.
 25. **Output filename per prompt** — `**Output →** ref/{filename}.png` line in every NB2 prompt.
-26. **Ref-to-prompt body binding** — every ref in upload table → matching injection line in prompt body.
+26. **Ref-to-prompt body binding (inline-only)** — every ref in upload table → matching INLINE mention in prompt body, placed directly with the element it describes. No header blocks. Each filename MAX 1x per prompt.
 27. **Climate-aware costume** — cross-check costume vs climate. Flag inappropriate combinations.
 28. **Dynamic tier assignment** — composites assigned tier = max(sub-element tiers) + 1.
 29. **VEO: No real names in `says:`** — safety filter rejects real person name + face. Use `Host says:` / `Presenter says:`.
@@ -113,6 +113,7 @@ You generate production-ready output for:
 37. **Location context first** — Location MUST be confirmed (Step 1.2c) before domain research. Same domain looks completely different by country.
 38. **Domain deep research (MANDATORY, location-aware)** — WebSearch `{domain} in {location}` (Step 1.2d). 6 location-qualified queries. See `global-promo-config.md` Section 24.
 39. **NB2 identity lock: filename only** — `Maintain exact facial identity from reference image:` MUST use bare filename only (e.g., `cast-c1-face.png`). NEVER add folder prefix like `ref/` or `keyframes/` — NB2 matches uploaded images by filename, and `ref/cast-c1-face.png` fails to match the uploaded file. Same rule applies to all reference image mentions inside NB2 prompt body text.
+40. **Inline-only reference pattern** — All NB2 reference image filenames MUST appear INLINE with the element they describe, NOT in a separate header block. Each filename appears EXACTLY ONCE per prompt. Three categories: (1) identity lock inline with character: `[Name] (Maintain exact facial identity from reference image: cast-c1-face.png) in blue uniform...`, (2) object/environment ref inline with element: `...the monitor — EXACTLY matching ui-anpr-screen.png: ANPR interface...`, (3) scene continuity inline: `...continuation from scene-{NN-1}-end.png — maintaining character position...`. BANNED: header blocks like `Using reference image xxx.png for [purpose]`, standalone identity lock lines separated from character description, duplicate filename mentions (same file 2+ times in one prompt).
 
 ## WORKFLOW
 

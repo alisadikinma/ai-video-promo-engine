@@ -130,6 +130,8 @@ Copy `agents/promo-engine-agent.md` to your project's `.claude/agents/` director
 43. **Prop/object scale enforcement** — Every handheld prop or object in NB2/VEO prompts MUST include: (a) exact physical dimensions in cm/mm, (b) real-world size analogy, (c) proportion relative to human hand/body, (d) explicit negative for wrong sizes. "Small" alone is NOT sufficient.
 44. **Camera angle constraint for Frame mode** — START and END frames within one VEO scene MUST have: max 1-step shot size change (CU↔MCU↔MS↔MWS↔WS) and max 15° camera angle change. Drastic camera jumps break VEO interpolation.
 45. **NB2 identity lock: filename only** — `Maintain exact facial identity from reference image:` MUST use bare filename only (e.g., `cast-c1-face.png`). NEVER add folder prefix like `ref/` or `keyframes/` — NB2 matches uploaded images by filename, and `ref/cast-c1-face.png` fails to match the uploaded `cast-c1-face.png`. Same rule applies to all reference image mentions inside NB2 prompt body text.
+46. **Inline-only reference pattern** — All NB2 reference image filenames MUST appear INLINE with the element they describe, NOT in a separate header block. Each filename appears EXACTLY ONCE per prompt. Three categories: (1) identity lock inline with character: `[Name] (Maintain exact facial identity from reference image: cast-c1-face.png) in blue uniform...`, (2) object/environment ref inline with element: `...the monitor — EXACTLY matching ui-anpr-screen.png: ANPR interface...`, (3) scene continuity inline: `...continuation from scene-{NN-1}-end.png — maintaining character position...`. BANNED: header blocks like `Using reference image xxx.png for [purpose]`, standalone identity lock lines, duplicate filename mentions.
+47. **Multi-POV environment spatial context** — When a scene's upload table has 2+ `env-*` references of the SAME location from DIFFERENT viewpoints (e.g., entry, exit, side, interior, exterior), the prompt MUST include a `SPATIAL CONTEXT` block immediately after the opening line. This block: (a) explicitly states all references show the SAME location from DIFFERENT camera angles, (b) maps each ref to the specific zone/element it depicts, (c) specifies the CAMERA POSITION for this scene relative to the reference angles, (d) clarifies which ref provides PRIMARY layout vs which provide DETAIL for specific zones. Without this block, NB2 may misinterpret multi-POV refs as separate locations or attempt to literally reproduce all angles simultaneously.
 
 ---
 
@@ -1129,11 +1131,11 @@ FOR each batch (ACT or sub-batch):
        - **Aspect ratio triple enforcement** (first line, TECHNICAL, last line)
        - Central 60% rule
        - **`Output →` filename** per prompt (ref/scene-{NN}-start.png, ref/scene-{NN}-end.png)
-       - **Ref-to-prompt body binding** — every ref in upload table MUST have matching line in prompt
+       - **Ref-to-prompt body binding (inline-only)** — every ref in upload table MUST have matching INLINE mention in prompt body, placed directly with the element it describes. BANNED: header blocks like `Using reference image xxx.png for [purpose]`. Each filename MAX 1x per prompt.
        - **UI text localization** — on-screen text in narration language
        - **Scale/dimension specification** — every visible prop and object MUST have real-world dimensions in the prompt (cm/mm + visual analogy + proportion to hand + negative for wrong size)
        - **Wardrobe verbatim consistency** — pull EXACT costume text from cast-profile.md or Character Costume Tracking Table (Section 7D of script-to-scene-bridge.md). NEVER paraphrase. If character appears in 3+ scenes, the costume text string MUST be identical across all prompts.
-       - **Previous scene continuity injection** — for scenes 2+ in timeline, inject `scene-{NN-1}-end.png` as first reference image in prompt body text (filename only, NO `ref/` prefix) and include in upload table
+       - **Previous scene continuity injection (inline)** — for scenes 2+ in timeline, inject `scene-{NN-1}-end.png` inline with continuity statement (e.g., `continuation from scene-{NN-1}-end.png — maintaining character position...`), filename only (NO `ref/` prefix), and include in upload table
 
      END FOR
 
@@ -1328,11 +1330,14 @@ Present final production package summary:
 - [ ] Thinking mode specified (minimal for draft, high for final)
 - [ ] EVERY visual element references its asset file (no text-only descriptions for recurring elements)
 - [ ] Output filename specified per prompt (`ref/scene-{NN}-start.png`)
-- [ ] Every ref in upload table has matching injection line in prompt body
+- [ ] Every ref in upload table has matching INLINE mention in prompt body — placed directly with the element it describes, NOT in a header block
+- [ ] No `Using reference image xxx.png for [purpose]` header blocks — all refs must be inline with elements
+- [ ] No standalone identity lock lines — must be inline with character description (e.g., `[Name] (Maintain exact facial identity...) — description...`)
+- [ ] No duplicate filenames within same prompt — each filename MAX 1x
 - [ ] UI text localized per narration_language (except technical abbreviations)
 - [ ] DOMAIN CONTEXT line in every prompt contains specific local equipment/process details (not generic)
 - [ ] Every prop/object has explicit scale specification (dimensions + analogy + negative)
-- [ ] Previous scene end frame referenced in upload table and prompt body (for scenes 2+)
+- [ ] Previous scene end frame referenced in upload table and inline in prompt body (for scenes 2+)
 - [ ] Camera angle between start/end max 15° change, shot size max 1 step
 - [ ] Aspect ratio specified in ALL prompts (NB2: triple enforcement; VEO: first + last line)
 - [ ] NB2 identity lock uses filename only — NO `ref/` or other folder prefix in `Maintain exact facial identity from reference image:` lines or any reference image mention inside prompt body text
@@ -1361,4 +1366,5 @@ Present final production package summary:
 - [ ] **Data pinning** — dashboard names/numbers consistent across all scenes showing same data
 - [ ] **Timeline consistency** — time-of-day/lighting matches across connected scenes
 - [ ] **Wardrobe tracking** — Character Costume Tracking Table built, each character's costume text verbatim identical across all scenes (unless script-directed change with justification)
-- [ ] **Sequential dependency chain** — every scene N+1 references scene N end frame output in both upload table and prompt body
+- [ ] **Sequential dependency chain** — every scene N+1 references scene N end frame output in upload table and inline in prompt body (continuity statement, not header block)
+- [ ] **Inline-only reference pattern** — no header blocks, no standalone identity lock lines, no duplicate filenames per prompt (Rule 46)
