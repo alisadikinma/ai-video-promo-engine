@@ -1,10 +1,11 @@
 ---
-name: promo-add-platform
+name: video-add-platform
 description: >
-  Scaffold all files needed to add a new AI video platform to the promo engine.
+  Scaffold all files needed to add a new AI video platform to the video promo engine.
   Creates platform guide in reference/, updates cross-references in SKILL.md, agent,
   CLAUDE.md, and global-promo-config.md. Then runs validation.
-  Triggers on: add platform, new platform, tambah platform, scaffold platform.
+  Triggers on: add platform, new platform, tambah platform, scaffold platform,
+  video add platform, video platform baru.
 ---
 
 # Add Video Platform
@@ -62,15 +63,15 @@ Create `reference/image-video-gen/{NN}-{platform}-production-guide.md` following
 Update the following files to include the new platform:
 
 1. **`CLAUDE.md`** — Add to Reference Files table, Architecture section
-2. **`skills/promo-engine/SKILL.md`** — Add to Phase 5 reference table
-3. **`agents/promo-engine-agent.md`** — Add to reference table
+2. **`skills/video-gen/SKILL.md`** — Add to Phase 5 reference table
+3. **`agents/video-engine-agent.md`** — Add to reference table
 4. **`reference/global-promo-config.md`** — Add platform to routing table
 5. **`reference/image-video-gen/00-index.md`** — Add to production stack
 6. **`reference/script-to-scene-bridge.md`** — Add platform-specific templates
 
 ### Step 5: Run Validation
 
-Run `/promo-validate` to verify cross-file consistency after adding the new platform.
+Run `/video-validate --refs` to verify cross-file consistency after adding the new platform.
 
 ### Step 6: Summary
 

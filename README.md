@@ -47,29 +47,41 @@ Then restart Claude Code. The plugin auto-registers on session start.
 
 ## Usage
 
-### Main Skill
+### Full Pipeline (End-to-End)
 
 ```
-/promo-engine
+/video-full
 ```
 
-Starts the full interactive pipeline. The engine asks questions, generates outputs phase-by-phase, and waits for your approval at each gate.
+Starts the full interactive pipeline. The orchestrator runs all 4 production skills in sequence, asking questions and generating outputs phase-by-phase with approval gates.
 
 **Flags:**
 - `--full` (default) — full production plan with storyboard notes, NB2 prompts, VEO prompts, audio specs, extension strategy, post-production checklist
 - `--quick` — copy-paste ready prompts only (NB2 + VEO per scene, no production plan)
 - `--preset ali` — use Ali Sadikin creator preset instead of generic brand profile
 
+### Individual Skills
+
+Run any phase independently:
+
+```
+/video-brainstorm      # Phase 1: brainstorm, cast, product, location, domain research
+/video-script          # Phase 2-3.5: script, scene breakdown, reference collection
+/video-image           # Phase 4: NB2 asset library + scene keyframes
+/video-gen             # Phase 5: image review + VEO video prompts
+```
+
 ### Utility Skills
 
 ```
-/promo-validate        # Cross-file consistency checker (23 reference files)
-/promo-add-platform    # Scaffold support for a new AI video platform
+/video-validate            # Unified validator (--script / --image / --video / --refs / --all)
+/video-add-platform        # Scaffold support for a new AI video platform
 ```
 
-### Subagent
+### Agents
 
-The `promo-engine-agent` handles batch or complex promo work and can be dispatched for parallel processing.
+- **`video-engine-agent`** — handles batch or complex promo work, can be dispatched for parallel processing
+- **`video-prompt-reviewer`** — independent validator for NB2/VEO prompt batches (auto-spawned during Phase 4B and Phase 5)
 
 ## Production Stack
 
@@ -94,7 +106,8 @@ The `promo-engine-agent` handles batch or complex promo work and can be dispatch
 - **Scene Auto-Calculation** — optimal scene count from script beats with VEO mode mapping
 - **Extension Strategy** — same-scene continuity via VEO Extend (up to ~148s chains)
 - **"Last Frame Secret"** — seamless scene transitions by feeding Clip A's final frame into Clip B's NB2 start frame
-- **Cross-File Validation** — consistency checker across all 23 reference files
+- **Image Review Before Video** — per-scene collaborative review where AI reads actual keyframe images (multimodal), compares with NB2 prompts, and brainstorms VEO approach with user before generating video prompts
+- **Cross-File Validation** — unified validator with 5 targets: script, image, video, refs, all
 
 ## Storytelling Philosophy
 
@@ -108,11 +121,16 @@ The script engine enforces 8 commandments (no opening with brand name, no jargon
 .claude-plugin/plugin.json          # Plugin metadata
 hooks/                              # Session start hook
 skills/
-  promo-engine/SKILL.md             # Main skill — end-to-end pipeline
-  promo-validate/SKILL.md           # Cross-file consistency checker
-  promo-add-platform/SKILL.md       # Scaffold new video platform
+  video-brainstorm/SKILL.md         # Phase 1 — brainstorm, cast, product, location
+  video-script/SKILL.md             # Phase 2-3.5 — script, scene, reference collection
+  video-image/SKILL.md              # Phase 4 — NB2 asset library + scene keyframes
+  video-gen/SKILL.md                # Phase 5 — image review + VEO video prompts
+  video-full/SKILL.md               # Orchestrator — runs all 4 skills in sequence
+  video-validate/SKILL.md           # Unified validator (5 targets)
+  video-add-platform/SKILL.md       # Scaffold new video platform
 agents/
-  promo-engine-agent.md             # Subagent for batch/complex work
+  video-engine-agent.md             # Subagent for batch/complex work
+  video-prompt-reviewer.md          # Independent prompt quality validator
 reference/
   global-promo-config.md            # Single source of truth for all settings
   creator-profile-system.md         # Creator/brand profile setup
@@ -128,8 +146,8 @@ All configurable values live in `reference/global-promo-config.md` — the singl
 ## Contributing
 
 1. **Change a setting** — edit `reference/global-promo-config.md` only
-2. **Add a reference file** — create in `reference/`, update SKILL.md + agent + CLAUDE.md, run `/promo-validate`
-3. **Add a video platform** — run `/promo-add-platform` to scaffold everything
+2. **Add a reference file** — create in `reference/`, update relevant SKILL.md + agent + CLAUDE.md, run `/video-validate --refs`
+3. **Add a video platform** — run `/video-add-platform` to scaffold everything
 
 ## License
 

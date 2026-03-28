@@ -1,4 +1,4 @@
-# Prompt Reviewer Agent
+# Video Prompt Reviewer Agent
 
 Independent validation agent for AI Video Promo Engine output. Reviews NB2 image prompts and VEO video prompts for quality, consistency, and rule compliance.
 

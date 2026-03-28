@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-Claude Code plugin that generates complete promotional video production packages: from brainstorm to script to image prompts (NB2) to video prompts (VEO 3.1). 1 main skill + 2 utility skills + 1 agent + 23 reference documents as RAG knowledge base.
+Claude Code plugin that generates complete promotional video production packages: from brainstorm to script to image prompts (NB2) to video prompts (VEO 3.1). 4 production skills + 1 orchestrator + 2 utility skills + 2 agents + 23 reference documents as RAG knowledge base.
 
 **Core Value:** Anyone — video agencies, freelancers, brand owners — can produce professional 2-3 minute promotional videos by following the generated production plan.
 
@@ -10,9 +10,13 @@ Claude Code plugin that generates complete promotional video production packages
 
 | Command | Description |
 |---------|-------------|
-| `/promo-engine` | Run end-to-end video promo pipeline (brainstorm → script → images → video) |
-| `/promo-validate` | Cross-file consistency checker across all 23 reference files |
-| `/promo-add-platform` | Scaffold new AI video platform support |
+| `/video-full` | End-to-end pipeline orchestrator (brainstorm → script → images → video) |
+| `/video-brainstorm` | Phase 1: brainstorm, cast, product, location, domain research |
+| `/video-script` | Phase 2-3.5: script generation, scene breakdown, reference collection |
+| `/video-image` | Phase 4: NB2 asset library + scene keyframes |
+| `/video-gen` | Phase 5: image review + VEO video prompts |
+| `/video-validate` | Unified validator: `--script` / `--image` / `--video` / `--refs` / `--all` |
+| `/video-add-platform` | Scaffold new AI video platform support |
 
 ## Architecture
 
@@ -21,11 +25,15 @@ Claude Code plugin that generates complete promotional video production packages
 | `.claude-plugin/plugin.json` | Plugin metadata (name, version, author) |
 | `hooks/hooks.json` | SessionStart hook definition |
 | `hooks/session-start.sh` | Session start script — announces available skills |
-| `skills/promo-engine/SKILL.md` | Main skill — end-to-end promo video pipeline |
-| `skills/promo-validate/SKILL.md` | Cross-file consistency checker |
-| `skills/promo-add-platform/SKILL.md` | Scaffold new video platform support |
-| `agents/promo-engine-agent.md` | Subagent for batch/complex promo work (6-phase pipeline) |
-| `agents/prompt-reviewer-agent.md` | Independent validator — reviews NB2/VEO prompt batches for quality |
+| `skills/video-brainstorm/SKILL.md` | Phase 1 — brainstorm, cast, product, location, domain research |
+| `skills/video-script/SKILL.md` | Phase 2-3.5 — script, scene breakdown, reference collection |
+| `skills/video-image/SKILL.md` | Phase 4 — NB2 asset library + scene keyframes |
+| `skills/video-gen/SKILL.md` | Phase 5 — image review + VEO video prompts |
+| `skills/video-full/SKILL.md` | Orchestrator — runs all 4 production skills in sequence |
+| `skills/video-validate/SKILL.md` | Unified validator (--script / --image / --video / --refs / --all) |
+| `skills/video-add-platform/SKILL.md` | Scaffold new video platform support |
+| `agents/video-engine-agent.md` | Subagent for batch/complex video production (6-phase pipeline) |
+| `agents/video-prompt-reviewer.md` | Independent validator — reviews NB2/VEO prompt batches for quality |
 | `reference/` | 23 reference docs read on-demand by skill/agent |
 | `README.md` | Repo README |
 | `LICENSE` | MIT license |
@@ -385,12 +393,12 @@ All configurable values live in `reference/global-promo-config.md` — single so
 ### Adding a New Reference File
 1. Create `.md` file in `reference/`
 2. Add entry to the Reference Files table in skill SKILL.md
-3. Add entry to the Reference Files table in `agents/promo-engine-agent.md`
+3. Add entry to the Reference Files table in `agents/video-engine-agent.md`
 4. Update this CLAUDE.md file
-5. Run `/promo-validate` to verify cross-file consistency
+5. Run `/video-validate --refs` to verify cross-file consistency
 
 ### Adding a New Video Platform
-1. Run `/promo-add-platform` skill
+1. Run `/video-add-platform` skill
 2. It scaffolds platform guide, updates cross-references
 
 ### File Naming
@@ -436,7 +444,7 @@ All configurable values live in `reference/global-promo-config.md` — single so
 | Wrong ethnicity for local extras | Cultural context missing — check strategic-brief.md Cultural Context, inject into NB2 |
 | AI-generated logo looks wrong | Logo generation unreliable — brand logo MUST be user-provided, not AI-generated |
 | Storyline missing beats | User input incomplete — Step 1.7 maps to 7-beat arc, AI suggests missing beats |
-| Cross-file drift | Run `/promo-validate` — checks all 23 reference files for consistency |
+| Cross-file drift | Run `/video-validate --refs` — checks all reference files for consistency |
 | Same element looks different across scenes | Recurring element not generated as standalone asset — auto-detect from av-script.md, generate in Phase 4A first |
 | Gate/facility hallucinated wrong | No user photo used — auto-scan ref/ folder, existing photos = ground truth, NEVER override with text description |
 | Product texture completely wrong | No product closeup reference — user photo mandatory (AI generates wrong species/shape for commodities like cangkang) |
@@ -473,5 +481,5 @@ All configurable values live in `reference/global-promo-config.md` — single so
 
 ---
 
-**Version:** 1.8.1
-**Last Updated:** 2026-03-28
+**Version:** 2.0.0
+**Last Updated:** 2026-03-29
