@@ -34,7 +34,7 @@ Claude Code plugin that generates complete promotional video production packages
 | `skills/video-add-platform/SKILL.md` | Scaffold new video platform support |
 | `agents/video-engine-agent.md` | Subagent for batch/complex video production (6-phase pipeline) |
 | `agents/video-prompt-reviewer.md` | Independent validator — reviews NB2/VEO prompt batches for quality |
-| `reference/` | 23 reference docs read on-demand by skill/agent |
+| `reference/` | 24 reference docs read on-demand by skill/agent |
 | `README.md` | Repo README |
 | `LICENSE` | MIT license |
 

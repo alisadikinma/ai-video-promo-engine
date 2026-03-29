@@ -1,6 +1,6 @@
 # AI Video Promo Engine
 
-Claude Code plugin that generates complete promotional video production packages — from brainstorm to script to image prompts (NB2) to video prompts (VEO 3.1).
+Claude Code plugin that generates complete promotional video production packages — from brainstorm to script to image prompts (NB2) to video prompts (VEO 3.1 / Seedance 2.0).
 
 Anyone — video agencies, freelancers, brand owners — can produce professional 2-3 minute promotional videos by following the generated production plan.
 
@@ -13,7 +13,7 @@ Give it a product or service, and the engine walks you through a 6-phase pipelin
 3. **Scene Breakdown** — auto-calculated scene count, VEO mode per scene, extension strategy
 4. **Reference Collection** — auto-derive ref manifest, cultural location research, batch NB2 prompts for missing refs, hard-block validation gate
 5. **Image Prompts (NB2)** — Phase 4A: asset library (atoms with dependency graph) → Phase 4B: scene keyframes (molecules composed from assets)
-6. **Video Prompts (VEO 3.1)** — per-scene prompts with camera movement, 3-layer audio, lip sync, extensions, vocal performance direction
+6. **Video Prompts (VEO 3.1 / Seedance 2.0)** — per-scene prompts with camera movement, 3-layer audio, lip sync, extensions, vocal performance direction. Seedance 2.0 alt: native 2K, @ reference system, dual-branch AV, 10+ lip-sync languages
 
 Each phase has a user approval gate before proceeding. Phase 3.5 (Reference Collection) is a hard block — 100% of reference images must be validated before image generation.
 
@@ -88,8 +88,10 @@ Run any phase independently:
 | Component | Technology |
 |-----------|------------|
 | Image Generation | Nano Banana 2 (NB2) — Gemini 3.1 Flash Image |
-| Video Generation | VEO 3.1 (primary, extensible) |
-| Pipeline | NB2 image → VEO First+Last Frame / Ingredients → VEO Extend |
+| Video Generation (Primary) | VEO 3.1 — 720p/1080p, 8s clips, 148s extension chain |
+| Video Generation (Alt) | Seedance 2.0 — native 2K, 15s clips, @ reference system, dual-branch AV |
+| Pipeline (VEO) | NB2 image → VEO First+Last Frame / Ingredients → VEO Extend |
+| Pipeline (Seedance) | NB2 image → Seedance @Image refs + Omni mode → Seedance @Video extend |
 
 ## Key Features
 
@@ -102,9 +104,11 @@ Run any phase independently:
 - **Asset-First Production** — recurring elements (2+ scenes) auto-detected and generated as standalone assets before scene keyframes, with dependency graph and tier system
 - **Film Directing Guide** — 180° rule, gaze direction, actor blocking, vocal performance direction, natural acting methodology, visual continuity supervision
 - **Reference Image Validation Gate** — Phase 3.5 hard block with 5 ref categories, cultural location research (5 facts per location), batch NB2 prompt generation for missing refs
-- **23 Reference Documents** — storytelling psychology, cinematography lookup, hook vault (100 hooks), CTA frameworks, directing grammar, platform adaptation, and more
+- **24 Reference Documents** — storytelling psychology, cinematography lookup, hook vault (100 hooks), CTA frameworks, directing grammar, platform adaptation, Seedance 2.0 production guide, and more
 - **Scene Auto-Calculation** — optimal scene count from script beats with VEO mode mapping
-- **Extension Strategy** — same-scene continuity via VEO Extend (up to ~148s chains)
+- **Dual Video Platform Support** — VEO 3.1 (primary) + Seedance 2.0 (alt) with platform-specific prompt generation, camera libraries, and audio specs
+- **Seedance 2.0 Integration** — native 2K resolution, @ reference system (9 images + 3 videos + 3 audio), dual-branch AV generation, 3-Angle Rule identity lock, 10+ lip-sync languages including Indonesian, timestamp-based multi-shot storyboarding
+- **Extension Strategy** — VEO Extend (up to ~148s chains) or Seedance @Video extend (unlimited chains, drift ~20th hop)
 - **"Last Frame Secret"** — seamless scene transitions by feeding Clip A's final frame into Clip B's NB2 start frame
 - **Image Review Before Video** — per-scene collaborative review where AI reads actual keyframe images (multimodal), compares with NB2 prompts, and brainstorms VEO approach with user before generating video prompts
 - **Cross-File Validation** — unified validator with 5 targets: script, image, video, refs, all
@@ -136,7 +140,7 @@ reference/
   creator-profile-system.md         # Creator/brand profile setup
   script-to-scene-bridge.md         # Script → scene → prompts bridge
   storytelling_script_gen/           # 12 storytelling & script reference files
-  image-video-gen/                  # 8 image & video production reference files
+  image-video-gen/                  # 9 image & video production reference files
 ```
 
 ## Configuration

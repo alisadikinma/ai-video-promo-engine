@@ -1,7 +1,7 @@
 {
   "name": "ai-video-promo-engine",
-  "description": "End-to-end AI video promo production engine: brainstorm → script → image prompts (NB2) → video prompts (VEO 3.1). Generates complete 2-3 minute promotional video production packages for any brand.",
-  "version": "2.0.0",
+  "description": "End-to-end AI video promo production engine: brainstorm → script → image prompts (NB2) → video prompts (VEO 3.1 / Seedance 2.0). Generates complete 2-3 minute promotional video production packages for any brand.",
+  "version": "2.1.0",
   "author": {
     "name": "Ali Sadikin",
     "url": "https://github.com/alisadikin"
@@ -18,6 +18,7 @@
     "script",
     "NB2",
     "VEO",
+    "Seedance",
     "image-to-video",
     "AI video",
     "video agency",
