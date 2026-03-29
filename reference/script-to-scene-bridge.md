@@ -89,6 +89,42 @@ FOR each scene:
     FACE SAFETY: First+Last Frame → ONLY for faceless scenes (face <30% frame)
 ```
 
+### Step 3b: Seedance 2.0 Mode Selection per Scene (if `video_model` = `seedance`)
+
+```
+FOR each scene:
+    IF scene has RECURRING CHARACTER (needs identity consistency):
+        → Omni mode (Full Multi-Reference)
+        → @Image1-3: character 3-angle views (front, profile, 3/4) — MANDATORY
+        → @Video1: motion/camera reference (if available)
+        → @Audio1: voice/rhythm reference (if available)
+        → CRITICAL: Real face upload BANNED — use AI-generated faces only
+
+    IF scene shows STATE CHANGE (before→after, product transform):
+        → First+Last Frame mode (2 NB2 images: start + end)
+        → Interpolation-based — model fills between two states
+        → Good for low-complexity transitions
+
+    IF scene is SIMPLE B-ROLL (environment, product, no character):
+        → Single Image I2V (1 NB2 image as start frame)
+        → Faster generation, computationally lighter
+
+    IF scene CONTINUES previous scene:
+        → Extension via @Video state-setter
+        → 4-15s per extension hop, unlimited chains
+        → Re-upload @Image reference every 5-10 extensions to prevent drift
+
+    SEEDANCE CONSTRAINTS:
+    - ~50 words max per prompt (shorter = better reliability)
+    - No negative prompts — use positive constraint syntax
+    - No real face upload (0% success rate)
+    - 3-Angle Rule mandatory for character consistency (front, profile, 3/4)
+    - Multi-shot timestamps available: [0-5s], [5-10s], [10-15s]
+    - 6 aspect ratios: 16:9, 9:16, 1:1, 3:4, 4:3, 21:9
+
+See reference/image-video-gen/07-seedance-production-guide.md for full specs.
+```
+
 ---
 
 ## 2. Scene Plan Output Format

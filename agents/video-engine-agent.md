@@ -60,6 +60,7 @@ You generate production-ready output for:
 | Production stack | `reference/image-video-gen/00-index.md` |
 | NB2 specs | `reference/image-video-gen/01-nb2-image-generation.md` |
 | VEO 3.1 specs | `reference/image-video-gen/02-veo-production-guide.md` |
+| Seedance 2.0 specs | `reference/image-video-gen/07-seedance-production-guide.md` |
 | NB2→VEO pipeline | `reference/image-video-gen/03-workflow-pipeline.md` |
 | Cinematography | `reference/image-video-gen/04-cinematography-lookup.md` |
 | Creator preset | `reference/image-video-gen/05-creator-and-holidays.md` |

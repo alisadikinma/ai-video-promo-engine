@@ -35,15 +35,39 @@ See Section 21 for full rules and examples. Key principle:
 
 | Setting | Value | Notes |
 |---------|-------|-------|
+| `video_model` | `veo` or `seedance` | Selected in Phase 1 or Phase 5. Default: `veo` |
 | `video_aspect_ratio` | `16:9` | For YouTube/LinkedIn. Switch to `9:16` for TikTok/Reels |
-| `video_resolution` | `720p` | Default 720p for extendable clips. 1080p only for final non-extendable |
 | `video_duration` | `120-180s` | Target 2-3 minutes |
+
+### VEO 3.1 Defaults
+
+| Setting | Value | Notes |
+|---------|-------|-------|
+| `video_resolution` | `720p` | Default 720p for extendable clips. 1080p only for final non-extendable |
 | `veo_clip_duration` | `8s` | Maximum per VEO generation |
 | `veo_extend_duration` | `7s` | Per extension hop |
 | `veo_max_extensions` | `20` | ~148s total possible |
 | `veo_audio_quality` | `Highest Quality (Experimental Audio)` | Always use highest |
 | `veo_negative_prompt` | `No subtitles, no text overlays, no watermarks, no blurry faces, no distorted hands, no cartoon effects, no audience sounds, no laugh track.` | Standard block |
-| `frame_rate` | `24fps` | Fixed by VEO |
+| `veo_frame_rate` | `24fps` | Fixed by VEO |
+| `veo_aspect_ratios` | `16:9, 9:16` | 2 options |
+
+### Seedance 2.0 Defaults
+
+| Setting | Value | Notes |
+|---------|-------|-------|
+| `seedance_resolution` | `2K` (native) | 2048x1080 landscape / 1080x2048 portrait. Upscale to 4K available |
+| `seedance_clip_duration` | `4-15s` | Single generation, no hop needed for <=15s |
+| `seedance_max_total_duration` | `unlimited` | Chain extensions via @Video state-setter. Quality drifts ~20th hop — re-upload @Image reference |
+| `seedance_frame_rate` | `24fps` | 24/30/60 supported. 24 = cinematic default |
+| `seedance_prompt_length` | `~50 words` | Shorter = better. Detail via @ references, not long prompts |
+| `seedance_max_refs` | `12` | 9 images + 3 videos + 3 audio |
+| `seedance_negative_prompt` | Not supported | Use positive constraint syntax: embed "do not alter" in prompt |
+| `seedance_aspect_ratios` | `16:9, 9:16, 1:1, 3:4, 4:3, 21:9` | 6 options |
+| `seedance_real_face` | `BANNED` | Use AI-generated faces only. Real face upload = 0% success |
+| `seedance_lip_sync_languages` | `ZH, EN, JA, KO, ES, FR, PT, ID, DE, RU` | 10+ languages including Indonesian |
+
+See `reference/image-video-gen/07-seedance-production-guide.md` for full Seedance 2.0 specs.
 
 ---
 
@@ -159,6 +183,8 @@ See Section 21 for full rules and examples. Key principle:
 | NB2 image prompt | 80-200 words | Up to 250 for complex scenes |
 | VEO video prompt | 100-150 words | 1,024 token max |
 | VEO extension prompt | 50-80 words | Reference previous clip context |
+| Seedance video prompt | ~50 words | Shorter = better reliability. Detail via @ refs |
+| Seedance multi-shot prompt | ~50 words + timestamps | `[0-5s]: ... [5-10s]: ... [10-15s]: ...` |
 
 ---
 
@@ -166,8 +192,8 @@ See Section 21 for full rules and examples. Key principle:
 
 | Setting | Value |
 |---------|-------|
-| `config_version` | `1.5.1` |
-| `last_updated` | `2026-03-28` |
+| `config_version` | `1.6.0` |
+| `last_updated` | `2026-03-29` |
 
 ---
 

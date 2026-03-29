@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-Claude Code plugin that generates complete promotional video production packages: from brainstorm to script to image prompts (NB2) to video prompts (VEO 3.1). 4 production skills + 1 orchestrator + 2 utility skills + 2 agents + 23 reference documents as RAG knowledge base.
+Claude Code plugin that generates complete promotional video production packages: from brainstorm to script to image prompts (NB2) to video prompts (VEO 3.1 / Seedance 2.0). 4 production skills + 1 orchestrator + 2 utility skills + 2 agents + 24 reference documents as RAG knowledge base.
 
 **Core Value:** Anyone — video agencies, freelancers, brand owners — can produce professional 2-3 minute promotional videos by following the generated production plan.
 
@@ -57,7 +57,7 @@ Claude Code plugin that generates complete promotional video production packages
 | `storytelling_script_gen/F10_Modular_Asset_and_AB_Testing.md` | Modular asset creation and A/B testing strategy |
 | `storytelling_script_gen/F11_Pattern_Interrupt_and_Retention.md` | Pattern interrupt techniques and retention optimization |
 
-#### Image & Video Production (8 files)
+#### Image & Video Production (9 files)
 
 | File | When Used |
 |------|-----------|
@@ -68,6 +68,7 @@ Claude Code plugin that generates complete promotional video production packages
 | `image-video-gen/04-cinematography-lookup.md` | Emotion → complete setup mapping (lighting, lens, film stock, atmosphere, camera motion) |
 | `image-video-gen/05-creator-and-holidays.md` | Ali Sadikin as cast slot, cast-c{N} naming, holiday palettes, cultural context |
 | `image-video-gen/06-directing-and-performance.md` | Film directing grammar — 180° rule, gaze direction, blocking, vocal performance, continuity supervision |
+| `image-video-gen/07-seedance-production-guide.md` | Seedance 2.0 video prompts — native 2K, @ reference system, dual-branch audio, modes, materials |
 | `image-video-gen/project-instruction.md` | Image/video project instructions — critical rules, example workflows |
 
 #### Global Config & Bridge (3 files)
@@ -162,8 +163,10 @@ Phase 5: VIDEO PROMPTS (VEO)   → Output: video-prompts.md
 ### Production Stack
 
 - **Image Model**: Nano Banana 2 (NB2) — Gemini 3.1 Flash Image
-- **Video Model**: VEO 3.1 (primary, extensible to other platforms)
-- **Pipeline**: NB2 image → VEO First+Last Frame / Ingredients → VEO Extend
+- **Video Model (Primary)**: VEO 3.1 — 720p/1080p, 8s clips, 148s extension chain
+- **Video Model (Alt)**: Seedance 2.0 — native 2K, 15s clips, @ reference system, dual-branch AV
+- **Pipeline (VEO)**: NB2 image → VEO First+Last Frame / Ingredients → VEO Extend
+- **Pipeline (Seedance)**: NB2 image → Seedance @Image refs + Omni mode → Seedance @Video extend
 
 ### Critical Audio Rules
 
@@ -225,7 +228,8 @@ Each phase loads ONLY the reference files it needs — NOT all 23. This prevents
 | Phase 3.5 | global-promo-config, creator-profile-system | 2 |
 | Phase 4A | global-promo-config, 01-nb2, script-to-scene-bridge (7B only) | 3 |
 | Phase 4B | global-promo-config, 01-nb2, script-to-scene-bridge, 04-cinematography | 4 per batch |
-| Phase 5 | global-promo-config, 02-veo, 03-workflow, 04-cinematography | 4 per batch |
+| Phase 5 (VEO) | global-promo-config, 02-veo, 03-workflow, 04-cinematography | 4 per batch |
+| Phase 5 (Seedance) | global-promo-config, 07-seedance, 03-workflow, 04-cinematography | 4 per batch |
 
 Phase 4B and 5 also load per-batch filtered data from output files (cast entries + scene entries for current batch only).
 
@@ -481,5 +485,5 @@ All configurable values live in `reference/global-promo-config.md` — single so
 
 ---
 
-**Version:** 2.0.0
+**Version:** 2.1.0
 **Last Updated:** 2026-03-29

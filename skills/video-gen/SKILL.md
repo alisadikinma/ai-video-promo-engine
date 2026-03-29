@@ -37,6 +37,7 @@ These files must exist in the output folder:
 | Task | Read |
 |------|------|
 | VEO 3.1 production | `reference/image-video-gen/02-veo-production-guide.md` |
+| Seedance 2.0 production | `reference/image-video-gen/07-seedance-production-guide.md` |
 | Image-video pipeline | `reference/image-video-gen/project-instruction.md` |
 | Cinematography lookup | `reference/image-video-gen/04-cinematography-lookup.md` |
 
