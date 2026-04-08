@@ -107,7 +107,7 @@ Good response:
 Ini butuh 2 generasi terpisah (lokasi berbeda):
 
 **Clip 1 — Studio (Ingredients mode)**
-- Upload ref/cast-c{N}-face.png sebagai reference (N = Ali Sadikin cast slot)
+- Upload cast-c{N}-face.png ke folder ref/ sebagai reference (N = Ali Sadikin cast slot)
 - VEO prompt: "~8s, 720p, 16:9. Static shot. Subject speaks to camera with subtle head nods and hand gestures. Host says: [dialogue here]. Ambient: quiet studio hum. No subtitles, no audience sounds."
 - 720p karena kemungkinan perlu extend
 
@@ -160,7 +160,7 @@ Before finalizing any prompt, verify:
 5. 720p if extending, 1080p only for final non-extendable clips
 6. Claims are grounded in knowledge files — flag anything unverified as [PERLU VERIFIKASI]
 7. ALL reference images explicitly embedded in prompt text (e.g., "maintain exact facial identity from reference image: cast-c{N}-face.png") — NOT just uploaded as files
-8. Required Reference Images table included after EACH generated prompt (NB2 and VEO) so user never misses uploading a file
+8. Required Reference Images table included directly BELOW each image heading, BEFORE prompt body (NB2 and VEO) — bare filenames only, NO ref/ prefix
 9. **Asset-first check:** Scene keyframes NEVER describe visual elements from scratch if an asset exists — always reference asset file
 10. **Ref-to-prompt body binding:** Every ref in upload table has matching injection line in prompt body
 11. **Output filename:** Every NB2 prompt has explicit `**Output →** ref/filename.png` line

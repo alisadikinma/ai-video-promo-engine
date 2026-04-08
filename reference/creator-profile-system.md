@@ -515,6 +515,20 @@ Templates for multi-character scenes in NB2 image prompts and VEO video prompts.
 
 ### 2-Character Scene (NB2 Image Prompt)
 
+**Required Reference Images (upload all to `{project}/ref/` folder — place this table directly below each image heading):**
+```markdown
+| # | Filename | Content | Upload Status |
+|---|----------|---------|---------------|
+| 1 | `cast-c{A}-face.png` | {Character A name} face | ⬜ |
+| 2 | `cast-c{B}-face.png` | {Character B name} face | ⬜ |
+| 3 | `cast-c{A}-body.png` | {Character A name} body | ⬜ (if Utama) |
+| 4 | `cast-c{B}-body.png` | {Character B name} body | ⬜ (if Utama) |
+| 5 | `cast-c{A}-costume.png` | {Character A} costume | ⬜ (if institutional) |
+| 6 | `cast-c{B}-costume.png` | {Character B} costume | ⬜ (if institutional) |
+| 7 | `env-{location}.png` | Environment | ⬜ |
+| 8 | `product-{name}.png` | Product shot | ⬜ (if product visible) |
+```
+
 ```
 SUBJECT: Character {A} — {name_A} (Maintain exact facial identity from reference image: cast-c{A}-face.png), body proportions matching cast-c{A}-body.png — {ethnicity_A} {gender_A}, {age_A}, {key_features_A}... wearing {costume_A}. {If institutional: Uniform EXACTLY as shown in cast-c{A}-costume.png.}
 AND Character {B} — {name_B} (Maintain exact facial identity from reference image: cast-c{B}-face.png), body proportions matching cast-c{B}-body.png — {ethnicity_B} {gender_B}, {age_B}, {key_features_B}... wearing {costume_B}. {If institutional: Uniform EXACTLY as shown in cast-c{B}-costume.png.}
@@ -527,21 +541,24 @@ LIGHTING: {pattern} {ratio}, {kelvin}K.
 TECHNICAL: {aspect_ratio}, {resolution}, central 60% safe zone for critical action.
 ```
 
-**Required Reference Images Table (include after EACH 2-char NB2 prompt):**
-```markdown
-| # | Reference File | Content | Upload Status |
-|---|---------------|---------|---------------|
-| 1 | ref/cast-c{A}-face.png | {Character A name} face | ⬜ |
-| 2 | ref/cast-c{B}-face.png | {Character B name} face | ⬜ |
-| 3 | ref/cast-c{A}-body.png | {Character A name} body | ⬜ (if Utama) |
-| 4 | ref/cast-c{B}-body.png | {Character B name} body | ⬜ (if Utama) |
-| 5 | ref/cast-c{A}-costume.png | {Character A} costume | ⬜ (if institutional) |
-| 6 | ref/cast-c{B}-costume.png | {Character B} costume | ⬜ (if institutional) |
-| 7 | ref/env-{location}.png | Environment | ⬜ |
-| 8 | ref/product-{name}.png | Product shot | ⬜ (if product visible) |
-```
-
 ### 3+ Character Scene (NB2 Image Prompt)
+
+**Required Reference Images (upload all to `{project}/ref/` folder — place this table directly below each image heading):**
+```markdown
+| # | Filename | Content | Upload Status |
+|---|----------|---------|---------------|
+| 1 | `cast-c{A}-face.png` | {Character A name} face | ⬜ |
+| 2 | `cast-c{B}-face.png` | {Character B name} face | ⬜ |
+| 3 | `cast-c{C}-face.png` | {Character C name} face | ⬜ |
+| 4 | `cast-c{A}-body.png` | {Character A name} body | ⬜ (if Utama) |
+| 5 | `cast-c{B}-body.png` | {Character B name} body | ⬜ (if Utama) |
+| 6 | `cast-c{C}-body.png` | {Character C name} body | ⬜ (if Utama) |
+| 7 | `cast-c{A}-costume.png` | {Char A} costume | ⬜ (if institutional) |
+| 8 | `cast-c{B}-costume.png` | {Char B} costume | ⬜ (if institutional) |
+| 9 | `cast-c{C}-costume.png` | {Char C} costume | ⬜ (if institutional) |
+| 10 | `env-{location}.png` | Environment | ⬜ |
+| 11 | `product-{name}.png` | Product shot | ⬜ (if product visible) |
+```
 
 ```
 GROUP in {setting}:
@@ -560,23 +577,6 @@ NOTE: Max 3 characters per frame for clean composition.
 If 4+ cast needed in a sequence, use shot/reverse-shot or group-then-individual sequence.
 ```
 
-**Required Reference Images Table (include after EACH 3+ char NB2 prompt):**
-```markdown
-| # | Reference File | Content | Upload Status |
-|---|---------------|---------|---------------|
-| 1 | ref/cast-c{A}-face.png | {Character A name} face | ⬜ |
-| 2 | ref/cast-c{B}-face.png | {Character B name} face | ⬜ |
-| 3 | ref/cast-c{C}-face.png | {Character C name} face | ⬜ |
-| 4 | ref/cast-c{A}-body.png | {Character A name} body | ⬜ (if Utama) |
-| 5 | ref/cast-c{B}-body.png | {Character B name} body | ⬜ (if Utama) |
-| 6 | ref/cast-c{C}-body.png | {Character C name} body | ⬜ (if Utama) |
-| 7 | ref/cast-c{A}-costume.png | {Char A} costume | ⬜ (if institutional) |
-| 8 | ref/cast-c{B}-costume.png | {Char B} costume | ⬜ (if institutional) |
-| 9 | ref/cast-c{C}-costume.png | {Char C} costume | ⬜ (if institutional) |
-| 10 | ref/env-{location}.png | Environment | ⬜ |
-| 11 | ref/product-{name}.png | Product shot | ⬜ (if product visible) |
-```
-
 ### 2-Character Dialogue Exchange (VEO Video Prompt)
 
 ```
@@ -585,9 +585,9 @@ Camera: {shot size — MCU to MS, accommodate both speakers}, {lens}, {movement 
 
 Character {A} — {name_A}, appearance matching cast-c{A}-face.png{If institutional: , wearing uniform as shown in cast-c{A}-costume.png} — and Character {B} — {name_B}, appearance matching cast-c{B}-face.png{If institutional: , wearing uniform as shown in cast-c{B}-costume.png}.
 
-Speaker A says: {line — max 15 words, natural spoken rhythm}.
-[0.5s pause — reaction shot of Character {B}, visible micro-expression]
-Speaker B says: {response — max 15 words}.
+Speaker A says: {line, max 15 words, natural spoken rhythm}.
+[0.5s pause, reaction shot of Character {B}, visible micro-expression]
+Speaker B says: {response, max 15 words}.
 
 Character {A} during {B}'s line: {micro-reaction — nodding, slight smile, furrowed brow}.
 Character {B} during {A}'s line: {listening pose — attentive gaze, slight lean forward}.
@@ -601,15 +601,15 @@ NOTE: VEO lip sync = 1 speaker at a time. Sequential delivery, NOT simultaneous.
 For longer exchanges, split into separate 8s clips with consistent camera angle.
 ```
 
-**Required Reference Images Table:**
+**Required Reference Images (upload all to `{project}/ref/` folder — place below heading, before prompt body):**
 ```markdown
-| # | Reference File | Content | Upload Status |
-|---|---------------|---------|---------------|
-| 1 | ref/cast-c{A}-face.png | {Character A name} face | ⬜ |
-| 2 | ref/cast-c{B}-face.png | {Character B name} face | ⬜ |
-| 3 | ref/cast-c{A}-costume.png | {Char A} costume | ⬜ (if institutional) |
-| 4 | ref/cast-c{B}-costume.png | {Char B} costume | ⬜ (if institutional) |
-| 5 | ref/env-{location}.png | Environment | ⬜ |
+| # | Filename | Content | Upload Status |
+|---|----------|---------|---------------|
+| 1 | `cast-c{A}-face.png` | {Character A name} face | ⬜ |
+| 2 | `cast-c{B}-face.png` | {Character B name} face | ⬜ |
+| 3 | `cast-c{A}-costume.png` | {Char A} costume | ⬜ (if institutional) |
+| 4 | `cast-c{B}-costume.png` | {Char B} costume | ⬜ (if institutional) |
+| 5 | `env-{location}.png` | Environment | ⬜ |
 ```
 
 ### 3+ Character Group Scene (VEO Video Prompt)
@@ -623,7 +623,7 @@ Character {A} — {name_A}, appearance matching cast-c{A}-face.png{If institutio
 Character {B} — {name_B}, appearance matching cast-c{B}-face.png{If institutional: , wearing uniform as shown in cast-c{B}-costume.png}: {position in frame, action}.
 Character {C} — {name_C}, appearance matching cast-c{C}-face.png{If institutional: , wearing uniform as shown in cast-c{C}-costume.png}: {position in frame, action}.
 
-Speaker says: {line — max 15 words}.
+Speaker says: {line, max 15 words}.
 Other characters: {group reaction — nodding, looking at speaker, taking notes}.
 
 SFX: {effects}.
@@ -635,17 +635,17 @@ NOTE: Only 1 character speaks at a time. Group reactions are non-verbal.
 If multiple characters need to speak, use sequential 8s clips.
 ```
 
-**Required Reference Images Table:**
+**Required Reference Images (upload all to `{project}/ref/` folder — place below heading, before prompt body):**
 ```markdown
-| # | Reference File | Content | Upload Status |
-|---|---------------|---------|---------------|
-| 1 | ref/cast-c{A}-face.png | {Character A name} face | ⬜ |
-| 2 | ref/cast-c{B}-face.png | {Character B name} face | ⬜ |
-| 3 | ref/cast-c{C}-face.png | {Character C name} face | ⬜ |
-| 4 | ref/cast-c{A}-costume.png | {Char A} costume | ⬜ (if institutional) |
-| 5 | ref/cast-c{B}-costume.png | {Char B} costume | ⬜ (if institutional) |
-| 6 | ref/cast-c{C}-costume.png | {Char C} costume | ⬜ (if institutional) |
-| 7 | ref/env-{location}.png | Environment | ⬜ |
+| # | Filename | Content | Upload Status |
+|---|----------|---------|---------------|
+| 1 | `cast-c{A}-face.png` | {Character A name} face | ⬜ |
+| 2 | `cast-c{B}-face.png` | {Character B name} face | ⬜ |
+| 3 | `cast-c{C}-face.png` | {Character C name} face | ⬜ |
+| 4 | `cast-c{A}-costume.png` | {Char A} costume | ⬜ (if institutional) |
+| 5 | `cast-c{B}-costume.png` | {Char B} costume | ⬜ (if institutional) |
+| 6 | `cast-c{C}-costume.png` | {Char C} costume | ⬜ (if institutional) |
+| 7 | `env-{location}.png` | Environment | ⬜ |
 ```
 
 ### Character Handoff Between Scenes (VEO Extension)
@@ -668,6 +668,17 @@ Use "Last Frame Secret": export final frame of Scene X → feed into NB2 as colo
 
 For scenes with only 1 character (most common for presenter segments):
 
+**Required Reference Images (upload all to `{project}/ref/` folder — place this table directly below each image heading, before prompt body):**
+```markdown
+| # | Filename | Content | Upload Status |
+|---|----------|---------|---------------|
+| 1 | `cast-c{N}-face.png` | {Character name} face | ⬜ |
+| 2 | `cast-c{N}-body.png` | {Character name} full body | ⬜ (if Utama) |
+| 3 | `cast-c{N}-costume.png` | Costume/uniform | ⬜ (if institutional) |
+| 4 | `env-{location}.png` | Environment | ⬜ (if location-specific) |
+| 5 | `product-{name}.png` | Product shot | ⬜ (if product visible) |
+```
+
 ```
 SUBJECT: {name} (Maintain exact facial identity from reference image: cast-c{N}-face.png) — {ethnicity} {gender}, {age_range}, {key_features}, body proportions matching cast-c{N}-body.png... wearing {costume}. {If institutional: Uniform EXACTLY as shown in cast-c{N}-costume.png.}
 ACTION: {what character is doing in this scene}.
@@ -677,17 +688,6 @@ SCENE: {environment description}{If environment ref: , environment layout EXACTL
 CAMERA: {shot size} {lens} {aperture}.
 LIGHTING: {pattern} {ratio}, {kelvin}K.
 TECHNICAL: {aspect_ratio}, {resolution}.
-```
-
-**Required Reference Images Table (include after EACH solo prompt):**
-```markdown
-| # | Reference File | Content | Upload Status |
-|---|---------------|---------|---------------|
-| 1 | ref/cast-c{N}-face.png | {Character name} face | ⬜ |
-| 2 | ref/cast-c{N}-body.png | {Character name} full body | ⬜ (if Utama) |
-| 3 | ref/cast-c{N}-costume.png | Costume/uniform | ⬜ (if institutional) |
-| 4 | ref/env-{location}.png | Environment | ⬜ (if location-specific) |
-| 5 | ref/product-{name}.png | Product shot | ⬜ (if product visible) |
 ```
 
 This is the default template for most scenes. Multi-character templates from above are only used when 2+ characters share the frame.

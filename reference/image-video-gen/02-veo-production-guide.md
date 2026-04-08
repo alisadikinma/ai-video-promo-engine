@@ -115,10 +115,10 @@ Maintain exact lighting, environment, appearance from reference frame.
 Start and end frames must share similar camera angle (max 15° deviation) and adjacent shot size (max 1-step change: CU↔MCU↔MS↔MWS↔WS). Drastic camera changes (e.g., eye-level CU to overhead WS) cause VEO interpolation artifacts — distorted faces, warped environments, ghosting.
 
 **CRITICAL — VEO Reference Image Rules:**
-- VEO does NOT use NB2's reference image injection system — do NOT put `ref/cast-c{N}-face.png` filenames in VEO prompts
+- VEO does NOT use NB2's reference image injection system — do NOT put `cast-c{N}-face.png` filenames in VEO prompts
 - VEO gets identity from the uploaded start frame / ingredient images, NOT from text filenames
 - Use generic continuity language: `Maintain visual continuity with reference frame character appearance throughout clip.`
-- Face reference filenames (`ref/cast-c{N}-face.png`) belong ONLY in NB2 prompts
+- Face reference filenames (`cast-c{N}-face.png`) belong ONLY in NB2 prompts — use bare filename, NO ref/ prefix
 
 Every VEO prompt MUST include a **Required Reference Images** table listing start frame / ingredient images needed. See `global-promo-config.md` Section 16.
 

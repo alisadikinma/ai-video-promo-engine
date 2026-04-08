@@ -201,6 +201,23 @@ OUTPUT: 16:9 LANDSCAPE aspect ratio. Width > Height. Do NOT crop or change ratio
 
 **Output →** `ref/scene-{NN}-start.png`
 
+**Required Reference Images (upload all to `{project}/ref/` folder):**
+```markdown
+| # | Filename | Content | Upload Status |
+|---|----------|---------|---------------|
+| 1 | `cast-c{N}-face.png` | {Character name} face | ⬜ |
+| 2 | `cast-c{N}-body.png` | {Character name} full body | ⬜ |
+| 3 | `cast-c{N}-costume.png` | {Institution} uniform | ⬜ (if institutional) |
+| 4 | `env-{location}.png` | {Location} establishing | ⬜ |
+| 5 | `product-{name}.png` | Product hero shot | ⬜ (if product visible) |
+| 6 | `product-closeup-{name}.png` | Product texture closeup | ⬜ (if product texture visible) |
+| 7 | `brand-{asset}.png` | Brand asset | ⬜ (if brand visible) |
+| 8 | `vehicle-{type}-{name}.png` | Vehicle | ⬜ (if vehicle in scene) |
+| 9 | `object-{name}.png` | Object/equipment | ⬜ (if object in scene) |
+| 10 | `ui-{name}.png` | UI/screen | ⬜ (if screen visible) |
+| 11 | `scene-{NN-1}-end.png` | Previous scene end frame — grading & continuity anchor | ⬜ (MANDATORY if scene > 1 in timeline) |
+```
+
 **End Frame Template:**
 ```
 IMPORTANT: Generate in LANDSCAPE 16:9 aspect ratio. Do NOT generate portrait or square.
@@ -225,23 +242,6 @@ OUTPUT: 16:9 LANDSCAPE aspect ratio. Width > Height. Do NOT crop or change ratio
 ```
 
 **Output →** `ref/scene-{NN}-end.png`
-
-**Required Reference Images Table (include after EACH prompt):**
-```markdown
-| # | Reference File | Content | Upload Status |
-|---|---------------|---------|---------------|
-| 1 | ref/cast-c{N}-face.png | {Character name} face | ⬜ |
-| 2 | ref/cast-c{N}-body.png | {Character name} full body | ⬜ |
-| 3 | ref/cast-c{N}-costume.png | {Institution} uniform | ⬜ (if institutional) |
-| 4 | ref/env-{location}.png | {Location} establishing | ⬜ |
-| 5 | ref/product-{name}.png | Product hero shot | ⬜ (if product visible) |
-| 6 | ref/product-closeup-{name}.png | Product texture closeup | ⬜ (if product texture visible) |
-| 7 | ref/brand-{asset}.png | Brand asset | ⬜ (if brand visible) |
-| 8 | ref/vehicle-{type}-{name}.png | Vehicle | ⬜ (if vehicle in scene) |
-| 9 | ref/object-{name}.png | Object/equipment | ⬜ (if object in scene) |
-| 10 | ref/ui-{name}.png | UI/screen | ⬜ (if screen visible) |
-| 11 | ref/scene-{NN-1}-end.png | Previous scene end frame — grading & continuity anchor | ⬜ (MANDATORY if scene > 1 in timeline) |
-```
 
 **Consistency Checklist (Start ↔ End):**
 - [ ] Same aspect ratio
@@ -269,12 +269,12 @@ TECHNICAL: {aspect_ratio}, 4K resolution, high thinking mode.
 WARDROBE: {wardrobe from creator profile}.
 ```
 
-**Required Reference Images Table (include after prompt):**
+**Required Reference Images (upload all to `{project}/ref/` folder):**
 ```markdown
-| # | Reference File | Content | Upload Status |
-|---|---------------|---------|---------------|
-| 1 | ref/cast-c{N}-face.png | {Character name} face | ⬜ |
-| 2 | ref/cast-c{N}-body.png | {Character name} full body | ⬜ (if Utama) |
+| # | Filename | Content | Upload Status |
+|---|----------|---------|---------------|
+| 1 | `cast-c{N}-face.png` | {Character name} face | ⬜ |
+| 2 | `cast-c{N}-body.png` | {Character name} full body | ⬜ (if Utama) |
 ```
 
 ### For Multi-Character Scenes
@@ -378,15 +378,15 @@ Maintain exact lighting, environment, appearance from reference frame.
 **CRITICAL VEO DIALOGUE RULES:**
 - Use `Host says:` / `Presenter says:` / `Speaker says:` — NEVER real person names (safety filter)
 - NO em dash `—` in dialogue text — VEO audio engine mistranslates it, use `,` or `. ` instead
-- Face reference filenames (`ref/cast-c{N}-face.png`) belong ONLY in NB2 prompts, NOT VEO prompts
+- Face reference filenames (`cast-c{N}-face.png`) belong ONLY in NB2 prompts, NOT VEO prompts
 
-**Required Reference Images Table (include after EACH VEO prompt):**
+**Required Reference Images (upload all to `{project}/ref/` folder — place below heading, before prompt body):**
 ```markdown
-| # | Reference File | Content | Upload Status |
-|---|---------------|---------|---------------|
-| 1 | ref/cast-c{N}-face.png | {Character name} face | ⬜ |
-| 2 | ref/cast-c{N}-costume.png | Costume/uniform | ⬜ (if institutional) |
-| 3 | ref/env-{location}.png | Environment | ⬜ (if location-specific) |
+| # | Filename | Content | Upload Status |
+|---|----------|---------|---------------|
+| 1 | `cast-c{N}-face.png` | {Character name} face | ⬜ |
+| 2 | `cast-c{N}-costume.png` | Costume/uniform | ⬜ (if institutional) |
+| 3 | `env-{location}.png` | Environment | ⬜ (if location-specific) |
 ```
 
 ### B-Roll Scene (Voiceover, No Lip Sync) Template
@@ -416,16 +416,16 @@ Narrative context: Continues from scene {N-1} where {summary}. {Visual breadcrum
 - NEVER use bare `Voiceover: text` — VEO assigns speech to any visible on-screen character
 - NEVER use `[Character name] says:` for background narration — triggers lip sync
 - NO em dash `—` in voiceover text — replace with `,` or `. `
-- Face reference filenames (`ref/*.png`) do NOT go in VEO prompts — use generic continuity language
+- Face reference filenames (e.g., `cast-c{N}-face.png`) do NOT go in VEO prompts — use generic continuity language
 - Always include `> POST-PROD VO:` backup line outside the prompt block
 
-**Required Reference Images Table (include after EACH VEO prompt):**
+**Required Reference Images (upload all to `{project}/ref/` folder — place below heading, before prompt body):**
 ```markdown
-| # | Reference File | Content | Upload Status |
-|---|---------------|---------|---------------|
-| 1 | ref/product-{name}.png | Product shot | ⬜ (if product visible) |
-| 2 | ref/env-{location}.png | Environment | ⬜ (if location-specific) |
-| 3 | ref/brand-{asset}.png | Brand asset | ⬜ (if brand visible) |
+| # | Filename | Content | Upload Status |
+|---|----------|---------|---------------|
+| 1 | `product-{name}.png` | Product shot | ⬜ (if product visible) |
+| 2 | `env-{location}.png` | Environment | ⬜ (if location-specific) |
+| 3 | `brand-{asset}.png` | Brand asset | ⬜ (if brand visible) |
 ```
 
 ### Extension Prompt Template
@@ -475,15 +475,15 @@ Maintain visual continuity with reference frame appearances for all characters.
 - Use `Speaker A says:` / `Speaker B says:` — NEVER real person names
 - NO face ref filenames in VEO prompts — identity comes from start frame / ingredient images
 
-**Required Reference Images Table (include after EACH multi-char VEO prompt):**
+**Required Reference Images (upload all to `{project}/ref/` folder — place below heading, before prompt body):**
 ```markdown
-| # | Reference File | Content | Upload Status |
-|---|---------------|---------|---------------|
-| 1 | ref/cast-c{A}-face.png | {Character A name} face | ⬜ |
-| 2 | ref/cast-c{B}-face.png | {Character B name} face | ⬜ |
-| 3 | ref/cast-c{A}-costume.png | {Character A} costume | ⬜ (if institutional) |
-| 4 | ref/cast-c{B}-costume.png | {Character B} costume | ⬜ (if institutional) |
-| 5 | ref/env-{location}.png | Environment | ⬜ |
+| # | Filename | Content | Upload Status |
+|---|----------|---------|---------------|
+| 1 | `cast-c{A}-face.png` | {Character A name} face | ⬜ |
+| 2 | `cast-c{B}-face.png` | {Character B name} face | ⬜ |
+| 3 | `cast-c{A}-costume.png` | {Character A} costume | ⬜ (if institutional) |
+| 4 | `cast-c{B}-costume.png` | {Character B} costume | ⬜ (if institutional) |
+| 5 | `env-{location}.png` | Environment | ⬜ |
 ```
 
 **CRITICAL VEO LIP SYNC RULE:** VEO handles 1 speaker at a time.
@@ -513,16 +513,16 @@ Maintain visual continuity with reference frame appearances for all characters.
 - NO face ref filenames in VEO prompt — identity from start frame / ingredient images
 - Always include POST-PROD VO backup
 
-**Required Reference Images Table:**
+**Required Reference Images (upload all to `{project}/ref/` folder — place below heading, before prompt body):**
 ```markdown
-| # | Reference File | Content | Upload Status |
-|---|---------------|---------|---------------|
-| 1 | ref/cast-c{A}-face.png | {Character A name} face | ⬜ |
-| 2 | ref/cast-c{B}-face.png | {Character B name} face | ⬜ |
-| 3 | ref/cast-c{A}-costume.png | {Character A} costume | ⬜ (if institutional) |
-| 4 | ref/cast-c{B}-costume.png | {Character B} costume | ⬜ (if institutional) |
-| 5 | ref/product-{name}.png | Product shot | ⬜ (if product visible) |
-| 6 | ref/env-{location}.png | Environment | ⬜ |
+| # | Filename | Content | Upload Status |
+|---|----------|---------|---------------|
+| 1 | `cast-c{A}-face.png` | {Character A name} face | ⬜ |
+| 2 | `cast-c{B}-face.png` | {Character B name} face | ⬜ |
+| 3 | `cast-c{A}-costume.png` | {Character A} costume | ⬜ (if institutional) |
+| 4 | `cast-c{B}-costume.png` | {Character B} costume | ⬜ (if institutional) |
+| 5 | `product-{name}.png` | Product shot | ⬜ (if product visible) |
+| 6 | `env-{location}.png` | Environment | ⬜ |
 ```
 
 ---
@@ -546,7 +546,7 @@ Maintain visual continuity with reference frame appearances for all characters.
 
 3. **MANDATORY: Last Frame → Next Scene Anchor.** For EVERY sequential scene pair in the timeline, you MUST:
    1. Export the END frame output of Scene N as `ref/scene-{NN}-end.png`.
-   2. Inject `ref/scene-{NN}-end.png` as the FIRST reference image in Scene N+1's start frame prompt.
+   2. Inject `scene-{NN}-end.png` (bare filename, NO ref/ prefix) as the FIRST reference image in Scene N+1's start frame prompt.
    3. Include it in Scene N+1's Required Reference Images upload table as row 11.
    This is NOT optional. Sequential scenes without this continuity anchor will have inconsistent environments, lighting, and character positions.
 
@@ -624,16 +624,16 @@ Before finalizing each scene's prompts:
 - [ ] Extension prompt references previous clip context
 - [ ] Transition instruction added to scene-ending clip
 - [ ] All cast members' reference phrases used verbatim (not generic "creator")
-- [ ] Multi-character NB2 scenes specify EACH character's identity ref (ref/cast-c{N}-face.png)
+- [ ] Multi-character NB2 scenes specify EACH character's identity ref (cast-c{N}-face.png — bare filename, NO ref/ prefix)
 - [ ] VEO prompts use generic continuity (NO face ref filenames)
 - [ ] Character hierarchy correct (Pemeran Utama prominent, Pendamping supporting)
-- [ ] Costume matches institution ref (if institutional) — ref/cast-c{N}-costume.png
+- [ ] Costume matches institution ref (if institutional) — cast-c{N}-costume.png (bare filename, NO ref/ prefix)
 - [ ] ref-manifest.md validated before generating any prompts (Phase 3.5 gate)
 - [ ] Max 3 characters per frame (4+ use shot/reverse-shot)
 - [ ] VEO dialogue scenes: 1 speaker at a time, sequential delivery
 - [ ] **All reference images INLINE in NB2 prompt text** — each filename appears next to the element it describes, NOT in a separate header block above the prompt
 - [ ] **NB2 reference image injection syntax used INLINE** — identity lock inside SUBJECT line (`{Name} (Maintain exact facial identity from reference image: cast-c{N}-face.png) — {description}`), environment/vehicle/object refs inline with their elements (`EXACTLY matching {filename}.png`)
-- [ ] **Required Reference Images table included after EACH prompt** (NB2 and VEO)
+- [ ] **Required Reference Images table included directly BELOW each prompt heading, BEFORE prompt body** (NB2 and VEO) — bare filenames only, NO ref/ prefix
 - [ ] Scene N+1 start frame references Scene N end frame output (`ref/scene-{NN-1}-end.png`) as grading/continuity anchor
 - [ ] Previous scene output included in Required Reference Images upload table (row 11) for all scenes after Scene 1
 
@@ -643,12 +643,12 @@ Every NB2 and VEO prompt MUST pass this 9-point realism check. AI defaults to "s
 
 | # | Check | What to Verify | Common AI Failure |
 |---|-------|---------------|-------------------|
-| 1 | **Environment Accuracy** | Location matches cultural research (Step 3.5.2a). Architecture, vegetation, sky, road surface, signage all match the real location. If ref/env-{location}.png exists, prompt references it. | Generic "modern city" instead of specific Dumai pelabuhan / Surabaya industrial zone |
+| 1 | **Environment Accuracy** | Location matches cultural research (Step 3.5.2a). Architecture, vegetation, sky, road surface, signage all match the real location. If env-{location}.png exists in ref/ folder, prompt references it (bare filename). | Generic "modern city" instead of specific Dumai pelabuhan / Surabaya industrial zone |
 | 2 | **Human Behavior Realism** | People in scene perform plausible actions for context. Workers work, supervisors supervise, operators operate. Body language matches role and situation. No "standing and smiling at camera" in action scenes. | Everyone poses awkwardly. Worker holds tool wrong. Manager does manual labor. |
 | 3 | **Data/Display Consistency** | Dashboard numbers, ANPR readings, tracking data, screen content are internally consistent and plausible. If Scene 5 shows "98.7% accuracy," Scene 12 must not show "95.2%" unless script explains the change. | Random numbers on every screen. Inconsistent metrics across scenes. |
 | 4 | **Uniform & Rank Accuracy** | Institutional uniforms match rank/role. Supervisor ≠ operator uniform. Manager badge ≠ frontline badge. Epaulettes, stripes, helmet colors, safety vest colors match institutional hierarchy. | Everyone wears identical uniform regardless of rank. Captain has no stripes. |
 | 5 | **Explicit Negatives** | Prompt explicitly states what should NOT appear. If indoor scene: "no outdoor elements." If nighttime: "no sunlight." If clean facility: "no rust, no litter, no peeling paint." AI fills gaps with random elements. | AI adds windows to underground rooms. Puts sunshine in night scenes. Makes new facility look old. |
-| 6 | **Reference Photo Enforcement** | Every visual element with a ref/ image uses it. No text-only descriptions for elements that have reference photos. User photos = ground truth, NEVER override. | AI ignores uploaded gate photo and generates random fantasy gate instead. |
+| 6 | **Reference Photo Enforcement** | Every visual element with a reference image in ref/ folder uses it (bare filename in prompt, NO ref/ prefix). No text-only descriptions for elements that have reference photos. User photos = ground truth, NEVER override. | AI ignores uploaded gate photo and generates random fantasy gate instead. |
 | 7 | **Timeline & Shift Consistency** | Time of day matches across connected scenes. If establishing shot is "dawn," subsequent scenes keep dawn lighting. Shift patterns (pagi/siang/malam) consistent with narrative. Workers wear appropriate PPE for time/shift. | Dawn establishing shot followed by harsh midday lighting in the next scene. Night shift workers in daylight. |
 | 8 | **Prop/Object Scale Accuracy** | All handheld props specified with: (a) exact dimensions in cm/mm, (b) real-world analogy ("like a 7-Eleven receipt"), (c) proportion relative to hand/body ("narrower than a credit card"), (d) explicit negative for wrong sizes ("NOT A4, NOT letter size") |
 
@@ -786,6 +786,16 @@ Total refs: {N}/{N} ✅
 **Audio Type:** {Presenter lip sync / B-Roll voiceover / Music only}
 
 #### NB2 Start Frame
+
+**Required Reference Images (upload all to `{project}/ref/` folder):**
+| # | Filename | Content | Embedded in Prompt? | Upload Status |
+|---|----------|---------|--------------------|----|
+| 1 | `cast-c1-face.png` | {Character 1 name} face — identity lock | ✅ Yes | ⬜ |
+| 2 | `cast-c2-face.png` | {Character 2 name} face — identity lock | ✅ Yes | ⬜ |
+| 3 | `product-{name}.png` | Product shot — scene context | ✅ Yes | ⬜ |
+| 4 | `env-{location}.png` | Environment — background | ✅ Yes | ⬜ |
+| 5 | `costume-{institution}.png` | Institutional uniform — wardrobe ref | ✅ Yes | ⬜ |
+
 ```
 {full NB2 prompt}
 ```
@@ -804,15 +814,6 @@ Total refs: {N}/{N} ✅
 ```
 {full extension prompt}
 ```
-
-#### Required Reference Images (MANDATORY — upload before generating)
-| # | Filename | Content | Embedded in Prompt? | Upload Status |
-|---|----------|---------|--------------------|----|
-| 1 | ref/cast-c1-face.png | {Character 1 name} face — identity lock | ✅ Yes | ⬜ |
-| 2 | ref/cast-c2-face.png | {Character 2 name} face — identity lock | ✅ Yes | ⬜ |
-| 3 | ref/product-{name}.png | Product shot — scene context | ✅ Yes | ⬜ |
-| 4 | ref/env-{location}.png | Environment — background | ✅ Yes | ⬜ |
-| 5 | ref/costume-{institution}.png | Institutional uniform — wardrobe ref | ✅ Yes | ⬜ |
 
 ---
 

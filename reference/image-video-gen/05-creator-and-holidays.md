@@ -10,7 +10,7 @@ platform: claude-projects
 
 > **Cast System Note:** Ali Sadikin is a preset that fills exactly 1 Pemeran Utama slot
 > in the cast system. When activated, the slot number {N} is assigned during cast builder
-> (Phase 1). All references below use `ref/cast-c{N}-face.png` where {N} = Ali's assigned
+> (Phase 1). All references below use `cast-c{N}-face.png` (bare filename, NO ref/ prefix in prompt body) where {N} = Ali's assigned
 > cast slot. See `creator-profile-system.md` Section 2 for full integration details.
 
 ## Ali Sadikin MA — Physical Reference
@@ -67,7 +67,7 @@ Hook shot, CTA/ending shot, talking-head segments, direct-address moments.
 ## Thumbnail Generation
 
 ### Requirements
-- Creator face from `ref/cast-c{N}-face.png` (Ali Sadikin cast slot) — **50-60% of frame**
+- Creator face from `cast-c{N}-face.png` (Ali Sadikin cast slot, upload to ref/ folder) — **50-60% of frame**
 - Topic visual in background/side
 - Text overlay zone reserved (don't render text, leave space)
 - Expression EXAGGERATED (readable at 100×100px)

@@ -87,7 +87,7 @@ Total: 4 reference files + filtered output data. NEVER load storytelling or VEO 
 21. **Scene Logic Realism (9-point)** — Every prompt passes 9 checks: environment accuracy, human behavior realism, data consistency, uniform ranks, explicit negatives, reference photos, timeline/shift consistency, prop/object scale accuracy, domain context populated. See `script-to-scene-bridge.md` Section 7B.
 22. **Character portrait-first** — Any character in 2+ scenes MUST have standalone face portrait generated FIRST in Phase 4A. Text descriptions alone = different faces every time. Applies to cast AND recurring extras. See `global-promo-config.md` Section 18.
 23. **Narrative arc consistency** — Connected scenes MUST include `NARRATIVE CONTEXT:` block naming connections, visual breadcrumbs, cause-effect chains, shared environment refs. See `script-to-scene-bridge.md` Section 7C.
-24. **Sequential scene dependency** — Scene N+1 start frame MUST reference Scene N end frame (`ref/scene-{NN-1}-end.png`) as upstream continuity anchor. Upload table MUST include previous scene output. No exceptions for sequential timeline scenes.
+24. **Sequential scene dependency** — Scene N+1 start frame MUST reference Scene N end frame (`scene-{NN-1}-end.png`, bare filename in prompt body, NO ref/ prefix) as upstream continuity anchor. Upload table MUST include previous scene output. No exceptions for sequential timeline scenes.
 25. **Prop/object scale enforcement** — Every handheld prop or object in NB2/VEO prompts MUST include: (a) exact physical dimensions in cm/mm, (b) real-world size analogy, (c) proportion relative to human hand/body, (d) explicit negative for wrong sizes. "Small" alone is NOT sufficient.
 26. **Camera angle constraint for Frame mode** — START and END frames within one VEO scene MUST have: max 1-step shot size change (CU↔MCU↔MS↔MWS↔WS) and max 15° camera angle change. Drastic camera jumps break VEO interpolation.
 27. **NB2 identity lock: filename only** — `Maintain exact facial identity from reference image:` MUST use bare filename only (e.g., `cast-c1-face.png`). NEVER add folder prefix like `ref/` or `keyframes/` — NB2 matches uploaded images by filename, and `ref/cast-c1-face.png` fails to match the uploaded `cast-c1-face.png`. Same rule applies to all reference image mentions inside NB2 prompt body text.
@@ -176,7 +176,7 @@ Follow templates from `script-to-scene-bridge.md` Section 11.
 1. Generate all prompts for current tier (parallel within tier)
 2. Include aspect ratio triple enforcement (first line, TECHNICAL, last line)
 3. Include `**Output →** ref/{filename}.png` per prompt
-4. Include Required Reference Images table (upstream refs from previous tiers)
+4. Include Required Reference Images table directly BELOW each image heading, BEFORE prompt body (bare filenames, NO ref/ prefix)
 5. Include ref-to-prompt body binding (every ref in table → matching injection line in prompt)
 6. Apply UI text localization if prompt contains on-screen text
 7. **Wait for user to generate/upload all current tier assets**

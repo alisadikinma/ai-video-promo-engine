@@ -325,11 +325,11 @@ Before writing each NB2/VEO prompt, verify against previous scenes:
 | Wardrobe | Same clothes as previous scene (unless time/location change) | Re-check cast-profile.md wardrobe for this scene context |
 | Props in hand | If character held phone in Scene 5 mid-action, still holding it in Scene 6 continuation | Add prop to prompt |
 | Hair/appearance | Same hairstyle, same glasses, same facial hair | Copy verbatim from cast reference phrase |
-| Background continuity | Same location = same background elements | Reference same `ref/env-{location}.png` |
+| Background continuity | Same location = same background elements | Reference same `env-{location}.png` (bare filename) |
 | Lighting continuity | Same Kelvin, same direction, same ratio across scene cuts | Match values from previous scene prompt |
 | Weather | If it was raining in Scene 4, still raining in Scene 5 (same location) | Add weather to prompt |
 | Time of day | If Scene 7 is sunset, Scene 8 (same location) can't be midday | Match lighting Kelvin and sky |
-| Vehicle state | Same color, same damage, same plate number across scenes | Reference same `ref/vehicle-{name}.png` |
+| Vehicle state | Same color, same damage, same plate number across scenes | Reference same `vehicle-{name}.png` (bare filename) |
 | Screen direction | Character was walking left-to-right, still walking left-to-right | Maintain movement direction |
 | Product state | Product was opened in Scene 6, stays open in Scene 7 | Describe current state |
 
@@ -337,9 +337,9 @@ Before writing each NB2/VEO prompt, verify against previous scenes:
 
 These rules ensure the Continuity Supervisor mindset feeds into the asset-first pipeline:
 
-1. **Same visual = same reference.** If a truck appears in Scene 2 and Scene 8, BOTH prompts reference the EXACT same `ref/vehicle-truck-{name}.png`. No re-describing from text.
+1. **Same visual = same reference.** If a truck appears in Scene 2 and Scene 8, BOTH prompts reference the EXACT same `vehicle-truck-{name}.png` (bare filename, NO ref/ prefix in prompt body). No re-describing from text.
 
-2. **Logo = ALWAYS user file.** Brand logos, app icons, institutional emblems are NEVER AI-generated. If `ref/brand-{name}.png` exists, inject it. If not, hard-block until user provides it.
+2. **Logo = ALWAYS user file.** Brand logos, app icons, institutional emblems are NEVER AI-generated. If `brand-{name}.png` exists in ref/ folder, inject it (bare filename). If not, hard-block until user provides it.
 
 3. **Character = ALWAYS cast ref.** No matter how minor the appearance (background, reflection, photo on screen), if the character has a cast slot → inject `cast-c{N}-face.png`.
 

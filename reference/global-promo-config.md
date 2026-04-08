@@ -393,22 +393,23 @@ There are 3 categories of inline reference injection:
 | Multi-character | `Maintain visual continuity with reference frame appearances for all characters.` |
 | Environment continuity | `Maintain exact lighting, environment, appearance from reference frame.` |
 
-### Reference Image Table (MANDATORY per prompt)
+### Reference Image Table (MANDATORY per prompt — place directly BELOW each image heading, BEFORE prompt body)
 
-Every generated NB2 or VEO prompt MUST include a **Required Reference Images** table listing all ref files needed for that specific prompt. This ensures the user uploads every required file before generating.
+Every generated NB2 or VEO prompt MUST include a **Required Reference Images** table listing all ref files needed for that specific prompt. This ensures the user uploads every required file before generating. **Use bare filenames only (NO `ref/` prefix)** — NB2 matches by uploaded filename, not path.
 
 **Format:**
 
 ```markdown
 #### Required Reference Images for Scene {N}
+*(Upload all files to `{project}/ref/` folder)*
 
-| # | Reference File | Content | Upload Status |
-|---|---------------|---------|---------------|
-| 1 | `ref/cast-c1-face.png` | {Character 1 name} face — front view | ⬜ |
-| 2 | `ref/cast-c1-body.png` | {Character 1 name} full body | ⬜ |
-| 3 | `ref/product-{name}.png` | Product hero shot | ⬜ |
-| 4 | `ref/env-{location}.png` | Environment establishing shot | ⬜ |
-| 11 | `ref/scene-{NN-1}-end.png` | Previous scene end frame — grading & continuity anchor | ⬜ (MANDATORY if scene > 1) |
+| # | Filename | Content | Upload Status |
+|---|----------|---------|---------------|
+| 1 | `cast-c1-face.png` | {Character 1 name} face — front view | ⬜ |
+| 2 | `cast-c1-body.png` | {Character 1 name} full body | ⬜ |
+| 3 | `product-{name}.png` | Product hero shot | ⬜ |
+| 4 | `env-{location}.png` | Environment establishing shot | ⬜ |
+| 11 | `scene-{NN-1}-end.png` | Previous scene end frame — grading & continuity anchor | ⬜ (MANDATORY if scene > 1) |
 ```
 
 ### Ref-to-Prompt Body Binding (MANDATORY — Inline-Only)
@@ -424,19 +425,19 @@ RULE: For EACH row in the Required Reference Images table:
   → BANNED: Same filename appearing 2+ times in one prompt
 
   EXAMPLES:
-    Upload table has: ref/cast-c1-face.png
+    Upload table has: cast-c1-face.png
     Prompt body MUST have (inline with character):
       "Ahmad (Maintain exact facial identity from reference image: cast-c1-face.png) — Malay male, 40s..."
 
-    Upload table has: ref/env-gate-pelabuhan.png
+    Upload table has: env-gate-pelabuhan.png
     Prompt body MUST have (inline with environment):
       "...environment layout EXACTLY as shown in env-gate-pelabuhan.png."
 
-    Upload table has: ref/vehicle-truck-hino.png
+    Upload table has: vehicle-truck-hino.png
     Prompt body MUST have (inline with vehicle):
       "...the Hino dump truck — EXACTLY matching vehicle-truck-hino.png — approaching the gate..."
 
-    Upload table has: ref/scene-14-end.png
+    Upload table has: scene-14-end.png
     Prompt body MUST have (inline with continuity):
       "...continuation from scene-14-end.png — maintaining character position, lighting, and environment..."
 ```

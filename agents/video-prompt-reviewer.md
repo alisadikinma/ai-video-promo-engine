@@ -21,7 +21,7 @@ You will receive:
 For EACH prompt in the batch, run ALL checks below. Report PASS or FAIL per check per prompt.
 
 ### A. Dependency Chain (NB2 only)
-- [ ] Scene 2+ has `ref/scene-{NN-1}-end.png` in upload table
+- [ ] Scene 2+ has `scene-{NN-1}-end.png` in upload table (bare filename, NO ref/ prefix)
 - [ ] Scene 2+ has `scene-{NN-1}-end.png` inline with continuity statement in prompt body (e.g., `continuation from scene-{NN-1}-end.png — maintaining character position...`) — NO `ref/` prefix in prompt body, NO header block pattern
 - [ ] First scene in batch references last scene of previous batch (cross-batch continuity)
 

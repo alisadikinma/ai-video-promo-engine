@@ -214,6 +214,8 @@ Need consistent CHARACTER across shots?
 - NB2 parameters (CFG, denoise, thinking mode, identity lock) in `image-video-gen/01-nb2-image-generation.md`.
 - **NB2 Identity Lock Syntax:** `Maintain exact facial identity from reference image: filename.png` — use bare filename only (NO `ref/` or `keyframes/` prefix). NB2 matches uploaded files by filename; `ref/cast-c1-face.png` fails to match the uploaded `cast-c1-face.png`. Max 3 identity locks per scene.
 - **Inline-Only Reference Pattern:** All NB2 reference image filenames MUST appear inline with the element they describe, NOT in header blocks. Each filename MAX 1x per prompt. Three categories: (1) identity lock inline with character: `[Name] (Maintain exact facial identity from reference image: cast-c1-face.png) in uniform...`, (2) object/env ref inline: `...the monitor — EXACTLY matching ui-anpr-screen.png: interface...`, (3) scene continuity inline: `...continuation from scene-{NN-1}-end.png — maintaining position...`. BANNED: header blocks (`Using reference image xxx.png for [purpose]`), standalone identity lock lines, duplicate filenames.
+- **Required Reference Images Table Placement:** Table MUST appear directly BELOW each image/prompt heading, BEFORE the prompt body text — NOT above the heading, NOT after the prompt body. Use bare filenames only (NO `ref/` prefix). Add note: "Upload all files to `{project}/ref/` folder."
+- **No Em Dash in VEO Audio Text:** NEVER use `—` (em dash) in `says:` or `Voice-over narrator:` text — VEO audio engine mistranslates it. Replace with `,` or `. ` in all dialogue/voiceover template placeholders.
 - Cinematography defaults per content type in `image-video-gen/04-cinematography-lookup.md`.
 
 ### Smart Context Loading
@@ -482,8 +484,11 @@ All configurable values live in `reference/global-promo-config.md` — single so
 | NB2 identity lock fails / face not matched | Prompt body text uses `ref/cast-c1-face.png` instead of bare `cast-c1-face.png` — NB2 matches by uploaded filename, `ref/` prefix causes lookup failure. Remove ALL folder prefixes from identity lock lines and reference image mentions in prompt body |
 | Ref image uploaded but model ignores identity | Reference filename in header block at top of prompt, not inline with character — model reads past header blocks. Move filename inline: `[Name] (Maintain exact facial identity from reference image: cast-c1-face.png) — description...` |
 | Same ref file mentioned multiple times | Duplicate filename dilutes reference signal. Each filename MAX 1x per prompt — place inline with the primary element it describes |
+| ref/ prefix in Required Reference Images table | Upload table filenames use `ref/filename.png` — user copies wrong filename to NB2. Table MUST use bare filenames only (e.g., `cast-c1-face.png`), add "Upload all to `{project}/ref/` folder" note |
+| Reference table appears above image heading | Table placement wrong — table MUST appear directly BELOW each image/prompt heading, BEFORE the prompt body. Not above heading, not after prompt body |
+| VEO voiceover mispronounces words | Em dash `—` in `says:` or `Voice-over narrator:` text — VEO audio engine mistranslates em dashes. Replace with `,` or `. ` in all dialogue/voiceover text including template placeholders |
 
 ---
 
-**Version:** 2.1.0
-**Last Updated:** 2026-03-29
+**Version:** 2.1.1
+**Last Updated:** 2026-04-09
