@@ -1,15 +1,17 @@
 # AI Video Promo Engine
 
-Claude Code plugin that generates complete promotional video production packages — from brainstorm to script to image prompts (NB2) to video prompts (VEO 3.1 / Seedance 2.0).
+**v2.2.0** — Claude Code plugin that generates complete promotional video production packages — from brainstorm to script to image prompts (NB2) to video prompts (VEO 3.1 / Seedance 2.0).
 
 Anyone — video agencies, freelancers, brand owners — can produce professional 2-3 minute promotional videos by following the generated production plan.
+
+> **v2.2.0 hardening:** 4 new enforcement rules close gaps that previously allowed mid-production restructures — BODY 1 narrative completeness, NB2 reference uniqueness filter, max 5 inline refs per prompt, and environment-gated cross-scene references. See [v2.2.0 Hard Rules](#v220-hard-rules) below.
 
 ## What It Does
 
 Give it a product or service, and the engine walks you through a 6-phase pipeline:
 
 1. **Brainstorm** — language selection, cast builder (1-5 characters), institution detection, target market, awareness level, storyline input, tone/mood selection
-2. **Script** — 2-3 min A/V script with 7-beat narrative arc, beat labels, timing, narration, audio direction
+2. **Script** — 2-3 min A/V script with 7-beat narrative arc (or 6-stage user framework alias: HOOK → Foreshadow → BODY 1 → BODY 2 → Peak → Ending+CTA), beat labels, timing, narration, audio direction. v2.2.0+: BODY 1 Completeness rule enforces ALL identified pains dramatized as dedicated scenes.
 3. **Scene Breakdown** — auto-calculated scene count, VEO mode per scene, extension strategy
 4. **Reference Collection** — auto-derive ref manifest, cultural location research, batch NB2 prompts for missing refs, hard-block validation gate
 5. **Image Prompts (NB2)** — Phase 4A: asset library (atoms with dependency graph) → Phase 4B: scene keyframes (molecules composed from assets)
@@ -100,8 +102,8 @@ Run any phase independently:
 - **6 Tone/Mood Options** — Humorous, Serious, Professional, Inspirational, Casual, Edgy — affects cinematography, audio, and expression across all phases
 - **5 Target Markets** — C-Level, VP/Director, Manager, Individual Contributor, Social Media — each with adapted tone, depth, and CTA style
 - **5 Awareness Levels** — Unaware → Most-Aware routing to different narrative strategies
-- **7-Beat Universal Arc** — Pattern Interrupt → Hook → Foreshadow → Agitate → Guide+Plan → Peak → CTA → Won Day
-- **Asset-First Production** — recurring elements (2+ scenes) auto-detected and generated as standalone assets before scene keyframes, with dependency graph and tier system
+- **7-Beat Universal Arc** — Pattern Interrupt → Hook → Foreshadow → Agitate → Guide+Plan → Peak → CTA → Won Day. **v2.2.0+: also exposed as 6-stage user framework alias** — HOOK → Foreshadow → BODY 1 (Problems) → BODY 2 (Solutions) → Peak → Ending+CTA. Internally identical, user-facing simpler.
+- **Asset-First Production with Uniqueness Filter (v2.2.0+)** — recurring elements (2+ scenes) auto-detected and generated as standalone assets BUT filtered by uniqueness criterion (UNIQUE → generate, COMMON generic items → skip and render from text). Dependency graph and tier system. Max 5 inline references per Phase 4B prompt enforced.
 - **Film Directing Guide** — 180° rule, gaze direction, actor blocking, vocal performance direction, natural acting methodology, visual continuity supervision
 - **Reference Image Validation Gate** — Phase 3.5 hard block with 5 ref categories, cultural location research (5 facts per location), batch NB2 prompt generation for missing refs
 - **24 Reference Documents** — storytelling psychology, cinematography lookup, hook vault (100 hooks), CTA frameworks, directing grammar, platform adaptation, Seedance 2.0 production guide, and more
@@ -117,7 +119,24 @@ Run any phase independently:
 
 > Product is NEVER the hero. Product is the BRIDGE. Customer is the hero. Brand is the guide.
 
-The script engine enforces 8 commandments (no opening with brand name, no jargon without translation, every feature needs a human consequence, etc.) and auto-checks for 22 structural failure patterns.
+The script engine enforces **9 commandments (v2.2.0+)** (no opening with brand name, no jargon without translation, every feature needs a human consequence, **BODY 1 must dramatize ALL identified problems**, etc.) and auto-checks for 22+ structural failure patterns.
+
+## v2.2.0 Hard Rules
+
+Released 2026-05-14 to close gaps revealed during real-world production (IRN-Logistik hero promo). The 4 rules are enforced at validator phase gates:
+
+| # | Rule | Validator | Phase | What it prevents |
+|---|---|---|---|---|
+| 1 | **BODY 1 Completeness** — count(pains dramatized in BODY 1 scenes) ≥ count(pains identified in brainstorm). Pairing OK if shared root cause (max 2/scene). Anchor pain non-pairable. | C1 | Phase 2 (Script) | Solutions outweighing problems → under-earned Peak. Auto-fails when script overlay says "1 dari N" while N>1, or coverage <50%. |
+| 2 | **NB2 Reference Uniqueness Filter** — generate Phase 4A assets ONLY for UNIQUE items (faces, logos, custom UI, industry-specific equipment). SKIP for COMMON items (generic phone, kopi gelas, pavement) — NB2 renders these reliably from text. | C2 | Phase 4A (Asset Library) | Wasted generation budget on generic assets that don't need refs. Cluttered upload tables. |
+| 3 | **Max 5 Inline References per Phase 4B Prompt** — combined cap on faces + bodies + costumes + objects + envs + UI. All inline. Each filename max 1× per prompt. Replaces old "Max 3 identity locks". | C3 | Phase 4B (Scene Keyframes) | NB2 ignoring lower-priority refs when prompts exceed cap. Forces scene splitting or composite asset consolidation. |
+| 4 | **Cross-Scene Reference Env-Gated** — Scene N+1 START references `scene-N-end.png` ONLY IF env(N) == env(N+1). Character/prop continuity alone is NOT sufficient. Hard cuts (different env) drop cross-ref entirely. | C4 | Phase 4B (Scene Keyframes) | NB2 mixing wrong-location elements when treating cross-env scene-end.png as compositional template (e.g., yard pavement bleeding into customer warehouse floor). |
+
+Full rule text + decision tables + examples: [`reference/global-promo-config.md`](reference/global-promo-config.md) §25, §26, §27.
+
+Validator details: [`agents/video-prompt-reviewer.md`](agents/video-prompt-reviewer.md) checks C1-C4.
+
+Implementation plan: [`docs/plans/2026-05-14-plugin-rules-hardening.md`](docs/plans/2026-05-14-plugin-rules-hardening.md).
 
 ## Project Structure
 

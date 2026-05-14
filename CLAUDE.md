@@ -44,7 +44,7 @@ Claude Code plugin that generates complete promotional video production packages
 
 | File | When Used |
 |------|-----------|
-| `storytelling_script_gen/project-instruction.md` | ALWAYS for script generation — master operating system, 2-phase state machine, 8 commandments, 7-beat arc |
+| `storytelling_script_gen/project-instruction.md` | ALWAYS for script generation — master operating system, 2-phase state machine, 9 commandments (v2.2.0+), 7-beat arc + 6-stage user framework alias |
 | `storytelling_script_gen/F1_Audience_Psychology_Matrix.md` | Target market selection — C-Level, VP/Director, Manager, IC, End Consumer psychographics |
 | `storytelling_script_gen/F2_Narrative_Arc_and_Video_Typology.md` | Narrative arc selection — 7-beat universal arc, 12 video types, duration mapping |
 | `storytelling_script_gen/F3_Cinematic_AV_Production_Rules.md` | Lighting grammar, audio design, camera directions for script |
@@ -124,7 +124,7 @@ Phase 3.5: REFERENCE COLLECTION  → Output: ref-manifest.md
 
 Phase 4A: ASSET LIBRARY (NB2)   → Output: nb2-reference-prompts.md
   ├─ Auto-scan ref/ folder (user photos = ground truth)
-  ├─ Recurring element detection (2+ scenes → standalone asset)
+  ├─ Recurring element detection (2+ scenes → standalone asset) — **v2.2.0+: combined with UNIQUENESS filter (skip COMMON-tier generic items) per global-promo-config.md §26**
   ├─ Dynamic tier assignment with dependency graph
   ├─ Tier-by-tier generation with validation gates
   ├─ Extended categories: cast, vehicles, objects, products, product closeups, environments, UI composites
@@ -212,7 +212,7 @@ Need consistent CHARACTER across shots?
 - Scene count auto-calculated from script beats. Scene → VEO mode mapping in `script-to-scene-bridge.md`.
 - VEO specs (resolution, duration, extensions, prompt limits) in `image-video-gen/02-veo-production-guide.md`.
 - NB2 parameters (CFG, denoise, thinking mode, identity lock) in `image-video-gen/01-nb2-image-generation.md`.
-- **NB2 Identity Lock Syntax:** `Maintain exact facial identity from reference image: filename.png` — use bare filename only (NO `ref/` or `keyframes/` prefix). NB2 matches uploaded files by filename; `ref/cast-c1-face.png` fails to match the uploaded `cast-c1-face.png`. Max 3 identity locks per scene.
+- **NB2 Identity Lock Syntax:** `Maintain exact facial identity from reference image: filename.png` — use bare filename only (NO `ref/` or `keyframes/` prefix). NB2 matches uploaded files by filename; `ref/cast-c1-face.png` fails to match the uploaded `cast-c1-face.png`. **v2.2.0+: Max 5 inline references per Phase 4B prompt (combined faces + bodies + costumes + objects + envs + UI), replaces old "Max 3 identity locks per scene" (which applied to faces only). See global-promo-config.md §26.4.**
 - **Inline-Only Reference Pattern:** All NB2 reference image filenames MUST appear inline with the element they describe, NOT in header blocks. Each filename MAX 1x per prompt. Three categories: (1) identity lock inline with character: `[Name] (Maintain exact facial identity from reference image: cast-c1-face.png) in uniform...`, (2) object/env ref inline: `...the monitor — EXACTLY matching ui-anpr-screen.png: interface...`, (3) scene continuity inline: `...continuation from scene-{NN-1}-end.png — maintaining position...`. BANNED: header blocks (`Using reference image xxx.png for [purpose]`), standalone identity lock lines, duplicate filenames.
 - **Required Reference Images Table Placement:** Table MUST appear directly BELOW each image/prompt heading, BEFORE the prompt body text — NOT above the heading, NOT after the prompt body. Use bare filenames only (NO `ref/` prefix). Add note: "Upload all files to `{project}/ref/` folder."
 - **No Em Dash in VEO Audio Text:** NEVER use `—` (em dash) in `says:` or `Voice-over narrator:` text — VEO audio engine mistranslates it. Replace with `,` or `. ` in all dialogue/voiceover template placeholders.
@@ -436,7 +436,7 @@ All configurable values live in `reference/global-promo-config.md` — single so
 | Light jumps between clips | Different lighting in start/end frames — match Kelvin + direction in both NB2 images |
 | Can't extend clip | Clip was generated at 1080p — use 720p for extendable clips |
 | Stutter at extension joint | Abrupt motion at clip end — maintain consistent camera speed through final second |
-| Script too corporate | Check 8 Commandments — forbidden words, missing human consequences |
+| Script too corporate | Check 9 Commandments (v2.2.0+) — forbidden words, missing human consequences, BODY 1 incomplete |
 | Weak hook | Must pass "So What?" test in first 3 seconds — check F5 Hook Vault |
 | CTA too generic | Must be specific, time-bound, low-friction — check F6 CTA Vault |
 | Wrong target market tone | Check F1 Audience Psychology Matrix for correct psychographic profile |
