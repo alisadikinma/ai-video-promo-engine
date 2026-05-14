@@ -374,7 +374,7 @@ Phase 3.5 web searches 5 facts per location (license plates, ethnicity, landmark
 
 **Product is NEVER the hero. Product is the BRIDGE. Customer is the hero. Brand is the guide.**
 
-8 Commandments (cannot be overridden):
+9 Commandments (cannot be overridden):
 1. NEVER open with company name or logo
 2. NEVER use jargon without immediate translation
 3. Every feature MUST have a human consequence
@@ -383,8 +383,18 @@ Phase 3.5 web searches 5 facts per location (license plates, ethnicity, landmark
 6. Every scene MUST pass the "So What?" test
 7. CTA must be specific, time-bound, and low-friction
 8. The first 3 seconds determine everything
+9. **(v2.2.0+) BODY 1 must dramatize ALL identified problems** — count(pains dramatized as dedicated scenes in BODY 1) >= count(pains identified in Phase 1 brainstorm). Pairing OK if shared root cause (max 2/scene). Anchor pain NOT pairable. Overlay "1 of N" while N>1 = auto-fail. See `global-promo-config.md` §25.
 
-22 rejection signals auto-checked — see `storytelling_script_gen/project-instruction.md`. Target market adaptation in `F1_Audience_Psychology_Matrix.md`. 7-beat arc and awareness routing in `F2` and `F8`.
+22 rejection signals auto-checked — see `storytelling_script_gen/project-instruction.md`. Target market adaptation in `F1_Audience_Psychology_Matrix.md`. 7-beat arc and awareness routing in `F2` and `F8`. 6-stage user framework alias (HOOK → Foreshadow → BODY 1 → BODY 2 → Peak → Ending+CTA) in `F2` §B0 + `global-promo-config.md` §25.
+
+### v2.2.0 Hard Rules (NEW — must read for any new project)
+
+| Rule | Reference | Validator Check |
+|---|---|---|
+| BODY 1 Completeness — all identified pains dramatized | `global-promo-config.md` §25 | C1 (Phase 2) |
+| NB2 Reference Uniqueness Filter — skip COMMON, generate UNIQUE | `global-promo-config.md` §26 | C2 (Phase 4A) |
+| Max 5 inline refs per Phase 4B prompt | `global-promo-config.md` §26.4 | C3 (Phase 4B) |
+| Cross-scene `scene-N-end.png` ref env-gated only | `global-promo-config.md` §27 | C4 (Phase 4B) |
 
 ## Technical Defaults
 
@@ -487,8 +497,25 @@ All configurable values live in `reference/global-promo-config.md` — single so
 | ref/ prefix in Required Reference Images table | Upload table filenames use `ref/filename.png` — user copies wrong filename to NB2. Table MUST use bare filenames only (e.g., `cast-c1-face.png`), add "Upload all to `{project}/ref/` folder" note |
 | Reference table appears above image heading | Table placement wrong — table MUST appear directly BELOW each image/prompt heading, BEFORE the prompt body. Not above heading, not after prompt body |
 | VEO voiceover mispronounces words | Em dash `—` in `says:` or `Voice-over narrator:` text — VEO audio engine mistranslates em dashes. Replace with `,` or `. ` in all dialogue/voiceover text including template placeholders |
+| **(v2.2.0) BODY 1 dramatizes only 1 pain while brainstorm identified many** | C1 validator auto-fail — Phase 2 script REJECTED. Phase 2 output MUST include Pain Coverage Table. count(pains dramatized in BODY 1 scenes) >= count(pains brainstormed). Pairing allowed (max 2/scene, shared root cause). Overlay "1 dari N" while N>1 = auto-fail trigger. See `global-promo-config.md` §25. |
+| **(v2.2.0) Phase 4A generates assets for generic items (kopi gelas, plain phone, pavement)** | C2 validator FLAG — apply UNIQUENESS filter BEFORE generating any Phase 4A asset. COMMON tier (generic everyday items that NB2 can render from text alone) = SKIP reference. UNIQUE tier (faces, logos, industry-specific equipment, custom UI) = GENERATE. Decision test: "Can a competent prompt writer describe this in 20 words and trust NB2?" YES → COMMON, skip. NO → UNIQUE, generate. See `global-promo-config.md` §26. |
+| **(v2.2.0) Phase 4B scene prompt has 8+ reference filenames** | C3 validator FAIL — Max 5 inline refs per Phase 4B prompt (combined faces + objects + env + UI). Replaces old "Max 3 identity locks". If >5 needed → split scene into 2 sub-scenes OR consolidate via composite asset (Tier 5+ per §18). See `global-promo-config.md` §26.4. |
+| **(v2.2.0) `scene-N-end.png` cross-ref between hard-cut scenes (different env)** | C4 validator FAIL — Cross-scene ref env-gated ONLY. Allowed only if env(N) == env(N+1). Hard cut (location differs) = DROP cross-ref entirely. Visual continuity carried by text SUBJECT spec + standalone identity refs (cast-c{N}-face.png) + costume verbatim + NARRATIVE CONTEXT block. Reason: NB2 treats scene-NN-end.png as compositional template — using cross-env confuses model into mixing wrong-location elements. See `global-promo-config.md` §27. |
 
 ---
 
-**Version:** 2.1.1
-**Last Updated:** 2026-04-09
+**Version:** 2.2.0
+**Last Updated:** 2026-05-14
+
+### v2.2.0 Changelog
+
+- **§25 added (global-promo-config.md):** Narrative Arc Hard Rules — 6-stage user framework alias to 7-beat, BODY 1 Completeness rule (count pain dramatized ≥ count pain brainstormed), pairing rules, validator C1
+- **§26 added (global-promo-config.md):** NB2 Reference Image Inclusion Rule — Uniqueness Filter (UNIQUE/COMMON/AMBIGUOUS), 2-question decision test, combined filter (uniqueness AND recurrence), Max 5 inline refs per Phase 4B prompt (replaces old Max 3 identity locks), validators C2 + C3
+- **§27 added (global-promo-config.md):** Cross-Scene Reference Conditional (Environment-Gated) — replaces blanket "MUST reference scene-N-end.png" rule. Cross-ref allowed ONLY if env(N) == env(N+1). Hard cuts drop cross-ref entirely. Validator C4
+- **video-prompt-reviewer.md:** Added 4 new validator checks (C1-C4) cross-referenced to §25-§27. Updated batch report table with applicability matrix
+- **video-script SKILL.md:** Added Hard Rule #15 (BODY 1 Pain Coverage HARD GATE)
+- **video-image SKILL.md:** Updated Rule #24 (env-gated cross-ref conditional), added Rule #31 (uniqueness filter Phase 4A), added Rule #32 (max 5 inline refs Phase 4B)
+- **F2_Narrative_Arc_and_Video_Typology.md:** Added 6-stage user framework alias subsection
+- **project-instruction.md:** Added BODY 1 COVERAGE line in Production Notes output template + 2 new entries in Structural Failures table
+- **script-to-scene-bridge.md:** Updated sequential cross-ref rule (env-gated), Required Reference Images table row 11 conditional, production checklist 4 new v2.2.0 checks
+- **01-nb2-image-generation.md:** Added Uniqueness Filter subsection + Max 5 Inline References subsection

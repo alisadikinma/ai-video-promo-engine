@@ -1269,3 +1269,239 @@ Examples:
 - If user corrects domain info → update strategic-brief.md immediately
 - Every scene depicting domain-specific content → prompt must include `DOMAIN CONTEXT:` line
 - Domain research + cultural research (Step 3.5.2a) are COMPLEMENTARY — domain = industry knowledge, cultural = geographic/ethnic/architectural details
+
+---
+
+## 25. Narrative Arc Hard Rules (MANDATORY — BODY 1 Completeness)
+
+**Added v2.2.0 (2026-05-14)** — Closes gap where BODY 1 (Agitate) could dramatize subset of identified pains, leaving viewer with under-earned Peak emotional weight.
+
+### 25.1 Canonical 6-Stage User Framework
+
+The canonical narrative arc going forward (user-facing terminology):
+
+```
+HOOK → Foreshadow → BODY 1 (Problems) → BODY 2 (Solutions) → Peak → Ending + CTA
+```
+
+**Internal 7-beat alias** (existing `F2_Narrative_Arc_and_Video_Typology.md` IDs):
+
+| User-Facing Beat | Internal 7-Beat ID |
+|---|---|
+| HOOK | Pattern Interrupt + HOOK |
+| Foreshadow | FORESHADOW |
+| **BODY 1 (Problems)** | **AGITATE** |
+| **BODY 2 (Solutions)** | **GUIDE + PLAN** |
+| Peak | PEAK |
+| Ending + CTA | CTA + WON DAY |
+
+Both terminologies remain valid. User-facing copy + brainstorm uses 6-stage names. Internal validator + reference docs reference 7-beat IDs.
+
+### 25.2 BODY 1 Completeness Rule (HARD)
+
+**Rule:** `count(pains dramatized as dedicated visual scenes in BODY 1) >= count(pains identified in Phase 1 emotional-core brainstorm)`
+
+**Pairing allowed** when 2 pains share visual logic — single scene dramatizes 2 related pains (e.g., "field blindness" + "container location unknown" both = location-unknown frame).
+
+**Pairing strict rules:**
+1. Max 2 paired pains per scene (never 3+)
+2. Pairing valid only if pains share root cause (location-blindness, data-blindness, trust-gap, etc.)
+3. **Anchor pain** (strongest emotional dramatization, e.g., kencing solar in IRN case) gets dedicated scene at minimum 8-12s — anchor pain NOT pairable
+4. Paired pain scenes: ~6s per scene (2 pains share screen time)
+
+### 25.3 Auto-Fail Triggers (Validator C1)
+
+Reject script at Phase 2 if any of:
+
+| Trigger | Severity | Action |
+|---|---|---|
+| Script overlay text contains "1 dari N" / "1 of N" / "satu dari banyak" while N >1 | FAIL | Reject — implies only 1 pain dramatized of many |
+| BODY 1 covers <50% of identified pains | FAIL | Reject — return pain inventory + required dramatization list to Phase 2 |
+| BODY 1 covers 50-99% of pains | AMBER | Require user explicit confirmation to proceed |
+| BODY 1 covers 100% of pains (all dramatized OR validly paired) | PASS | Proceed |
+
+### 25.4 Pain Coverage Table (Phase 2 Output Requirement)
+
+Every script Phase 2 output MUST include a pain coverage table:
+
+| Pain # | Pain (from brainstorm) | BODY 1 Scene | Dramatization type | Paired with? |
+|---|---|---|---|---|
+| 1 | [pain text] | Scene N | dedicated / paired | — / Pain # |
+| 2 | ... | ... | ... | ... |
+
+If a pain has no Scene entry → C1 FAIL.
+
+### 25.5 Examples
+
+**INVALID (Real IRN case before restructure):**
+- 7 pains identified in brainstorm
+- BODY 1 has 1 dramatization scene (fuel theft, Pain #3)
+- Overlay "1 DARI 7" — explicit auto-fail trigger
+- Coverage: 14% (1/7) → C1 FAIL
+
+**VALID (After restructure):**
+- 7 pains identified
+- BODY 1 has 6 dramatization scenes:
+  - Scene 7: Pain #1 + #5 paired (location-blindness root cause)
+  - Scene 8: Pain #2 dedicated
+  - Scene 9: Pain #3 dedicated (anchor)
+  - Scene 10: Pain #4 dedicated
+  - Scene 11: Pain #6 + #7 paired (yard-position-blindness root cause)
+  - Scene 12: Anchor close "7 DARI 7" overlay
+- Coverage: 100% (7/7) → C1 PASS
+
+---
+
+## 26. NB2 Reference Image Inclusion Rule (MANDATORY — Uniqueness + Max 5)
+
+**Added v2.2.0 (2026-05-14)** — Closes gap where Phase 4A over-generated reference assets for generic items (plain phone, kopi gelas, pavement) that NB2 can render reliably from text alone.
+
+### 26.1 Uniqueness Filter (Replaces RECURRENCE-only)
+
+**Rule:** Generate Phase 4A standalone asset reference ONLY for **UNIQUE** assets that NB2 cannot reliably render from text alone.
+
+**3-tier classification:**
+
+| Tier | Description | Examples | Action |
+|---|---|---|---|
+| **UNIQUE** | Specific identity, brand, custom design, industry-specific equipment, proprietary visual | Cast faces, company logos, custom UI screens, UHF RFID reader, fuel sensor probe, ESP32 controller, chassis ID plate with QR sticker, specific product hero shots, location landmarks (Pelindo signage, Batam port gate) | **GENERATE reference** |
+| **COMMON** | Generic everyday items that NB2 renders correctly from text alone | Generic phone in hand, kopi gelas, concrete pavement, plain office chair, generic paper stack, ceiling fan, generic shirt sleeve, plain concrete wall, generic clipboard, generic pen | **SKIP reference** — text-only rendering |
+| **AMBIGUOUS** | Borderline cases | Anything not clearly UNIQUE or COMMON | Default **GENERATE** (safer; user can drop in Phase 4B review) |
+
+### 26.2 Decision Test (Apply to Each Candidate Asset)
+
+Before generating any Phase 4A asset, ask 2 questions:
+
+1. **"Can a competent prompt writer describe this in 20 words and trust NB2 to render correctly?"** YES → COMMON, skip. NO → UNIQUE, generate.
+2. **"Does this asset have specific identity, brand, or proprietary design details that vary by instance?"** YES → UNIQUE, generate. NO → COMMON, skip.
+
+If both questions point to UNIQUE → generate. If both to COMMON → skip. Mixed → AMBIGUOUS → default generate.
+
+### 26.3 Combined Filter (Uniqueness AND Recurrence/Identity)
+
+Asset generation criteria (BOTH must be true):
+
+```
+(Uniqueness Tier == UNIQUE OR AMBIGUOUS)
+  AND
+(recurring in 2+ scenes OR critical-identity element OR plot-anchor object)
+```
+
+**COMMON tier overrides recurrence** — even if appears in 5 scenes, if COMMON → still skip.
+
+### 26.4 Max 5 Inline References Per Phase 4B Prompt (HARD)
+
+**Rule:** Each Phase 4B scene prompt has **MAX 5 inline references** combined.
+
+**Combined count includes:** faces + bodies + costumes + objects + environments + UI composites.
+
+**Replaces:** old "Max 3 identity locks per scene" rule (which applied to faces only).
+
+**All references must be inline** with the element described — no header blocks, no standalone lines, each filename MAX 1× per prompt (cross-ref §16 Inline-Only Pattern).
+
+**If prompt needs >5 refs:** Split scene into 2 sub-scenes OR consolidate via composite asset (Tier 5+ in dependency graph per §18).
+
+### 26.5 Validator Checks (C2 + C3)
+
+| Check ID | Trigger Phase | Pass Condition |
+|---|---|---|
+| **C2** — Uniqueness Filter | Phase 4A asset list | No COMMON-tier asset in generation list. FLAG any borderline assets for user confirmation. |
+| **C3** — Max 5 Inline Refs | Phase 4B scene prompts | Each prompt has ≤5 inline references. |
+
+### 26.6 Examples (IRN Reality Test)
+
+**UNIQUE (generate Phase 4A asset):**
+- `cast-c1-face.png` (Ali Sadikin) — identity unique
+- `cast-c2-face.png` (Pak Indra) — identity unique
+- `13-object-fuel-gauge.png` — specific Indonesian truck dashboard layout
+- `14-object-rfid-tag.png` — UHF RFID 920-925 MHz EPC Gen 2 sticker, specific copper antenna pattern
+- `19-object-esp32-fuel-sensor.png` — ESP32-S3 BLE bridge box, specific board layout
+- `45-ui-driver-app-pair-chassis.png` — custom INDUSIA app screen
+- `46-object-chassis-qr-plate.png` — specific IRN-CH-040 stenciled plate + 8x8cm QR sticker
+
+**COMMON (skip Phase 4A asset, render from text):**
+- Generic Samsung Galaxy A-series phone in hand (NB2 renders Galaxy A14 reliably from text)
+- Generic kopi gelas (no specific brand/shape)
+- Generic concrete pavement
+- Generic ceiling fan
+- Generic plain polo shirt (color/wear specified in text)
+- Generic paper stack on desk
+- Generic stainless steel office chair
+
+Implication: existing IRN production over-generated some COMMON assets (e.g., 21-object-android-phone.png — could have been skipped). Future projects: Phase 4A asset list trimmed by uniqueness filter.
+
+---
+
+## 27. Cross-Scene Reference Conditional (MANDATORY — Environment-Gated)
+
+**Added v2.2.0 (2026-05-14)** — Closes gap where parent CLAUDE.md RULE 3 blanket "Scene N+1 START MUST reference Scene N END" caused useless cross-refs for hard-cut scenes.
+
+### 27.1 Rule (Environment-Gated)
+
+**Rule (user-corrected 2026-05-14):** Scene N+1 START frame references Scene N END frame output (`scene-N-end.png`) **ONLY IF same environment (same location)**.
+
+**Character continuity OR prop continuity alone is NOT sufficient** — environment is the SOLE gating criterion.
+
+### 27.2 Decision Algorithm (Validator C4)
+
+```
+For each Scene N+1 START that references `scene-N-end.png`:
+  IF env(N) == env(N+1):
+    PASS — cross-ref valid
+  ELSE:
+    FAIL — drop cross-ref entirely
+           Visual continuity carried by text SUBJECT spec
+           Character continuity carried by standalone identity ref (cast-c{N}-face.png)
+```
+
+### 27.3 Environment Comparison Criteria
+
+Two scenes share the SAME environment if ALL of:
+
+| Criterion | Same env if... |
+|---|---|
+| Location type | indoor↔indoor OR outdoor↔outdoor (must match) |
+| Specific location | Same building/yard/street (e.g., both kopitiam Nagoya, both IRN yard) |
+| Time-of-day lighting | Same Kelvin range + light direction (or within 1 hour shift) |
+| Background elements | Major background features continue (wall, fan, signage, vehicles) |
+
+If any criterion differs → environment DIFFERS → no cross-ref.
+
+### 27.4 Camera/Shot-Size Delta (Within Scene Only)
+
+Camera/shot-size delta rule (max 15° camera change, max 1 shot-size step) applies **WITHIN scene** (START → END), NOT between scenes.
+
+Between scenes (N END → N+1 START), cross-ref is allowed by §27.1 only if environment continues, AND camera delta is still bounded by 15°/1-step.
+
+### 27.5 Replaces Parent CLAUDE.md RULE 3
+
+**Old (deprecated):** "Scene N+1 START frame MUST reference Scene N END frame output"
+
+**New (canonical):** "Scene N+1 START frame references Scene N END frame output ONLY IF env(N) == env(N+1)"
+
+Plugin-installed projects that import parent CLAUDE.md should treat §27 as the authoritative version. Parent CLAUDE.md to be updated in v2.2.0 release.
+
+### 27.6 Examples (IRN Reality Test)
+
+**Cross-ref VALID (same env):**
+- Scene 2 END (Pak Indra kopitiam HP scroll) → Scene 3 START (HP screen close-up at SAME kopitiam table) — env continues ✓
+- Scene 3 END (HP map close) → Scene 4 START (HP quad-grid at SAME table) — env continues ✓
+- Scene 24 END (dashboard recap part 1) → Scene 25 START (dashboard recap part 2, same UI chrome) — env continues ✓
+
+**Cross-ref INVALID (env differs, must drop):**
+- Scene 11 (indoor IRN office) → Scene 13 (outdoor customer warehouse) — env differs → DROP `scene-11-end.png` ❌
+- Scene 17 (IRN yard chassis QR scan) → Scene 18 (customer warehouse delivery) — env differs → DROP `scene-17-end.png` ❌ (even though same character + same HP prop)
+- Scene 26 (Ali at IRN yard golden hour) → Scene 27 (Pak Indra kopitiam pagi) — env + time differ → DROP cross-ref ❌
+
+### 27.7 Continuity Without Cross-Ref
+
+When cross-ref dropped (different env), maintain continuity via:
+
+1. **Character identity:** Inject standalone `cast-c{N}-face.png` identity lock inline with character description
+2. **Prop continuity:** Inject standalone prop asset ref (e.g., `21-object-android-phone.png`) inline with prop description
+3. **Costume continuity:** Same verbatim costume text from `cast-profile.md`
+4. **Narrative continuity:** Explicit `NARRATIVE CONTEXT:` block referencing prior scene action
+
+This pattern is **text-only continuity** — sufficient for hard cuts, prevents NB2 from mixing wrong-location elements.
+
+---

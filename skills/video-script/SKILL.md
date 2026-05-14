@@ -71,6 +71,7 @@ Generates a complete A/V script with 7-beat narrative arc, auto-calculates scene
 12. **Cultural accuracy** — when location is specified, web search MUST be performed (Step 3.5.2a) and cultural details MUST be injected into environment NB2 prompts and VEO scene prompts. Wrong license plate / wrong ethnicity / wrong architecture = rejection signal.
 13. **UI text localization** — on-screen text (dashboards, signage, displays) MUST match `narration_language`. Technical abbreviations stay English. See `global-promo-config.md` Section 21.
 14. **Max 5 cast members** — 1-3 Pemeran Utama + 0-2 Pemeran Pendamping (NB2 identity lock limit)
+15. **(v2.2.0+) BODY 1 Pain Coverage HARD GATE** — Phase 2 script output MUST include Pain Coverage Table. `count(pains dramatized in BODY 1 dedicated scenes) >= count(pains identified in Phase 1 emotional core)`. Pairing allowed (max 2/scene, shared root cause). Anchor pain NOT pairable. Validator C1 auto-rejects script if (a) overlay text contains "1 dari N" / "1 of N" while N>1, or (b) BODY 1 coverage <50%. AMBER 50-99% requires user explicit confirmation. See `global-promo-config.md` §25.
 
 ---
 

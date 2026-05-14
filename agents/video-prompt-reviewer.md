@@ -86,6 +86,36 @@ For EACH prompt in the batch, run ALL checks below. Report PASS or FAIL per chec
 - [ ] PRIMARY layout ref identified (widest/most comprehensive view listed first)
 - [ ] Upload table Purpose column includes POV label (e.g., "entry view", "side view", "EXIT side detail")
 
+### C1. BODY 1 Pain Coverage (Phase 2 script only — v2.2.0+)
+**Source:** `global-promo-config.md` §25 BODY 1 Completeness Rule
+- [ ] Phase 2 script output includes Pain Coverage Table (every pain from brainstorm Phase 1 emotional core → mapped to a BODY 1 scene)
+- [ ] count(pains dramatized as dedicated scenes in BODY 1) >= count(pains identified in brainstorm)
+- [ ] Pairing valid: max 2 pains per scene AND pairing shares root cause (location-blindness, data-blindness, trust-gap, etc.)
+- [ ] Anchor pain has dedicated scene (8-12s), NOT paired
+- [ ] No overlay text "1 dari N" / "1 of N" / "satu dari banyak" while N>1 (auto-fail trigger)
+- [ ] Coverage >=50% → otherwise REJECT (return pain inventory to Phase 2 with required dramatization list)
+
+### C2. NB2 Reference Uniqueness Filter (Phase 4A asset list only — v2.2.0+)
+**Source:** `global-promo-config.md` §26 NB2 Reference Image Inclusion Rule
+- [ ] Each Phase 4A asset passes UNIQUE filter test: "Can a competent prompt writer describe this in 20 words and trust NB2 to render correctly?" — if YES, asset should NOT be in Phase 4A list
+- [ ] No COMMON-tier assets in generation list: generic phone-in-hand, kopi gelas, concrete pavement, plain office chair, generic paper stack, ceiling fan, plain wall, generic clipboard
+- [ ] Combined filter applied: asset must be UNIQUE/AMBIGUOUS tier AND (recurring 2+ scenes OR critical-identity OR plot-anchor)
+- [ ] If borderline assets found → FLAG for user confirmation (not auto-fail)
+
+### C3. Max 5 Inline References (Phase 4B scene prompts only — v2.2.0+)
+**Source:** `global-promo-config.md` §26.4 Max 5 Inline References
+- [ ] Each Phase 4B scene prompt has ≤5 inline references (combined: faces + bodies + costumes + objects + environments + UI composites)
+- [ ] All references appear inline with element described (no header blocks, no standalone lines)
+- [ ] Each filename appears MAX 1× per prompt
+- [ ] If >5 needed → FAIL, recommend split-scene OR composite-asset consolidation
+
+### C4. Cross-Scene Reference Env-Gated (Phase 4B scene prompts only — v2.2.0+)
+**Source:** `global-promo-config.md` §27 Cross-Scene Reference Conditional
+- [ ] For each Scene N+1 START that includes `scene-{NN-1}-end.png` in upload table OR inline reference → verify env(N-1) == env(N+1)
+- [ ] Environment match criteria (ALL must hold): location type (indoor/outdoor), specific location (kopitiam/yard/warehouse), time-of-day lighting Kelvin range, major background elements
+- [ ] Hard cut (env differs) WITH cross-ref → FAIL, recommend drop `scene-{NN-1}-end.png` and use text-only continuity (identity ref + prop ref + costume verbatim + NARRATIVE CONTEXT block)
+- [ ] Same-env cross-ref → PASS
+
 ## Output Format
 
 Return a structured report:
@@ -98,9 +128,15 @@ Return a structured report:
 
 ### Per-Scene Results
 
-| Scene | Check A | Check B | Check C | Check D | Check E | Check F | Check G | Check H | Check I | Verdict |
-|-------|---------|---------|---------|---------|---------|---------|---------|---------|---------|---------|
-| {NN}  | pass/fail   | pass/fail   | pass/fail   | pass/fail   | pass/fail   | pass/fail   | pass/fail   | pass/fail   | pass/fail   | PASS/FAIL |
+| Scene | Check A | Check B | Check C | Check D | Check E | Check F | Check G | Check H | Check I | Check J | C1 | C2 | C3 | C4 | Verdict |
+|-------|---------|---------|---------|---------|---------|---------|---------|---------|---------|---------|----|----|----|----|---------|
+| {NN}  | pass/fail | pass/fail | pass/fail | pass/fail | pass/fail | pass/fail | pass/fail | pass/fail | pass/fail | pass/fail | pass/fail/N/A | pass/fail/N/A | pass/fail/N/A | pass/fail/N/A | PASS/FAIL |
+
+**Check applicability per phase:**
+- C1: Phase 2 (script) only — N/A for Phase 4A/4B
+- C2: Phase 4A (asset list) only — N/A for Phase 4B/Phase 5
+- C3: Phase 4B (scene prompts) only — N/A for Phase 4A/Phase 5
+- C4: Phase 4B (scene prompts) only — N/A for Phase 4A/Phase 5
 
 ### Issues Found (FAIL items only)
 

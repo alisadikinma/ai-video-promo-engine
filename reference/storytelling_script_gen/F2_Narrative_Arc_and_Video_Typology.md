@@ -46,6 +46,25 @@ Interrupt    (Zeigarnik)      Pain (PAS)    Authority +       Climax      Harves
                                             3-Step Plan       (Peak-End)
 ```
 
+#### 6-Stage User Framework Alias (v2.2.0+)
+
+User-facing brainstorm + brief uses 6-stage terminology that aliases to the 7-beat internal IDs:
+
+```
+HOOK → Foreshadow → BODY 1 (Problems) → BODY 2 (Solutions) → Peak → Ending + CTA
+```
+
+| User-Facing Beat | Internal 7-Beat ID |
+|---|---|
+| HOOK | Pattern Interrupt + HOOK |
+| Foreshadow | FORESHADOW |
+| **BODY 1 (Problems)** | **AGITATE** |
+| **BODY 2 (Solutions)** | **GUIDE + PLAN** |
+| Peak | PEAK |
+| Ending + CTA | CTA + WON DAY |
+
+**BODY 1 Completeness Hard Rule:** count(pains dramatized in BODY 1 scenes) ≥ count(pains identified in Phase 1 brainstorm). Pairing allowed for pains with shared root cause. See `global-promo-config.md` §25 for full rule + auto-fail triggers + validator C1.
+
 | Beat | Psychological Mechanism | What It Does | If Missing |
 |---|---|---|---|
 | **1. Hook** | Pattern Interrupt — breaks autopilot | Stops the scroll, creates "why should I look?" | No attention captured |

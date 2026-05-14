@@ -85,6 +85,30 @@ Without this injection, the model generates from text description only — causi
 
 Every NB2 prompt MUST also include a **Required Reference Images** table listing all ref files needed for that prompt, so the user never misses uploading a file. See `global-promo-config.md` Section 16 for table format.
 
+### Uniqueness Filter (v2.2.0+ — MANDATORY pre-Phase-4A)
+
+**Before generating any standalone asset reference in Phase 4A, apply the UNIQUENESS filter:**
+
+| Tier | Action |
+|---|---|
+| **UNIQUE** (faces, company logos, custom UI screens, industry-specific equipment like UHF RFID readers / fuel sensors / chassis ID plates, proprietary product designs, location landmarks) | **GENERATE reference** |
+| **COMMON** (generic phone in hand, kopi gelas, concrete pavement, plain office chair, generic paper stack, ceiling fan, plain wall, generic clipboard) | **SKIP reference** — NB2 renders reliably from text alone |
+| **AMBIGUOUS** | Default GENERATE (safer; user can drop in Phase 4B review) |
+
+**Decision test:** "Can a competent prompt writer describe this in 20 words and trust NB2 to render correctly?" YES → COMMON, skip. NO → UNIQUE, generate.
+
+See `global-promo-config.md` §26 for full rule + validator C2 (Phase 4A uniqueness audit) + IRN before/after examples.
+
+### Max 5 Inline References Per Phase 4B Prompt (v2.2.0+ — HARD CAP)
+
+**Replaces** old "Max 3 identity locks per scene" rule (which applied to faces only).
+
+**New rule:** Each Phase 4B scene prompt has MAX 5 inline references **combined** (faces + bodies + costumes + objects + environments + UI). All inline with element described (no header blocks). Each filename max 1× per prompt.
+
+**If >5 refs needed:** Split scene OR consolidate via composite asset (Tier 5+ per §18 dependency graph).
+
+See `global-promo-config.md` §26.4 + validator C3 (Phase 4B ref count audit).
+
 ## Text Rendering (94.2% Accuracy)
 
 - Exact wording in **quotes**: `"SALE"`

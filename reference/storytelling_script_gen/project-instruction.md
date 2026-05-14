@@ -268,6 +268,7 @@ PLATFORM NOTES       : [Pacing target, caption strategy, CTA convention]
 COMPONENT TAGS       : [Hook tag, CTA tag, Peak tag — from F10 taxonomy]
 BRUNSON DIAGNOSTIC   : [Riskiest component: Hook / Story / Offer — and why]
 REJECTION CHECK      : [Confirm all forbidden words absent, all beats present]
+BODY 1 COVERAGE      : [Pain coverage table — count(pains dramatized) MUST >= count(pains brainstormed). Pairing OK if shared root cause. See global-promo-config.md §25 + validator C1. Auto-fail if <50% coverage OR overlay contains "1 dari N" while N>1.]
 A/B TEST SUGGESTION  : [Alternative hook and/or CTA for testing]
 ```
 
@@ -309,6 +310,8 @@ Auto-reject any output containing the following:
 | "We/Us/Our" in first 10 seconds | Brand is guide, not protagonist |
 | Empathy Hook that pressures instead of validates | Shame marketing — forbidden |
 | Abstract jargon requiring mental effort to decode | Cognitive tax = channel change |
+| **BODY 1 dramatizes <50% of identified pains** (v2.2.0+) | **Solutions in BODY 2 outweigh problems in BODY 1 → Peak under-earned. See global-promo-config.md §25.** |
+| **Overlay text "1 dari N" / "1 of N" while N>1** (v2.2.0+) | **Self-admits only 1 of N pains dramatized — auto-fail per §25.3.** |
 | **Script has no Foreshadow beat** | Viewer drops at 3–7s (Zeigarnik) |
 | **Script has no Peak beat** | Content not memorable, weak CTA momentum (Peak-End Rule) |
 | **CTA fires without preceding Peak** | No emotional momentum to harvest |

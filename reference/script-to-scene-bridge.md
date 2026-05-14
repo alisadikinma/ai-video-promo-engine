@@ -215,7 +215,7 @@ OUTPUT: 16:9 LANDSCAPE aspect ratio. Width > Height. Do NOT crop or change ratio
 | 8 | `vehicle-{type}-{name}.png` | Vehicle | ⬜ (if vehicle in scene) |
 | 9 | `object-{name}.png` | Object/equipment | ⬜ (if object in scene) |
 | 10 | `ui-{name}.png` | UI/screen | ⬜ (if screen visible) |
-| 11 | `scene-{NN-1}-end.png` | Previous scene end frame — grading & continuity anchor | ⬜ (MANDATORY if scene > 1 in timeline) |
+| 11 | `scene-{NN-1}-end.png` | Previous scene end frame — grading & continuity anchor | ⬜ (CONDITIONAL — v2.2.0: include ONLY IF env(N-1) == env(N). Hard cut between scenes = DROP this row. See global-promo-config.md §27.) |
 ```
 
 **End Frame Template:**
@@ -544,11 +544,16 @@ Maintain visual continuity with reference frame appearances for all characters.
 | Dissolve | `Cross-dissolve preparation, hold final pose` |
 | Match Cut | `End framing matches first frame of next shot` |
 
-3. **MANDATORY: Last Frame → Next Scene Anchor.** For EVERY sequential scene pair in the timeline, you MUST:
+3. **CONDITIONAL: Last Frame → Next Scene Anchor (ENVIRONMENT-GATED per v2.2.0).** For sequential scene pairs WHERE env(N) == env(N+1) (same location, same lighting), you MUST:
    1. Export the END frame output of Scene N as `ref/scene-{NN}-end.png`.
    2. Inject `scene-{NN}-end.png` (bare filename, NO ref/ prefix) as the FIRST reference image in Scene N+1's start frame prompt.
    3. Include it in Scene N+1's Required Reference Images upload table as row 11.
-   This is NOT optional. Sequential scenes without this continuity anchor will have inconsistent environments, lighting, and character positions.
+
+   **HARD CUT case (env differs — indoor↔outdoor, kopitiam↔yard, yard↔warehouse, golden hour↔morning):** DROP `scene-{NN}-end.png` cross-ref ENTIRELY. Visual continuity carried by text SUBJECT spec + standalone identity refs (cast-c{N}-face.png) + standalone prop refs. Character/prop continuity ALONE is NOT sufficient justification to keep cross-ref — environment is the SOLE gating criterion.
+
+   See `global-promo-config.md` §27 for full conditional rule + decision algorithm + validator C4. **Old blanket "MUST reference" behavior is deprecated in v2.2.0.**
+
+   **Why env-gated:** NB2 treats `scene-NN-end.png` as a compositional template (it tries to match lighting, color grading, framing from the reference). When env differs, this CONFUSES the model into mixing wrong-location elements (e.g., yard pavement texture bleeding into customer warehouse floor). Text-only continuity is cleaner for hard cuts.
 
 #### Few-Shot: Dependency Chain
 
@@ -634,8 +639,10 @@ Before finalizing each scene's prompts:
 - [ ] **All reference images INLINE in NB2 prompt text** — each filename appears next to the element it describes, NOT in a separate header block above the prompt
 - [ ] **NB2 reference image injection syntax used INLINE** — identity lock inside SUBJECT line (`{Name} (Maintain exact facial identity from reference image: cast-c{N}-face.png) — {description}`), environment/vehicle/object refs inline with their elements (`EXACTLY matching {filename}.png`)
 - [ ] **Required Reference Images table included directly BELOW each prompt heading, BEFORE prompt body** (NB2 and VEO) — bare filenames only, NO ref/ prefix
-- [ ] Scene N+1 start frame references Scene N end frame output (`ref/scene-{NN-1}-end.png`) as grading/continuity anchor
-- [ ] Previous scene output included in Required Reference Images upload table (row 11) for all scenes after Scene 1
+- [ ] **(v2.2.0 env-gated)** Scene N+1 start frame references Scene N end frame output (`scene-{NN-1}-end.png`) ONLY IF env(N) == env(N+1). For hard cuts (different env), DROP cross-ref — text-only continuity per global-promo-config.md §27.
+- [ ] **(v2.2.0 conditional)** Previous scene output included in Required Reference Images upload table (row 11) ONLY when env continues. Hard cut scenes have row 11 dropped entirely.
+- [ ] **(v2.2.0 max-5 rule)** Total inline references per prompt ≤5 (combined faces + bodies + costumes + objects + envs + UI). See global-promo-config.md §26.4. If >5 needed → split scene OR consolidate via composite asset.
+- [ ] **(v2.2.0 uniqueness)** All Phase 4A assets in upload table pass UNIQUE filter (faces, logos, custom UI, industry-specific equipment). COMMON items (generic phone, generic kopi gelas, generic pavement) should NOT have ref files — render from text. See global-promo-config.md §26.
 
 ### 7B. Scene Logic Realism Checklist (9-Point)
 
