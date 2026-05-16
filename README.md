@@ -170,7 +170,7 @@ Released 2026-05-16. **Kling 3.0 added as 3rd video platform peer.**
 - ✅ Motion transfer from existing reference clip (Motion Control sub-model)
 
 **When NOT to pick Kling 3.0:**
-- ❌ Bahasa Indonesia lip-sync needed → use VEO/Seedance
+- ❌ **On-screen** Bahasa Indonesia lip-sync (face >30% speaking ID) → use VEO. **NOTE**: Bahasa Indonesia **Voice-over narrator IS supported natively** in Kling — most B-Roll ID production works fine
 - ❌ Long-form extension chain (>15s continuous) → use VEO (~148s) or Seedance (unlimited)
 - ❌ Stylized/anime/abstract content → use VEO (better range)
 - ❌ Complex @ reference control over individual assets → use Seedance Omni mode

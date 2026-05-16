@@ -1,5 +1,17 @@
 # AI Video Promo Engine — Claude Project Instructions
 
+## 🧠 Vault Context Link
+
+Skill library — agnostic terhadap project (IRN / SPARKFLUENCE / etc).
+
+Pre-read kalau perlu konteks lintas-skill:
+- `30-Knowledge/video-pipeline-shared.md` — 6-phase, VEO/Seedance/Kling craft
+- `30-Knowledge/image-gen-shared.md` — NB2 prompt engineering, anti-AI-look
+- `20-Projects/claude-plugin/README.md` — skill ecosystem overview
+- `10-Identity/voice-tone.md` — user-facing copy / docs
+
+JANGAN hardcode project-specific values (nama klien, fleet count, dll). Pakai `{{placeholder}}` syntax.
+
 ## Project Overview
 
 Claude Code plugin that generates complete promotional video production packages: from brainstorm to script to image prompts (NB2) to video prompts (VEO 3.1 / Seedance 2.0 / Kling 3.0). 4 production skills + 1 orchestrator + 2 utility skills + 2 agents + 25 reference documents as RAG knowledge base.
@@ -167,7 +179,7 @@ Phase 5: VIDEO PROMPTS (VEO)   → Output: video-prompts.md
 - **Image Model**: Nano Banana 2 (NB2) — Gemini 3.1 Flash Image
 - **Video Model (Primary)**: VEO 3.1 — 720p/1080p, 8s clips, 148s extension chain
 - **Video Model (Alt)**: Seedance 2.0 — native 2K, 15s clips, @ reference system, dual-branch AV
-- **Video Model (Alt)**: Kling 3.0 — 720p/1080p UI (4K via API), **per-second duration 3-15s** (pick exact second), multi-shot storyboard (6 shots within chosen duration), motion control, omni audio (5 langs, mixed-language scene unique). NO Bahasa Indonesia lip-sync.
+- **Video Model (Alt)**: Kling 3.0 — 720p/1080p UI (4K via API), **per-second duration 3-15s** (pick exact second), multi-shot storyboard (6 shots within chosen duration), motion control, omni audio (lip-sync 5 langs EN/ZH/JA/KO/ES, mixed-language scene unique). **Bahasa Indonesia: ✅ Voice-over narrator native, ❌ on-screen lip-sync** — perfect for B-Roll ID, use VEO for face-front ID dialogue.
 - **Pipeline (VEO)**: NB2 image → VEO First+Last Frame / Ingredients → VEO Extend
 - **Pipeline (Seedance)**: NB2 image → Seedance @Image refs + Omni mode → Seedance @Video extend
 - **Pipeline (Kling)**: NB2 image → Kling I2V / First+Last / Multi-Shot Storyboard / Motion Control (no native extension; restart with new NB2 anchor for long-form)
@@ -507,7 +519,8 @@ All configurable values live in `reference/global-promo-config.md` — single so
 | **(v2.2.0) Phase 4A generates assets for generic items (kopi gelas, plain phone, pavement)** | C2 validator FLAG — apply UNIQUENESS filter BEFORE generating any Phase 4A asset. COMMON tier (generic everyday items that NB2 can render from text alone) = SKIP reference. UNIQUE tier (faces, logos, industry-specific equipment, custom UI) = GENERATE. Decision test: "Can a competent prompt writer describe this in 20 words and trust NB2?" YES → COMMON, skip. NO → UNIQUE, generate. See `global-promo-config.md` §26. |
 | **(v2.2.0) Phase 4B scene prompt has 8+ reference filenames** | C3 validator FAIL — Max 5 inline refs per Phase 4B prompt (combined faces + objects + env + UI). Replaces old "Max 3 identity locks". If >5 needed → split scene into 2 sub-scenes OR consolidate via composite asset (Tier 5+ per §18). See `global-promo-config.md` §26.4. |
 | **(v2.2.0) `scene-N-end.png` cross-ref between hard-cut scenes (different env)** | C4 validator FAIL — Cross-scene ref env-gated ONLY. Allowed only if env(N) == env(N+1). Hard cut (location differs) = DROP cross-ref entirely. Visual continuity carried by text SUBJECT spec + standalone identity refs (cast-c{N}-face.png) + costume verbatim + NARRATIVE CONTEXT block. Reason: NB2 treats scene-NN-end.png as compositional template — using cross-env confuses model into mixing wrong-location elements. See `global-promo-config.md` §27. |
-| **(v2.3.0) Kling Bahasa Indonesia lip-sync garbled** | Bahasa Indonesia NOT in Kling's 5 supported languages (EN, ZH, JA, KO, ES). Fix: use VO + post-prod dub OR switch to VEO/Seedance for ID dialogue scenes. Plan platform mix in Step 5.0 — Kling for B-roll/face emotion, VEO for ID dialogue. |
+| **(v2.3.1) Kling Bahasa Indonesia on-screen lip-sync garbled** | Lip-sync only supports 5 langs (EN/ZH/JA/KO/ES). For ID dialogue with face >30%: switch to VEO 3.1 OR reframe scene as mouth-neutral (back-of-head, partial obscure) + `Voice-over narrator, [tone]: [ID text]`. **NOTE**: Bahasa Indonesia **Voice-over narrator IS supported natively** in Kling — only on-screen lip-sync is restricted. Most B-Roll ID scenes work natively. |
+| **(v2.3.1) Bahasa Indonesia VO not rendering in Kling** | User wrote `Host says: [Indonesian text]` for what should be B-Roll narration | Wrong syntax. B-Roll needs `Voice-over narrator, [tone]: [ID text]` (Kling treats narrator as off-screen — natively supports ID). `Host says:` triggers on-screen lip-sync path which is 5-lang restricted. |
 | **(v2.3.0) Kling multi-shot scenes flicker / shots blend** | Shot boundaries weak. Strengthen with numbered markers (`Shot 1: ... Shot 2: ...`) + transition cues (`match cut to`, `whip pan to`). Use ONLY when shots share env/character. Don't multi-shot complex narrative beats. |
 | **(v2.3.0) Kling text in scene warps to gibberish** | Same constraint as VEO/Seedance — Kling cannot render legible text. Strip logos/text from prompt, add as post-prod overlay. Brand visual = colors + shapes only, not text. |
 | **(v2.3.0) Kling prompt 200+ words = half ignored** | Kling optimal is 80-120 words. Longer prompts get half ignored, half hallucinated. Apply 5-part formula strictly: Camera + Scene + Action + Vibe/Lighting + Time/Audio. |
@@ -520,8 +533,17 @@ All configurable values live in `reference/global-promo-config.md` — single so
 
 ---
 
-**Version:** 2.3.0
+**Version:** 2.3.1
 **Last Updated:** 2026-05-16
+
+### v2.3.1 Changelog (fact correction)
+
+- **Bahasa Indonesia audio support — clarified two-tier model**:
+  - ✅ Voice-over narrator (off-screen, B-Roll) — **SUPPORTED NATIVELY** in Kling 3.0
+  - ❌ On-screen lip-sync (face >30% speaking ID) — restricted to 5 langs (EN/ZH/JA/KO/ES)
+  - Previously incorrectly stated "NO Bahasa Indonesia" — now correctly distinguishes lip-sync vs VO paths
+- **Impact:** Most Indonesian B-Roll production scenes work natively in Kling without post-prod dub. Only switch to VEO for face-front ID dialogue scenes.
+- **Files updated:** 7 (08-kling guide, global-promo-config, script-to-scene-bridge, video-gen SKILL.md, CLAUDE.md, 00-index, README)
 
 ### v2.3.0 Changelog
 

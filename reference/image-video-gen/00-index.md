@@ -38,7 +38,7 @@ platform: claude-projects
 - "Ingredients to Video" and "First+Last Frame" are **mutually exclusive** in VEO
 - Seedance: First/Last Frame and Omni are separate modes — use Omni for character consistency
 - Kling: I2V / First+Last Frame / Multi-Shot / Motion Control are 4 separate modes — pick one per generation
-- Audio is NOT optional — VEO: unspecified = random sounds; Seedance: native dual-branch AV; Kling: native omni audio (5 languages, NO Bahasa Indonesia lip-sync)
+- Audio is NOT optional — VEO: unspecified = random sounds; Seedance: native dual-branch AV; Kling: native omni audio (lip-sync 5 langs: EN/ZH/JA/KO/ES; **Voice-over narrator supports Bahasa Indonesia natively** + other langs)
 - All dialogue: colon syntax (`says:` not `says ""`)
 - Seedance: real face upload BANNED — use AI-generated faces only
 - Keep critical action in **central 60%** of frame for cross-platform safety

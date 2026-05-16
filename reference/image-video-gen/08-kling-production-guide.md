@@ -182,13 +182,21 @@ Use case: client gives reference clip ("make my character do THIS"), or apply VE
 | Korean | Very good | Standard Seoul |
 | Spanish | Very good | Castilian, Latin American |
 
-### Bahasa Indonesia Status
-**NOT in native lip-sync list.** For Indonesian dialogue:
-1. Generate visual with mouth-neutral prompt (`speaking calmly, face partially obscured` OR `voice-over narrator, off-screen`)
-2. Add `> POST-PROD VO: [Bahasa Indonesia line]` for post-production dub
-3. ALTERNATIVELY: use English lip-sync with Indonesian subtitle overlay (acceptable for B2B/professional brand audiences)
+### Bahasa Indonesia Status (CORRECTED v2.3.1)
 
-Same rule applies to other non-listed languages (Malay, Vietnamese, Thai, Tagalog, etc.).
+**Two-tier support:**
+
+| Use Case | Kling 3.0 Bahasa Indonesia | Workflow |
+|---|---|---|
+| **Voice-over narrator (off-screen, B-Roll)** | ✅ **SUPPORTED NATIVELY** | Use `Voice-over narrator, [tone]: [Bahasa Indonesia text]` directly in prompt. Kling renders ID voiceover natively — no post-prod dub needed |
+| **On-screen lip-sync (face >30%, character speaks)** | ❌ NOT in 5-lang native lip-sync (EN/ZH/JA/KO/ES) | Either: (a) generate with English lip-sync + ID subtitle overlay; (b) use mouth-neutral framing (back-of-head, partial obscure) + `Voice-over narrator: [ID text]`; (c) generate visual silent + post-prod dub |
+
+**Practical implication for Indonesian promo production:**
+- B-Roll scenes (most of typical 2-3 min promo) → **fully usable with native ID VO**
+- Presenter/dialogue scenes with face-front lip-sync → switch to VEO 3.1 (which supports ID lip-sync) OR reframe as VO-over-B-roll
+- Same two-tier logic applies for other non-5-lang languages (Malay, Vietnamese, Thai, Tagalog)
+
+This makes Kling **viable for full-Indonesian promo production** — not just B-roll filler.
 
 ### Mixed-Language Scene (Kling's USP)
 Within ONE scene, different characters can speak DIFFERENT languages:
@@ -341,7 +349,8 @@ Total: 15s. 16:9. 1080p.
 | Filter trigger | "Content rejected" error | Avoid: real person names in `says:`, weapons, explicit brand of competitor, copyrighted character names |
 | Spatial vagueness | Subject teleports / distorted body | Anchor with `eye-level`, `from camera left`, `2 meters from camera` |
 | Multi-language fail | Wrong lip-sync language | Explicitly declare per character: `Character A (Mandarin): "..."` not `they speak Mandarin` |
-| Bahasa Indonesia lip-sync | Garbled mouth movement | Not natively supported. Use VO + post-prod dub OR English fallback |
+| Bahasa Indonesia on-screen lip-sync | Garbled mouth movement when char speaks ID on-camera | Lip-sync limited to 5 langs (EN/ZH/JA/KO/ES). For ID dialogue: use mouth-neutral framing + `Voice-over narrator, [tone]: [ID text]` (NATIVELY supported), OR switch to VEO 3.1 for that scene |
+| Bahasa Indonesia voiceover not working | User wrote `Host says: [ID]` for B-Roll | Wrong syntax — B-Roll uses `Voice-over narrator, [tone]: [ID text]`. Kling renders ID VO natively when written as off-screen narrator, NOT as on-screen `says:` dialogue |
 | Dialogue rushed/clipped | Speech > ~2.5 words/sec budget | Bump duration up by 1-2 seconds (per-second selector). E.g., 5s with 18 words → switch to 7s. |
 | Em dash audio artifact | VO mispronounces / clips | Replace `—` with `,` or `. ` (same as VEO) |
 | Stylized/abstract content | Looks photorealistic anyway, mismatched intent | Kling's bias = realism. For anime/illustration → use VEO or Seedance instead |
@@ -378,7 +387,7 @@ Total: 15s. 16:9. 1080p.
 
 ### When NOT to Pick Kling
 
-- ❌ Bahasa Indonesia lip-sync needed → use VEO/Seedance
+- ❌ Bahasa Indonesia **on-screen lip-sync** needed (face >30% speaking ID) → use VEO 3.1 for those scenes. **NOTE**: Bahasa Indonesia **voice-over narrator** IS supported natively in Kling — only on-screen lip-sync is restricted to 5 langs
 - ❌ Long-form (>15s) extension chain → use VEO or Seedance
 - ❌ Stylized / anime / abstract → use VEO (better range)
 - ❌ Complex multi-character cinematic with @ refs → use Seedance

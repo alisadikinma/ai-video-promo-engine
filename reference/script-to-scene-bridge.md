@@ -164,7 +164,7 @@ FOR each scene:
     - Camera term position determines weight: start = camera dominates, end = camera follows subject
     - No native extension chain — for long-form, restart with new NB2 anchor
     - Cannot render legible text (use post-prod overlay for logos/text)
-    - Bahasa Indonesia NOT in lip-sync (5 langs: EN, ZH, JA, KO, ES) — use VO + post-prod dub for ID
+    - Bahasa Indonesia: **on-screen lip-sync** NOT supported (5 langs only: EN/ZH/JA/KO/ES). **Voice-over narrator IS supported natively** — for B-Roll/off-screen ID, use `Voice-over narrator, [tone]: [ID text]` directly (no post-prod dub needed). Only switch to VEO for face-front lip-sync ID scenes.
     - Mixed-language scene UNIQUE feature — different characters can speak different languages in same shot
     - Duration: PER-SECOND granular (3s/4s/5s/6s/7s/8s/9s/10s/11s/12s/13s/14s/15s) — pick exact second matching scene need, no padding
     - Dialogue budget ~2.5 words/sec: 3s→6-8 words, 5s→10-13, 8s→18-22, 10s→25-30, 15s→38-45

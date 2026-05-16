@@ -82,7 +82,8 @@ See `reference/image-video-gen/07-seedance-production-guide.md` for full Seedanc
 | `kling_negative_prompt` | `deformed hands, extra fingers, asymmetrical facial features, unnatural joint angles, sliding feet, morphing limbs, frozen mouth during speech, no subtitles, no text overlays, no audience sounds` | Universal base. Add 1-2 focused category (human/product/motion/env) per scene. 3-5 focused beats 20 generic |
 | `kling_aspect_ratios` | `16:9, 9:16, 1:1` | 3 options in UI — covers YouTube/LinkedIn (16:9), Reels/TikTok/Shorts (9:16), Instagram square (1:1) |
 | `kling_duration_dialogue_budget` | `~2.5 words/sec` | Use to pick exact duration for dialogue scene. E.g., 12 words ≈ 5s. Exceeds = rushed. |
-| `kling_lip_sync_languages` | `EN, ZH, JA, KO, ES` | 5 languages — NO Bahasa Indonesia. For ID: use VO + post-prod dub OR English fallback with subtitle |
+| `kling_lip_sync_languages` | `EN, ZH, JA, KO, ES` (on-screen lip-sync only) | 5 langs for **on-screen lip-sync** (face >30% speaking). **Voice-over narrator** supports MORE languages including **Bahasa Indonesia natively** — use `Voice-over narrator, [tone]: [ID text]` for B-Roll/off-screen, no post-prod dub needed |
+| `kling_vo_languages` | Includes Bahasa Indonesia + 5 lip-sync langs + others | Voice-over narrator (off-screen) renders natively — different model path than lip-sync. Critical for Indonesian B-Roll production |
 | `kling_mixed_language_scene` | `SUPPORTED` | Unique to Kling — different characters can speak different languages in same scene, each lip-syncs correctly |
 | `kling_modes` | `T2V, I2V, First+Last Frame, Multi-Shot Storyboard, Motion Control` | 5 modes, mutually exclusive per generation |
 | `kling_multi_shot_max` | `6 shots in single 15s render` | Use ONLY when shots share env/character. Avoid for high-stakes hero shots |
@@ -217,8 +218,9 @@ See `reference/image-video-gen/08-kling-production-guide.md` for full Kling 3.0 
 
 | Setting | Value |
 |---------|-------|
-| `config_version` | `2.3.0` |
+| `config_version` | `2.3.1` |
 | `last_updated` | `2026-05-16` |
+| `v2.3.1_changes` | Bahasa Indonesia audio correction: `kling_lip_sync_languages` stays 5 langs (on-screen lip-sync only); added `kling_vo_languages` row noting Voice-over narrator supports Bahasa Indonesia natively. Most B-Roll ID production now works in Kling without post-prod dub. |
 | `v2.3.0_changes` | Added Kling 3.0 as 3rd video platform peer (Section 2 Kling Defaults + Section 9 Kling prompt length). Updated `video_model` enum to include `kling` and `mixed`. |
 
 ---

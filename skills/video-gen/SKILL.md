@@ -104,13 +104,13 @@ AskUserQuestion:
 Options:
 A) VEO 3.1 (Google) — broadcast cinematic, prompt-faithful, lip-sync EN/ID, 8s/clip + extend ke 148s
 B) Seedance 2.0 (ByteDance) — native 2K, @ reference system (12 assets), unlimited extension, audio reference input
-C) Kling 3.0 (Kuaishou) — native 4K, multi-shot storyboard (6 shots/15s), mixed-language scene, photoreal human motion (NO Bahasa Indonesia lip-sync)
+C) Kling 3.0 (Kuaishou) — native 4K, multi-shot storyboard (6 shots/15s), mixed-language scene, photoreal human motion (Bahasa Indonesia: ✅ Voice-over narrator native, ❌ on-screen lip-sync 5 langs only)
 D) Mixed (pilih per-scene) — set `platform` column per scene in scene-plan.md
 ```
 
 **Platform selection rules:**
 - Save `video_platform` to `{output_folder}/scene-plan.md` (header line or per-scene column for Mixed mode)
-- If Bahasa Indonesia dialogue is mandatory in this video → Kling 3.0 disallowed for those scenes (use VO + post-prod dub fallback or pick VEO/Seedance)
+- If Bahasa Indonesia dialogue is mandatory: Kling 3.0 OK for **B-Roll + off-screen Voice-over narrator** (native ID support). Only switch to VEO/Seedance for **on-screen lip-sync ID dialogue** scenes (face >30% frame speaking ID)
 - If user picks Mixed → engine suggests per-scene platform via heuristic table in `reference/image-video-gen/08-kling-production-guide.md` "Phase 5 Decision Matrix"
 - Platform-specific mode selection (VEO Ingredients vs First+Last Frame; Seedance Omni vs First/Last; Kling I2V vs Multi-Shot vs Motion Control) happens per-scene during Image Review (Step 0)
 - Subsequent VEO-named steps in this skill (Step 5.1-5.4) apply to all three platforms — substitute mode/audio/safety rules from the matching platform guide
@@ -131,7 +131,7 @@ D) Mixed (pilih per-scene) — set `platform` column per scene in scene-plan.md
 | Resolution | 720p (extend) / 1080p (final) | Native 2K | Native 4K |
 | Clip duration | 8s + extension ~148s | 4-15s + unlimited extend | **3-15s per-second granular** (no native extend) |
 | Modes | Ingredients / First+Last / Extend / I2V | T2V / I2V / First-Last / Omni / Video Ext | T2V / I2V / First-Last / Multi-Shot / Motion Control |
-| Audio langs | 10+ | 10+ | 5 (no Bahasa Indonesia) |
+| Audio langs | 10+ (lip-sync + VO) | 10+ (lip-sync + VO) | Lip-sync 5 (EN/ZH/JA/KO/ES) / VO inc. Bahasa Indonesia native |
 | Unique feature | Reliable text-faithful | @ reference system + audio ref | Multi-shot 6-in-1 + mixed-language scene |
 
 ---
