@@ -1,8 +1,12 @@
 # AI Video Promo Engine
 
-**v2.3.0** — Claude Code plugin that generates complete promotional video production packages — from brainstorm to script to image prompts (NB2) to video prompts (VEO 3.1 / Seedance 2.0 / Kling 3.0).
+**v2.4.0** — Claude Code plugin that generates complete promotional video production packages — from brainstorm to script to image prompts (NB2) to video prompts (VEO 3.1 / Seedance 2.0 / Kling 3.0) with cross-platform voice-over consistency workflow.
 
 Anyone — video agencies, freelancers, brand owners — can produce professional 2-3 minute promotional videos by following the generated production plan.
+
+> **v2.4.0 expansion:** Cross-platform voice-over consistency workflow added. New reference `09-voice-consistency-workflow.md` covers 3 solution paths (native voice lock per platform, ElevenLabs Voice Changer post-prod, single-VO sync), prompt-level discipline rules, hybrid workflows per video type. New Step 5.0a Voice Consistency Strategy in Phase 5 runs BEFORE platform selection. Mandatory for any video with >1 scene or character voice continuity. See [v2.4.0 Changelog](#v240-changelog).
+
+> **v2.3.1 fix:** Bahasa Indonesia audio support clarified as two-tier — Voice-over narrator SUPPORTED NATIVELY in Kling 3.0; only on-screen lip-sync restricted to 5 langs.
 
 > **v2.3.0 expansion:** Kling 3.0 added as 3rd video platform peer alongside VEO 3.1 (primary) and Seedance 2.0. New: 5-part Kling prompt formula, per-second granular duration (3-15s), multi-shot storyboarding (6 shots in single render), mixed-language scene support, Motion Control sub-model. Platform selection step added to Phase 5 with per-scene routing in Mixed mode. See [v2.3.0 Changelog](#v230-changelog) below.
 
@@ -122,6 +126,59 @@ Run any phase independently:
 > Product is NEVER the hero. Product is the BRIDGE. Customer is the hero. Brand is the guide.
 
 The script engine enforces **9 commandments (v2.2.0+)** (no opening with brand name, no jargon without translation, every feature needs a human consequence, **BODY 1 must dramatize ALL identified problems**, etc.) and auto-checks for 22+ structural failure patterns.
+
+## v2.4.0 Changelog
+
+Released 2026-05-16. **Cross-platform voice-over consistency workflow.**
+
+**New reference file** — `reference/image-video-gen/09-voice-consistency-workflow.md` (~4200 tokens, platform-agnostic):
+
+The plugin now solves the cross-platform voice drift problem. All 3 video models (VEO 3.1 / Seedance 2.0 / Kling 3.0) generate random voices per clip — viewers detect mismatches within 45ms, retention drops 40%. Three solution paths:
+
+**Path A — Native Voice Lock (platform-specific):**
+- ✅ **Kling 3.0 Elements 3.0** — upload 3-8s audio sample OR video clip (extract face+voice), bind to character. 90-95% consistency. UNIQUE — Veo and Sora don't have this.
+- ✅ **Seedance 2.0 @Audio1** — voice rhythm/tone reference via @ system. 80-90% consistency.
+- ❌ **VEO 3.1** — no native voice cloning. Must use Path B.
+
+**Path B — Universal ElevenLabs Voice Changer post-prod (works for any platform mix):**
+1. Generate clips on any platform mix → accept inconsistent voices
+2. Edit timeline in CapCut/DaVinci/Premiere → export vocal track
+3. ElevenLabs Voice Changer → assign target Voice ID → regenerate → sync back
+- Result: 100% voice consistency regardless of source
+- Setup cost: 1-2 min audio sample for ElevenLabs Instant Clone
+
+**Path C — Single VO recording + sync (B-Roll-heavy promo):**
+1. Record/clone master VO (own voice OR ElevenLabs full TTS)
+2. Generate video silent (placeholder audio)
+3. Sync in DaVinci/Premiere with L-cuts/J-cuts + rate stretch (±5-10% undetectable)
+
+**Phase 5 enhancement — Step 5.0a Voice Consistency Strategy:**
+
+Runs BEFORE Step 5.0 Platform Selection. Asks user about voice continuity needs, locks voice description verbatim across all prompts in the video, saves `voice-consistency-plan.md` to output folder.
+
+**Prompt-level discipline (universal — applied automatically):**
+- Voice description verbatim across all prompts (copy-paste, no paraphrasing)
+- Accent lock priority (accent shifts more jarring than voice shifts)
+- One emotion per scene (no in-prompt transitions)
+- Explicit audio layer separation (dialogue + ambient + music as separate lines)
+
+**When voice consistency is critical:**
+- ✅ Multi-scene promo (2-3 min B2B videos)
+- ✅ Brand spokesperson video
+- ✅ Mixed-platform production (Step 5.0 = Mixed)
+- ✅ Same character speaking across multiple shots
+
+**When skip:**
+- ❌ Single-scene video (no continuity needed)
+- ❌ Pure ambient/music-only video (no VO)
+
+## v2.3.1 Changelog (fact correction)
+
+Released 2026-05-16. Bahasa Indonesia audio support in Kling 3.0 clarified as two-tier:
+- ✅ **Voice-over narrator** (off-screen, B-Roll) — SUPPORTED NATIVELY
+- ❌ **On-screen lip-sync** (face >30% speaking) — restricted to 5 langs (EN/ZH/JA/KO/ES)
+
+Most Indonesian B-Roll production works natively in Kling without post-prod dub. Switch to VEO 3.1 only for face-front ID dialogue scenes.
 
 ## v2.3.0 Changelog
 

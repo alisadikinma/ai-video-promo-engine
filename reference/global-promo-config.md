@@ -128,6 +128,9 @@ See `reference/image-video-gen/08-kling-production-guide.md` for full Kling 3.0 
 |---------|-------|-------|
 | `dialogue_syntax` | `Host says: text` | Generic role — NEVER real person names (safety filter) |
 | `voiceover_syntax` | `Voice-over narrator, [tone]: text` | Off-screen narrator — NEVER bare `Voiceover:` (lip-syncs to visible char) |
+| `voice_consistency_strategy` (v2.4.0+) | `path-a-native` / `path-b-elevenlabs` / `path-c-single-vo-sync` / `none` | Locked in Step 5.0a BEFORE platform selection. See `reference/image-video-gen/09-voice-consistency-workflow.md`. Default: `path-b-elevenlabs` (universal, fastest 100% consistency). |
+| `voice_description_verbatim_rule` (v2.4.0+) | `MANDATORY for video >1 scene` | The 10-15 word voice description (e.g., "warm baritone Indonesian male mid-30s, calm pace, slight Jakarta accent") MUST appear verbatim in every VEO/Seedance/Kling prompt in this video. Copy-paste, NEVER paraphrase. |
+| `voice_description_field` (v2.4.0+) | Saved in `voice-consistency-plan.md` per video | Single source of truth for the locked voice description. Engine injects into every Phase 5 prompt automatically. |
 | `postprod_vo_syntax` | `> POST-PROD VO: "text"` | Backup outside VEO prompt for every B-Roll scene |
 | `sfx_syntax` | `SFX: description` | Sound effects |
 | `ambient_syntax` | `Ambient: description` | Background atmosphere |
@@ -218,8 +221,9 @@ See `reference/image-video-gen/08-kling-production-guide.md` for full Kling 3.0 
 
 | Setting | Value |
 |---------|-------|
-| `config_version` | `2.3.1` |
+| `config_version` | `2.4.0` |
 | `last_updated` | `2026-05-16` |
+| `v2.4.0_changes` | NEW reference file `09-voice-consistency-workflow.md` (cross-platform VO consistency, 3 solution paths, prompt-level discipline). NEW Step 5.0a in video-gen SKILL runs voice consistency strategy BEFORE platform selection. ALL Phase 5 Smart Context Loading rows include 09-voice-consistency now. Audio Defaults section (this Section 5) gains `voice_consistency_strategy` field and `voice_description_verbatim_rule` field. |
 | `v2.3.1_changes` | Bahasa Indonesia audio correction: `kling_lip_sync_languages` stays 5 langs (on-screen lip-sync only); added `kling_vo_languages` row noting Voice-over narrator supports Bahasa Indonesia natively. Most B-Roll ID production now works in Kling without post-prod dub. |
 | `v2.3.0_changes` | Added Kling 3.0 as 3rd video platform peer (Section 2 Kling Defaults + Section 9 Kling prompt length). Updated `video_model` enum to include `kling` and `mixed`. |
 

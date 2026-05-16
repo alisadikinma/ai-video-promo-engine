@@ -29,6 +29,7 @@ platform: claude-projects
 | `07-seedance-production-guide.md` | Seedance 2.0 specs, @ reference system, modes, audio, camera, materials | Using Seedance 2.0 as video model |
 | `08-kling-production-guide.md` | Kling 3.0 specs, 5-part prompt formula, multi-shot storyboarding, motion control, omni audio | Using Kling 3.0 as video model (PRIMARY) |
 | `08b-kling-notebooklm-briefing.md` | Kling 3.0 NotebookLM-distilled briefing — efficiency data, Elements 3.0, 5-layer formula, cross-validates 08-kling | Cross-check Kling guide claims (SUPPLEMENTARY RAG) |
+| `09-voice-consistency-workflow.md` | **Cross-platform** VO consistency — 3 paths (native lock / ElevenLabs post-prod / single VO sync), prompt-level discipline, hybrid workflow per video type | MANDATORY for any video >1 scene OR with character voice continuity |
 
 ## Critical Constraints (Always Apply)
 - VEO max 8s/clip, 24fps, 720p for extensions, 1080p for final only

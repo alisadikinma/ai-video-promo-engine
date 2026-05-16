@@ -83,6 +83,7 @@ Claude Code plugin that generates complete promotional video production packages
 | `image-video-gen/07-seedance-production-guide.md` | Seedance 2.0 video prompts — native 2K, @ reference system, dual-branch audio, modes, materials |
 | `image-video-gen/08-kling-production-guide.md` | Kling 3.0 video prompts — native 4K, 5-part formula, multi-shot storyboard (6/15s), motion control, omni audio (5 langs incl mixed-language scene). **Primary** Kling reference (curated by Claude from 10-source WebSearch + UI ground truth) |
 | `image-video-gen/08b-kling-notebooklm-briefing.md` | Kling 3.0 NotebookLM-distilled Briefing Doc — independent cross-validation of 08-kling guide, contains efficiency data (rerolls/credit savings), Elements 3.0 system, 5-layer prompt formula breakdown. **Supplementary** RAG layer #2 (auto-generated from notebook `kling-prod`, regenerate via `nlm report create kling-prod`) |
+| `image-video-gen/09-voice-consistency-workflow.md` | **Cross-platform** voice-over consistency — applies to VEO 3.1 + Seedance 2.0 + Kling 3.0. 3 solution paths (Path A native voice lock per platform, Path B universal ElevenLabs post-prod, Path C single VO + sync), prompt-level discipline rules, hybrid workflow per video type, plugin integration spec for Phase 5 Step 5.0. **MANDATORY** for any video with >1 scene or character voice continuity. |
 | `image-video-gen/project-instruction.md` | Image/video project instructions — critical rules, example workflows |
 
 #### Global Config & Bridge (3 files)
@@ -246,10 +247,10 @@ Each phase loads ONLY the reference files it needs — NOT all 23. This prevents
 | Phase 3.5 | global-promo-config, creator-profile-system | 2 |
 | Phase 4A | global-promo-config, 01-nb2, script-to-scene-bridge (7B only) | 3 |
 | Phase 4B | global-promo-config, 01-nb2, script-to-scene-bridge, 04-cinematography | 4 per batch |
-| Phase 5 (VEO) | global-promo-config, 02-veo, 03-workflow, 04-cinematography | 4 per batch |
-| Phase 5 (Seedance) | global-promo-config, 07-seedance, 03-workflow, 04-cinematography | 4 per batch |
-| Phase 5 (Kling) | global-promo-config, 08-kling, 03-workflow, 04-cinematography | 4 per batch |
-| Phase 5 (Mixed) | global-promo-config, 02-veo + 07-seedance + 08-kling, 03-workflow, 04-cinematography | 6 per batch (one-time platform-guide load, then filter per scene) |
+| Phase 5 (VEO) | global-promo-config, 02-veo, 03-workflow, 04-cinematography, 09-voice-consistency | 5 per batch |
+| Phase 5 (Seedance) | global-promo-config, 07-seedance, 03-workflow, 04-cinematography, 09-voice-consistency | 5 per batch |
+| Phase 5 (Kling) | global-promo-config, 08-kling, 03-workflow, 04-cinematography, 09-voice-consistency | 5 per batch |
+| Phase 5 (Mixed) | global-promo-config, 02-veo + 07-seedance + 08-kling, 03-workflow, 04-cinematography, 09-voice-consistency | 7 per batch (one-time platform-guide load + voice workflow, then filter per scene) |
 
 Phase 4B and 5 also load per-batch filtered data from output files (cast entries + scene entries for current batch only).
 
@@ -533,8 +534,21 @@ All configurable values live in `reference/global-promo-config.md` — single so
 
 ---
 
-**Version:** 2.3.1
+**Version:** 2.4.0
 **Last Updated:** 2026-05-16
+
+### v2.4.0 Changelog
+
+- **NEW reference file `09-voice-consistency-workflow.md`** (~4200 tokens, cross-platform):
+  - Path A — Native voice lock per platform: Kling Elements 3.0 (audio sample or video extraction), Seedance @Audio1 (max 15s ref), VEO NOT supported
+  - Path B — Universal ElevenLabs Voice Changer post-prod (3-step workflow: generate → export → voice changer)
+  - Path C — Single VO recording + video sync (B-Roll-heavy promo)
+  - Hybrid workflow per video type (Pure-VEO / Pure-Kling / Pure-Seedance / Mixed / B-Roll-heavy)
+  - Prompt-level discipline rules (verbatim voice description, accent lock, one emotion per scene)
+  - Anti-patterns table + cost/time comparison
+- **video-gen SKILL.md:** NEW Step 5.0a VOICE CONSISTENCY STRATEGY runs BEFORE Step 5.0 Platform Selection. Voice consistency invariant added to cross-platform invariants table
+- **CLAUDE.md Smart Context Loading:** ALL Phase 5 rows (VEO / Seedance / Kling / Mixed) now include `09-voice-consistency.md` (5-7 refs per batch instead of 4-6)
+- **00-index.md + agent:** voice consistency reference row added
 
 ### v2.3.1 Changelog (fact correction)
 

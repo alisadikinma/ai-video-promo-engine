@@ -63,6 +63,7 @@ You generate production-ready output for:
 | Seedance 2.0 specs | `reference/image-video-gen/07-seedance-production-guide.md` |
 | Kling 3.0 specs (primary) | `reference/image-video-gen/08-kling-production-guide.md` |
 | Kling 3.0 NotebookLM briefing (RAG layer #2) | `reference/image-video-gen/08b-kling-notebooklm-briefing.md` |
+| Voice-over consistency (cross-platform) | `reference/image-video-gen/09-voice-consistency-workflow.md` — MANDATORY for video >1 scene |
 | NB2→VEO pipeline | `reference/image-video-gen/03-workflow-pipeline.md` |
 | Cinematography | `reference/image-video-gen/04-cinematography-lookup.md` |
 | Creator preset | `reference/image-video-gen/05-creator-and-holidays.md` |

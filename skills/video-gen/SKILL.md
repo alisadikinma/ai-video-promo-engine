@@ -39,6 +39,7 @@ These files must exist in the output folder:
 | VEO 3.1 production | `reference/image-video-gen/02-veo-production-guide.md` |
 | Seedance 2.0 production | `reference/image-video-gen/07-seedance-production-guide.md` |
 | Kling 3.0 production | `reference/image-video-gen/08-kling-production-guide.md` (primary) + `reference/image-video-gen/08b-kling-notebooklm-briefing.md` (NotebookLM-distilled cross-validation) |
+| Voice-over consistency (ALL platforms) | `reference/image-video-gen/09-voice-consistency-workflow.md` — MANDATORY for video >1 scene with voice continuity |
 | Image-video pipeline | `reference/image-video-gen/project-instruction.md` |
 | Cinematography lookup | `reference/image-video-gen/04-cinematography-lookup.md` |
 
@@ -57,6 +58,7 @@ READ these files ONLY (platform-conditional — load the guide matching `video_p
    - Mixed → load all three platform guides relevant to scenes in current batch
 3. `reference/image-video-gen/03-workflow-pipeline.md`
 4. `reference/image-video-gen/04-cinematography-lookup.md`
+5. `reference/image-video-gen/09-voice-consistency-workflow.md` (read once per video, NOT per batch — voice strategy is video-level decision)
 Plus PER-BATCH context:
 - `{output_folder}/cast-profile.md`: ONLY entries for characters in this batch
 - `{output_folder}/scene-plan.md`: ONLY entries for this batch's scenes
@@ -93,7 +95,28 @@ Total: 4 reference files + filtered output data. NEVER load storytelling or NB2-
 
 ## Workflow
 
-### Step 5.0: PLATFORM SELECTION (NEW v2.3.0 — runs BEFORE Image Review)
+### Step 5.0a: VOICE CONSISTENCY STRATEGY (NEW v2.4.0 — runs BEFORE platform selection)
+
+For any video with >1 scene OR with character voice continuity, voice consistency must be planned BEFORE platform/mode selection.
+
+```
+AskUserQuestion:
+"Apakah video ini perlu konsistensi voice-over antar scene?"
+
+Options:
+A) Ya, ada voice reference (audio sample / video clip dengan suara target) — engine will route to Path A native lock (Kling Elements 3.0 / Seedance @Audio1) or Path B prep
+B) Ya, tapi belum ada voice reference — engine defaults to Path B (post-prod ElevenLabs Voice Changer pass at end)
+C) Ya, saya akan record VO sendiri di post-prod (Path C) — engine generates with placeholder audio, drives final edit by VO track
+D) Tidak perlu (video pendek single-scene atau tanpa VO continuity) — skip voice strategy
+```
+
+If A/B/C: load `reference/image-video-gen/09-voice-consistency-workflow.md`, save selected path + voice description to `{output_folder}/voice-consistency-plan.md` for Phase 5 prompt injection.
+
+**Voice description verbatim rule (universal):** Once locked, the SAME 10-15 word voice description must appear in EVERY VEO/Seedance/Kling prompt in this video. Copy-paste, NEVER paraphrase. See `09-voice-consistency-workflow.md` §"Prompt-Level Discipline".
+
+---
+
+### Step 5.0: PLATFORM SELECTION (v2.3.0 — runs AFTER voice strategy, BEFORE Image Review)
 
 Phase 5 supports three video platforms. Pick at start of session before any image review.
 
@@ -124,6 +147,7 @@ D) Mixed (pilih per-scene) — set `platform` column per scene in scene-plan.md
 - B-Roll narration = `Voice-over narrator, [tone]: text` + `> POST-PROD VO:` backup
 - Face >30% frame for lip-sync (all platforms)
 - Cannot render legible text in scene — use post-prod overlay
+- **Voice-over consistency** — for any video >1 scene, follow `09-voice-consistency-workflow.md` (pick Path A/B/C, lock voice description verbatim across all prompts, single emotion per scene)
 
 **Platform-specific divergences (load matching guide for full rules):**
 | Aspect | VEO 3.1 | Seedance 2.0 | Kling 3.0 |
