@@ -35,7 +35,7 @@ See Section 21 for full rules and examples. Key principle:
 
 | Setting | Value | Notes |
 |---------|-------|-------|
-| `video_model` | `veo` or `seedance` | Selected in Phase 1 or Phase 5. Default: `veo` |
+| `video_model` | `veo`, `seedance`, `kling`, or `mixed` | Selected in Phase 1 or Phase 5 (Step 5.0). Default: `veo`. `mixed` = per-scene selection in scene-plan.md |
 | `video_aspect_ratio` | `16:9` | For YouTube/LinkedIn. Switch to `9:16` for TikTok/Reels |
 | `video_duration` | `120-180s` | Target 2-3 minutes |
 
@@ -68,6 +68,28 @@ See Section 21 for full rules and examples. Key principle:
 | `seedance_lip_sync_languages` | `ZH, EN, JA, KO, ES, FR, PT, ID, DE, RU` | 10+ languages including Indonesian |
 
 See `reference/image-video-gen/07-seedance-production-guide.md` for full Seedance 2.0 specs.
+
+### Kling 3.0 Defaults (v2.3.0+)
+
+| Setting | Value | Notes |
+|---------|-------|-------|
+| `kling_resolution` | `720p` or `1080p` (UI). `4K` available via API on selected providers | UI ships 720p/1080p. 4K is API-tier feature. Default for promo: 1080p |
+| `kling_clip_duration` | **`3s, 4s, 5s, 6s, 7s, 8s, 9s, 10s, 11s, 12s, 13s, 14s, 15s` (per-second granular)** | UNIQUE: per-second duration selector — pick exact second matching scene/dialogue need. Multi-shot: up to 6 shots fit within the chosen duration (10-15s typical). No forced padding |
+| `kling_max_total_duration` | `15s/clip` (no native extension chain) | For longer videos: chain via NB2-new-anchor + new Kling generation OR use Motion Control with prior clip as ref |
+| `kling_frame_rate` | `24fps` cinematic / `30fps` HDR broadcast / `60fps` smooth motion | 24fps default for promo |
+| `kling_prompt_length` | `~80-120 words` optimal | Follows 5-part formula. Longer = ignored/hallucinated |
+| `kling_max_refs` | `1 image (I2V) + 1 video (Motion Control) + 1 audio (lip-sync source)` | Less than Seedance's 12 — leans on prompt + anchor |
+| `kling_negative_prompt` | `deformed hands, extra fingers, asymmetrical facial features, unnatural joint angles, sliding feet, morphing limbs, frozen mouth during speech, no subtitles, no text overlays, no audience sounds` | Universal base. Add 1-2 focused category (human/product/motion/env) per scene. 3-5 focused beats 20 generic |
+| `kling_aspect_ratios` | `16:9, 9:16, 1:1` | 3 options in UI — covers YouTube/LinkedIn (16:9), Reels/TikTok/Shorts (9:16), Instagram square (1:1) |
+| `kling_duration_dialogue_budget` | `~2.5 words/sec` | Use to pick exact duration for dialogue scene. E.g., 12 words ≈ 5s. Exceeds = rushed. |
+| `kling_lip_sync_languages` | `EN, ZH, JA, KO, ES` | 5 languages — NO Bahasa Indonesia. For ID: use VO + post-prod dub OR English fallback with subtitle |
+| `kling_mixed_language_scene` | `SUPPORTED` | Unique to Kling — different characters can speak different languages in same scene, each lip-syncs correctly |
+| `kling_modes` | `T2V, I2V, First+Last Frame, Multi-Shot Storyboard, Motion Control` | 5 modes, mutually exclusive per generation |
+| `kling_multi_shot_max` | `6 shots in single 15s render` | Use ONLY when shots share env/character. Avoid for high-stakes hero shots |
+| `kling_text_in_scene` | `NOT SUPPORTED` | Cannot render legible text. Use post-prod overlay for logos/text (same as VEO/Seedance) |
+| `kling_prompt_formula` | `Camera Movement + Scene Setup + Subject Action + Vibe/Lighting + Time/Audio` | 5-part canonical structure. Camera term position determines weight (start = dominates, end = follows subject) |
+
+See `reference/image-video-gen/08-kling-production-guide.md` for full Kling 3.0 specs.
 
 ---
 
@@ -185,6 +207,9 @@ See `reference/image-video-gen/07-seedance-production-guide.md` for full Seedanc
 | VEO extension prompt | 50-80 words | Reference previous clip context |
 | Seedance video prompt | ~50 words | Shorter = better reliability. Detail via @ refs |
 | Seedance multi-shot prompt | ~50 words + timestamps | `[0-5s]: ... [5-10s]: ... [10-15s]: ...` |
+| Kling video prompt | ~80-120 words | 5-part formula: Camera + Scene + Action + Vibe/Light + Time/Audio. Longer = ignored |
+| Kling multi-shot prompt | ~80-120 words + shot markers | `Shot 1 (2s): ... Shot 2 (3s): ... ` — max 6 shots in single 15s clip, shared env/char |
+| Kling negative prompt | 3-5 focused terms per category | NOT generic dump — focused beats verbose |
 
 ---
 
@@ -192,8 +217,9 @@ See `reference/image-video-gen/07-seedance-production-guide.md` for full Seedanc
 
 | Setting | Value |
 |---------|-------|
-| `config_version` | `1.6.0` |
-| `last_updated` | `2026-03-29` |
+| `config_version` | `2.3.0` |
+| `last_updated` | `2026-05-16` |
+| `v2.3.0_changes` | Added Kling 3.0 as 3rd video platform peer (Section 2 Kling Defaults + Section 9 Kling prompt length). Updated `video_model` enum to include `kling` and `mixed`. |
 
 ---
 

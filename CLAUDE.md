@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-Claude Code plugin that generates complete promotional video production packages: from brainstorm to script to image prompts (NB2) to video prompts (VEO 3.1 / Seedance 2.0). 4 production skills + 1 orchestrator + 2 utility skills + 2 agents + 24 reference documents as RAG knowledge base.
+Claude Code plugin that generates complete promotional video production packages: from brainstorm to script to image prompts (NB2) to video prompts (VEO 3.1 / Seedance 2.0 / Kling 3.0). 4 production skills + 1 orchestrator + 2 utility skills + 2 agents + 25 reference documents as RAG knowledge base.
 
 **Core Value:** Anyone — video agencies, freelancers, brand owners — can produce professional 2-3 minute promotional videos by following the generated production plan.
 
@@ -69,6 +69,8 @@ Claude Code plugin that generates complete promotional video production packages
 | `image-video-gen/05-creator-and-holidays.md` | Ali Sadikin as cast slot, cast-c{N} naming, holiday palettes, cultural context |
 | `image-video-gen/06-directing-and-performance.md` | Film directing grammar — 180° rule, gaze direction, blocking, vocal performance, continuity supervision |
 | `image-video-gen/07-seedance-production-guide.md` | Seedance 2.0 video prompts — native 2K, @ reference system, dual-branch audio, modes, materials |
+| `image-video-gen/08-kling-production-guide.md` | Kling 3.0 video prompts — native 4K, 5-part formula, multi-shot storyboard (6/15s), motion control, omni audio (5 langs incl mixed-language scene). **Primary** Kling reference (curated by Claude from 10-source WebSearch + UI ground truth) |
+| `image-video-gen/08b-kling-notebooklm-briefing.md` | Kling 3.0 NotebookLM-distilled Briefing Doc — independent cross-validation of 08-kling guide, contains efficiency data (rerolls/credit savings), Elements 3.0 system, 5-layer prompt formula breakdown. **Supplementary** RAG layer #2 (auto-generated from notebook `kling-prod`, regenerate via `nlm report create kling-prod`) |
 | `image-video-gen/project-instruction.md` | Image/video project instructions — critical rules, example workflows |
 
 #### Global Config & Bridge (3 files)
@@ -165,8 +167,10 @@ Phase 5: VIDEO PROMPTS (VEO)   → Output: video-prompts.md
 - **Image Model**: Nano Banana 2 (NB2) — Gemini 3.1 Flash Image
 - **Video Model (Primary)**: VEO 3.1 — 720p/1080p, 8s clips, 148s extension chain
 - **Video Model (Alt)**: Seedance 2.0 — native 2K, 15s clips, @ reference system, dual-branch AV
+- **Video Model (Alt)**: Kling 3.0 — 720p/1080p UI (4K via API), **per-second duration 3-15s** (pick exact second), multi-shot storyboard (6 shots within chosen duration), motion control, omni audio (5 langs, mixed-language scene unique). NO Bahasa Indonesia lip-sync.
 - **Pipeline (VEO)**: NB2 image → VEO First+Last Frame / Ingredients → VEO Extend
 - **Pipeline (Seedance)**: NB2 image → Seedance @Image refs + Omni mode → Seedance @Video extend
+- **Pipeline (Kling)**: NB2 image → Kling I2V / First+Last / Multi-Shot Storyboard / Motion Control (no native extension; restart with new NB2 anchor for long-form)
 
 ### Critical Audio Rules
 
@@ -232,6 +236,8 @@ Each phase loads ONLY the reference files it needs — NOT all 23. This prevents
 | Phase 4B | global-promo-config, 01-nb2, script-to-scene-bridge, 04-cinematography | 4 per batch |
 | Phase 5 (VEO) | global-promo-config, 02-veo, 03-workflow, 04-cinematography | 4 per batch |
 | Phase 5 (Seedance) | global-promo-config, 07-seedance, 03-workflow, 04-cinematography | 4 per batch |
+| Phase 5 (Kling) | global-promo-config, 08-kling, 03-workflow, 04-cinematography | 4 per batch |
+| Phase 5 (Mixed) | global-promo-config, 02-veo + 07-seedance + 08-kling, 03-workflow, 04-cinematography | 6 per batch (one-time platform-guide load, then filter per scene) |
 
 Phase 4B and 5 also load per-batch filtered data from output files (cast entries + scene entries for current batch only).
 
@@ -501,11 +507,35 @@ All configurable values live in `reference/global-promo-config.md` — single so
 | **(v2.2.0) Phase 4A generates assets for generic items (kopi gelas, plain phone, pavement)** | C2 validator FLAG — apply UNIQUENESS filter BEFORE generating any Phase 4A asset. COMMON tier (generic everyday items that NB2 can render from text alone) = SKIP reference. UNIQUE tier (faces, logos, industry-specific equipment, custom UI) = GENERATE. Decision test: "Can a competent prompt writer describe this in 20 words and trust NB2?" YES → COMMON, skip. NO → UNIQUE, generate. See `global-promo-config.md` §26. |
 | **(v2.2.0) Phase 4B scene prompt has 8+ reference filenames** | C3 validator FAIL — Max 5 inline refs per Phase 4B prompt (combined faces + objects + env + UI). Replaces old "Max 3 identity locks". If >5 needed → split scene into 2 sub-scenes OR consolidate via composite asset (Tier 5+ per §18). See `global-promo-config.md` §26.4. |
 | **(v2.2.0) `scene-N-end.png` cross-ref between hard-cut scenes (different env)** | C4 validator FAIL — Cross-scene ref env-gated ONLY. Allowed only if env(N) == env(N+1). Hard cut (location differs) = DROP cross-ref entirely. Visual continuity carried by text SUBJECT spec + standalone identity refs (cast-c{N}-face.png) + costume verbatim + NARRATIVE CONTEXT block. Reason: NB2 treats scene-NN-end.png as compositional template — using cross-env confuses model into mixing wrong-location elements. See `global-promo-config.md` §27. |
+| **(v2.3.0) Kling Bahasa Indonesia lip-sync garbled** | Bahasa Indonesia NOT in Kling's 5 supported languages (EN, ZH, JA, KO, ES). Fix: use VO + post-prod dub OR switch to VEO/Seedance for ID dialogue scenes. Plan platform mix in Step 5.0 — Kling for B-roll/face emotion, VEO for ID dialogue. |
+| **(v2.3.0) Kling multi-shot scenes flicker / shots blend** | Shot boundaries weak. Strengthen with numbered markers (`Shot 1: ... Shot 2: ...`) + transition cues (`match cut to`, `whip pan to`). Use ONLY when shots share env/character. Don't multi-shot complex narrative beats. |
+| **(v2.3.0) Kling text in scene warps to gibberish** | Same constraint as VEO/Seedance — Kling cannot render legible text. Strip logos/text from prompt, add as post-prod overlay. Brand visual = colors + shapes only, not text. |
+| **(v2.3.0) Kling prompt 200+ words = half ignored** | Kling optimal is 80-120 words. Longer prompts get half ignored, half hallucinated. Apply 5-part formula strictly: Camera + Scene + Action + Vibe/Lighting + Time/Audio. |
+| **(v2.3.0) Kling generic camera term produces static** | Vague terms (`dynamic shot`, `cinematic angle`) → static or random direction. Use specific phrases from Kling Camera Movement Library: `slow dolly-in`, `360° orbit`, `whip pan right`, `crane up`. Camera term position determines weight (start = camera dominates, end = camera follows subject). |
+| **(v2.3.0) Kling negative prompt overweighted (stiff/lifeless output)** | Generic 20-term negative dump → Kling overweights and outputs stiff motion. Use focused 3-5 terms per relevant category (human / product / motion / environment). NOT all 4 categories at once. |
+| **(v2.3.0) Kling Motion Control character faces wrong direction** | Character Orientation parameter set wrong. Toggle: `Follow Video` (replicate motion-ref spatial position) for complex motion / `Follow Image` (maintain anchor composition) when camera dominates body motion. |
+| **(v2.3.0) Kling First+Last Frame rejected as "prominent people"** | Same VEO safety filter — 2 photoreal face images = rejection. For face-dominant scenes (face >30% frame) use single I2V mode. First+Last Frame in Kling is for faceless scenes only (dashboards, products, environments). |
+| **(v2.3.0) Kling clip dialogue rushed/clipped** | Dialogue exceeds ~2.5 words/sec budget. Kling has PER-SECOND duration selector (3/4/5/6/7/8/9/10/11/12/13/14/15s) — bump duration up by 1-2 seconds to fit. E.g., 12-word line at 5s = rushed → use 6s instead. No need to split scenes just for pacing. |
+| **(v2.3.0) Kling duration mismatch (padding or rushing)** | Picked 8s default when scene needed 5s (awkward pause) OR picked 5s when needed 9s (rushed). Use Kling's per-second selector — pick exact duration matching natural dialogue/beat pace. Eliminates re-pacing in post-edit. |
 
 ---
 
-**Version:** 2.2.0
-**Last Updated:** 2026-05-14
+**Version:** 2.3.0
+**Last Updated:** 2026-05-16
+
+### v2.3.0 Changelog
+
+- **NEW reference file `08-kling-production-guide.md`** (~7200 tokens): Kling 3.0 specs, 5-part prompt formula, 5 modes (T2V/I2V/First-Last/Multi-Shot/Motion Control), Omni audio (5 langs incl mixed-language scene), camera movement library, negative prompt strategy, cross-platform comparison vs VEO/Seedance
+- **Global config (Section 2):** Added Kling 3.0 Defaults table. `video_model` enum extended to `veo | seedance | kling | mixed`
+- **Global config (Section 9):** Added Kling prompt length guidelines (80-120 words optimal, 5-part formula)
+- **video-gen SKILL.md:** Added **Step 5.0 Platform Selection** before Image Review. Platform-conditional CONTEXT LOADING (load matching guide only). Cross-platform invariants table. Per-scene mode selection happens during Image Review.
+- **script-to-scene-bridge.md:** Added Step 3c (Kling Mode Selection per Scene) with full 5-mode decision tree
+- **CLAUDE.md:** Production Stack lists Kling as 3rd alt platform with constraints. Smart Context Loading adds Phase 5 (Kling) and Phase 5 (Mixed) rows. Debugging Checklist adds 8 Kling-specific rows
+- **Agent (`video-engine-agent.md`):** Reference table adds Kling row; capability list mentions tri-platform Phase 5
+- **00-index.md:** Production stack lists 3 video models; constraints section adds Kling clip duration + no-native-extension + 5-language lip-sync + cannot-render-text constraints
+- **plugin.json:** v2.1.1 → 2.3.0, description mentions all three platforms, keywords add `Kling`
+
+### v2.2.0 Changelog
 
 ### v2.2.0 Changelog
 

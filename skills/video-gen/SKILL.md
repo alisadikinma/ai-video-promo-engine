@@ -38,6 +38,7 @@ These files must exist in the output folder:
 |------|------|
 | VEO 3.1 production | `reference/image-video-gen/02-veo-production-guide.md` |
 | Seedance 2.0 production | `reference/image-video-gen/07-seedance-production-guide.md` |
+| Kling 3.0 production | `reference/image-video-gen/08-kling-production-guide.md` (primary) + `reference/image-video-gen/08b-kling-notebooklm-briefing.md` (NotebookLM-distilled cross-validation) |
 | Image-video pipeline | `reference/image-video-gen/project-instruction.md` |
 | Cinematography lookup | `reference/image-video-gen/04-cinematography-lookup.md` |
 
@@ -47,9 +48,13 @@ These files must exist in the output folder:
 | Actual keyframe images | `{output_folder}/keyframes/*.png` (multimodal read) |
 
 ### CONTEXT LOADING — Phase 5 (per batch)
-READ these files ONLY:
-1. `reference/global-promo-config.md` (Sections 6-10, 13: output, resolution, VEO modes, tone)
-2. `reference/image-video-gen/02-veo-production-guide.md`
+READ these files ONLY (platform-conditional — load the guide matching `video_platform` from Step 5.0):
+1. `reference/global-promo-config.md` (Sections 6-10, 13, 28: output, resolution, video modes, tone, platform routing)
+2. Platform guide (pick ONE based on `video_platform`):
+   - VEO 3.1 → `reference/image-video-gen/02-veo-production-guide.md`
+   - Seedance 2.0 → `reference/image-video-gen/07-seedance-production-guide.md`
+   - Kling 3.0 → `reference/image-video-gen/08-kling-production-guide.md`
+   - Mixed → load all three platform guides relevant to scenes in current batch
 3. `reference/image-video-gen/03-workflow-pipeline.md`
 4. `reference/image-video-gen/04-cinematography-lookup.md`
 Plus PER-BATCH context:
@@ -87,6 +92,49 @@ Total: 4 reference files + filtered output data. NEVER load storytelling or NB2-
 ---
 
 ## Workflow
+
+### Step 5.0: PLATFORM SELECTION (NEW v2.3.0 — runs BEFORE Image Review)
+
+Phase 5 supports three video platforms. Pick at start of session before any image review.
+
+```
+AskUserQuestion:
+"Pilih video platform untuk video ini:"
+
+Options:
+A) VEO 3.1 (Google) — broadcast cinematic, prompt-faithful, lip-sync EN/ID, 8s/clip + extend ke 148s
+B) Seedance 2.0 (ByteDance) — native 2K, @ reference system (12 assets), unlimited extension, audio reference input
+C) Kling 3.0 (Kuaishou) — native 4K, multi-shot storyboard (6 shots/15s), mixed-language scene, photoreal human motion (NO Bahasa Indonesia lip-sync)
+D) Mixed (pilih per-scene) — set `platform` column per scene in scene-plan.md
+```
+
+**Platform selection rules:**
+- Save `video_platform` to `{output_folder}/scene-plan.md` (header line or per-scene column for Mixed mode)
+- If Bahasa Indonesia dialogue is mandatory in this video → Kling 3.0 disallowed for those scenes (use VO + post-prod dub fallback or pick VEO/Seedance)
+- If user picks Mixed → engine suggests per-scene platform via heuristic table in `reference/image-video-gen/08-kling-production-guide.md` "Phase 5 Decision Matrix"
+- Platform-specific mode selection (VEO Ingredients vs First+Last Frame; Seedance Omni vs First/Last; Kling I2V vs Multi-Shot vs Motion Control) happens per-scene during Image Review (Step 0)
+- Subsequent VEO-named steps in this skill (Step 5.1-5.4) apply to all three platforms — substitute mode/audio/safety rules from the matching platform guide
+
+**Cross-platform invariants (all three platforms):**
+- NB2 aspect ratio MUST match video model target — mismatch = edge hallucination
+- Audio is NEVER optional — specify all 3 layers (dialogue/VO, ambient, music)
+- Dialogue uses colon syntax (`says:` NEVER quotation marks)
+- NO real person names in `says:` — use `Host says:` / `Presenter says:`
+- NO em dash `—` in audio text — use `,` or `. `
+- B-Roll narration = `Voice-over narrator, [tone]: text` + `> POST-PROD VO:` backup
+- Face >30% frame for lip-sync (all platforms)
+- Cannot render legible text in scene — use post-prod overlay
+
+**Platform-specific divergences (load matching guide for full rules):**
+| Aspect | VEO 3.1 | Seedance 2.0 | Kling 3.0 |
+|--------|---------|--------------|-----------|
+| Resolution | 720p (extend) / 1080p (final) | Native 2K | Native 4K |
+| Clip duration | 8s + extension ~148s | 4-15s + unlimited extend | **3-15s per-second granular** (no native extend) |
+| Modes | Ingredients / First+Last / Extend / I2V | T2V / I2V / First-Last / Omni / Video Ext | T2V / I2V / First-Last / Multi-Shot / Motion Control |
+| Audio langs | 10+ | 10+ | 5 (no Bahasa Indonesia) |
+| Unique feature | Reliable text-faithful | @ reference system + audio ref | Multi-shot 6-in-1 + mixed-language scene |
+
+---
 
 ### Step 0: IMAGE REVIEW — Per-Scene Validation & Brainstorm
 

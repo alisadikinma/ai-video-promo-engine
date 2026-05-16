@@ -125,6 +125,57 @@ FOR each scene:
 See reference/image-video-gen/07-seedance-production-guide.md for full specs.
 ```
 
+### Step 3c: Kling 3.0 Mode Selection per Scene (if `video_model` = `kling`, v2.3.0+)
+
+```
+FOR each scene:
+    IF scene applies motion FROM existing reference video TO new subject/scene:
+        → Motion Control mode
+        → Source: 1 motion-ref video + new anchor image + text prompt
+        → Character Orientation parameter:
+            • Follow Video → replicate spatial positioning + camera angles (best for complex motion/dance/action)
+            • Follow Image → maintain anchor composition (best when camera dominates body motion)
+
+    IF scene has HOOK / MONTAGE / VIRAL CUT (3-6 quick shots in <=15s, shared env/character):
+        → Multi-Shot Storyboard mode
+        → Single 15s render containing up to 6 distinct shots
+        → Shot boundaries: numbered (`Shot 1: ... Shot 2: ...`) OR transition cues (`match cut to`, `whip pan to`)
+        → NB2 anchor required ONLY for Shot 1 (Kling extrapolates further shots from text)
+        → Trade-off: less control per shot, cannot extend, failures = full re-render
+        → AVOID for high-stakes hero shots / complex dialogue beats / scenes needing extension
+
+    IF scene shows STATE CHANGE (before→after, product unbox, environment shift), FACELESS only:
+        → First+Last Frame mode (2 NB2 images: start + end)
+        → ⚠ Same safety filter risk as VEO — 2 photoreal face images = "prominent people" rejection
+        → For face-dominant scenes (face >30% frame) → use single I2V instead
+
+    IF scene has CHARACTER speaking / face >30% frame:
+        → Single I2V mode (1 NB2 image as start anchor)
+        → Anchor = identity/layout lock; text prompt = how scene evolves
+        → Frame 1 quality rule: clean lighting + clean pose = >90% success
+
+    IF scene has NO anchor image (rare — most production uses NB2 upstream):
+        → Text-to-Video (T2V) mode
+        → Lowest control over identity, best for atmospheric B-roll / environmental establish
+
+    KLING CONSTRAINTS:
+    - 80-120 word prompt optimal (longer = ignored)
+    - 5-part prompt formula MANDATORY: Camera Movement + Scene Setup + Subject Action + Vibe/Lighting + Time/Audio
+    - Camera term position determines weight: start = camera dominates, end = camera follows subject
+    - No native extension chain — for long-form, restart with new NB2 anchor
+    - Cannot render legible text (use post-prod overlay for logos/text)
+    - Bahasa Indonesia NOT in lip-sync (5 langs: EN, ZH, JA, KO, ES) — use VO + post-prod dub for ID
+    - Mixed-language scene UNIQUE feature — different characters can speak different languages in same shot
+    - Duration: PER-SECOND granular (3s/4s/5s/6s/7s/8s/9s/10s/11s/12s/13s/14s/15s) — pick exact second matching scene need, no padding
+    - Dialogue budget ~2.5 words/sec: 3s→6-8 words, 5s→10-13, 8s→18-22, 10s→25-30, 15s→38-45
+    - Negative prompts focused (3-5 terms per relevant category), NOT 20-term generic dump
+    - 3 aspect ratios in UI: 16:9, 9:16, 1:1
+    - Resolution: 720p or 1080p (UI); 4K available via API on selected providers
+    - Frame rates: 24/30/60fps (24 default for promo)
+
+See reference/image-video-gen/08-kling-production-guide.md for full specs and 5-part prompt formula examples.
+```
+
 ---
 
 ## 2. Scene Plan Output Format

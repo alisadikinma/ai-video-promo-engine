@@ -12,8 +12,10 @@ platform: claude-projects
 - **Image Model:** Nano Banana 2 (Gemini 3.1 Flash Image) — all start/end frames
 - **Video Model (Primary):** Google VEO 3.1 — temporal animation, audio, lip sync
 - **Video Model (Alt):** Bytedance Seedance 2.0 — native 2K, dual-branch AV, @ reference system
+- **Video Model (Alt):** Kuaishou Kling 3.0 — native 4K, multi-shot storyboarding (6 shots/15s), mixed-language lip sync
 - **Pipeline (VEO):** NB2 image → VEO First+Last Frame → VEO Extend (same scene)
 - **Pipeline (Seedance):** NB2 image → Seedance @Image refs + Omni mode → Seedance @Video extend
+- **Pipeline (Kling):** NB2 image → Kling I2V / First+Last / Multi-Shot Storyboard / Motion Control
 
 ## File Map
 
@@ -25,14 +27,19 @@ platform: claude-projects
 | `04-cinematography-lookup.md` | Lighting, camera, lens, film stocks, emotion mapping, atmosphere | Crafting any visual prompt |
 | `05-creator-and-holidays.md` | Ali Sadikin profile, holiday palettes, thumbnail templates | Creator content or seasonal campaigns |
 | `07-seedance-production-guide.md` | Seedance 2.0 specs, @ reference system, modes, audio, camera, materials | Using Seedance 2.0 as video model |
+| `08-kling-production-guide.md` | Kling 3.0 specs, 5-part prompt formula, multi-shot storyboarding, motion control, omni audio | Using Kling 3.0 as video model (PRIMARY) |
+| `08b-kling-notebooklm-briefing.md` | Kling 3.0 NotebookLM-distilled briefing — efficiency data, Elements 3.0, 5-layer formula, cross-validates 08-kling | Cross-check Kling guide claims (SUPPLEMENTARY RAG) |
 
 ## Critical Constraints (Always Apply)
 - VEO max 8s/clip, 24fps, 720p for extensions, 1080p for final only
 - Seedance max 15s/clip, 24-60fps, native 2K, unlimited extension chains (drift ~20th hop)
+- Kling clip duration: per-second granular 3-15s (pick exact second matching scene), up to 6 shots in single 10-15s render, 24/30/60fps, 720p/1080p (UI) or 4K (API), no native extension chain
 - NB2 image aspect ratio MUST match video model target ratio — mismatch = edge hallucination
 - "Ingredients to Video" and "First+Last Frame" are **mutually exclusive** in VEO
 - Seedance: First/Last Frame and Omni are separate modes — use Omni for character consistency
-- Audio is NOT optional — VEO: unspecified = random sounds; Seedance: native dual-branch AV
+- Kling: I2V / First+Last Frame / Multi-Shot / Motion Control are 4 separate modes — pick one per generation
+- Audio is NOT optional — VEO: unspecified = random sounds; Seedance: native dual-branch AV; Kling: native omni audio (5 languages, NO Bahasa Indonesia lip-sync)
 - All dialogue: colon syntax (`says:` not `says ""`)
 - Seedance: real face upload BANNED — use AI-generated faces only
 - Keep critical action in **central 60%** of frame for cross-platform safety
+- Kling: cannot render legible text (same as VEO/Seedance) — use post-prod overlay for logos/text
